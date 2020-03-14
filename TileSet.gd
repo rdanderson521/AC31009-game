@@ -34,5 +34,16 @@ func onReset(isTriggered):
 				tile.set_texture(spritesheet)
 				tile.set_region(true)
 				tile.set_region_rect(Rect2(x*tileSize_x, y*tileSize_y, tileSize_x, tileSize_y))
-				#tile.set_offset(Vector2(x*tileSize_x+tileSize_x/2, y*tileSize_y+tileSize_y/2))
+				tile.position = (Vector2(x*tileSize_x+tileSize_x/2, y*tileSize_y+tileSize_y/2))
+				#new code
+				var a2d = Area2D.new()
+				tile.add_child(a2d)
+				var collision = CollisionShape2D.new()
+				a2d.add_child(collision)
+				collision.shape = ConvexPolygonShape2D
+				var collision_points = PoolVector2Array()
+				collision_points.append([Vector2(-32,-56),Vector2(32,-56),
+				Vector2(-64,0),Vector2(32,56),Vector2(-32,56),Vector2(-32,0)])
+				collision.points = collision_points
+				
 

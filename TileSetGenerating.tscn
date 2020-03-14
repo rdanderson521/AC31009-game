@@ -1,20 +1,31 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://TileSet.gd" type="Script" id=1]
 
 [sub_resource type="StreamTexture" id=1]
 load_path = "res://.import/tiles.png-20e12ed313f9b52ca4483ea23302e684.stex"
 
+[sub_resource type="CanvasItemMaterial" id=2]
+blend_mode = 1
+
+[sub_resource type="ConvexPolygonShape2D" id=3]
+points = PoolVector2Array( -32, -56, 32, -56, 64, 0, 32, 56, -32, 56, -64, 0 )
+
 [node name="Node" type="Node"]
 script = ExtResource( 1 )
-tileCount_x = 8
-tileCount_y = 6
-spritesheet = SubResource( 1 )
 
 [node name="0" type="Sprite" parent="."]
+position = Vector2( 295.667, 123.806 )
 texture = SubResource( 1 )
 region_enabled = true
 region_rect = Rect2( 0, 0, 128, 192 )
+
+[node name="Area2D" type="Area2D" parent="0"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="0/Area2D"]
+material = SubResource( 2 )
+position = Vector2( 0, 32 )
+shape = SubResource( 3 )
 
 [node name="1" type="Sprite" parent="."]
 texture = SubResource( 1 )
