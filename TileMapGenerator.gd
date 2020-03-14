@@ -38,14 +38,14 @@ func onGenerate(generate):
 		map = Array()
 		
 		for y in range(grid_y):
-			var mapx = Array()
 			for x in range(grid_x):
 				var offset = int(x/2)
-				mapx.push_back((Hex.new(Vector2(x,y-offset))))
-			map.push_back((mapx))
+				map.push_back((Hex.new(Vector2(x,y-offset))))
 		
 		for _i in range(blob_num):
-			var start_cell = map[int(rand_range(0,grid_y))][int(rand_range(0,grid_x))]
+			var rand_x = int(rand_range(0,grid_x))
+			var rand_y = int(rand_range(0,grid_y))
+			var start_cell = map[rand_y*grid_x + rand_x]
 			start_cell.power = blob_size
 			var blob_temp = rand_range(-blob_effect,blob_effect)
 			var blob_height = rand_range(-blob_effect,blob_effect)
@@ -61,11 +61,11 @@ func onGenerate(generate):
 				idx = idx - 1
 				blob_cells.shuffle()
 				var curr_blob = blob_cells.pop_front()
-				while blob_visited.has(Vector2(curr_blob.pos.x,curr_blob.pos.y-int(curr_blob.pos.x/2))) and !blob_cells.empty():
+				while blob_visited.has(Vector2(curr_blob.pos.x,curr_blob.pos.y)) and !blob_cells.empty():
 					curr_blob = blob_cells.pop_front()
 				
 				
-				if blob_visited.has(Vector2(curr_blob.pos.x,curr_blob.pos.y-int(curr_blob.pos.x/2))):
+				if blob_visited.has(Vector2(curr_blob.pos.x,curr_blob.pos.y)):
 					break 
 					
 				if curr_blob.power > 0:
@@ -78,42 +78,41 @@ func onGenerate(generate):
 					
 					var x = curr_blob.pos.x
 					var y = curr_blob.pos.y+(int(x/2))
-					if y-1 >= 0:
-						blob_cells.push_back(map[y-1][x])
+					if y-1 >= 0: #y-1 x
+						blob_cells.push_back(map[(y-1)*grid_x+x])
 						blob_cells.back().power = curr_blob.power - rand_range(1,5)
 						
-					if y-1 >= 0:
+					if y-1 >= 0: #y-1 x+1
 						if x+1 < grid_x:
-							blob_cells.push_back(map[y-1][x+1])
+							blob_cells.push_back(map[(y-1)*grid_x+x+1])
 						else:
-							blob_cells.push_back(map[y-1][0])
+							blob_cells.push_back(map[(y-1)*grid_x+0])
 						blob_cells.back().power = curr_blob.power - rand_range(1,5)
 						
-					if x+1 < grid_x:
-						blob_cells.push_back(map[y][x+1])
+					if x+1 < grid_x: #y x+1
+						blob_cells.push_back(map[y*grid_x+x+1])
 					else:
-						blob_cells.push_back(map[y][0])
+						blob_cells.push_back(map[y*grid_x+0])
 					blob_cells.back().power = curr_blob.power - rand_range(1,5)
 						
-					if y+1 < grid_y:
-						blob_cells.push_back(map[y+1][x])
+					if y+1 < grid_y: #y+1 x
+						blob_cells.push_back(map[(y+1)*grid_x+x])
 						blob_cells.back().power = curr_blob.power - rand_range(1,5)
 						
-					if x-1 >= 0:
-						blob_cells.push_back(map[y-1][x-1])
-					else:
-						blob_cells.push_back(map[y-1][grid_x-1])
-					blob_cells.back().power = curr_blob.power - rand_range(1,5)
+					if y < grid_y-1:
+						if x-1 >= 0: #y+1 x-1
+							blob_cells.push_back(map[(y+1)*grid_x+x-1])
+						else:
+							blob_cells.push_back(map[(y+1)*grid_x+grid_x-1])
+						blob_cells.back().power = curr_blob.power - rand_range(1,5)
 					
-					if y-1 >=0:
-						if x-1 >= 0:
-							blob_cells.push_back(map[y-1][x-1])
-						else:
-							blob_cells.push_back(map[y-1][grid_x-1])
-						blob_cells.back().power = curr_blob.power - rand_range(1,5)
+					if x-1 >= 0: #y x-1
+						blob_cells.push_back(map[y*grid_x+x-1])
+					else:
+						blob_cells.push_back(map[y*grid_x+grid_x-1])
+					blob_cells.back().power = curr_blob.power - rand_range(1,5)
 				
-		for x in map:
-			for y in x:
+		for y in map:
 				print (str(y.pos.x) + "," + str(y.pos.y) + ": " + str(y.height))
 				
 				var rand
