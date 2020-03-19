@@ -22,15 +22,16 @@ func _input(event):
 		self.on_click(event.position)
 
 func on_click(click_position):
-	var camera = self.get_child(0)
-	var global_click_position =  (camera.get_camera_position() + (( click_position - camera.get_viewport().get_visible_rect().size/2) * camera.scale * camera.get_zoom()))
+	pass
+	#var camera = self.get_child(0)
+	#var global_click_position =  (camera.get_camera_position() + (( click_position - camera.get_viewport().get_visible_rect().size/2) * camera.scale * camera.get_zoom()))
 
-	var hex_coord = hex.point_to_hex(global_click_position)
-	hex.hex_in_range(1,hex_coord)
-	hex.hex_in_range(2,hex_coord)
+	#var hex_coord = hex.point_to_hex(global_click_position)
+	#hex.hex_in_range(1,hex_coord)
+	#hex.hex_in_range(1,hex_coord)
 	#set_cellv(hex_coord,-1)
 	
-	var hex_centre = hex.hex_to_point(hex_coord)
+	#var hex_centre = hex.hex_to_point(hex_coord)
 	#print (hex_centre)
 	#var points = Array()
 	#points.push_back(Vector2(hex_centre.x-8,hex_centre.y-14))
