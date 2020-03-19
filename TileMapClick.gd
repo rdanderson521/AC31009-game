@@ -19,16 +19,15 @@ func _input(event):
 	if event is InputEventMouseButton \
 	and event.button_index == BUTTON_LEFT \
 	and event.is_pressed():
-		print("tilemap: "+str(event.position))
 		self.on_click(event.position)
 
 func on_click(click_position):
-	print("Click")
 	var camera = self.get_child(0)
 	var global_click_position =  (camera.get_camera_position() + (( click_position - camera.get_viewport().get_visible_rect().size/2) * camera.scale * camera.get_zoom()))
 
 	var hex_coord = hex.point_to_hex(global_click_position)
-	
+	hex.hex_in_range(1,hex_coord)
+	hex.hex_in_range(2,hex_coord)
 	#set_cellv(hex_coord,-1)
 	
 	var hex_centre = hex.hex_to_point(hex_coord)

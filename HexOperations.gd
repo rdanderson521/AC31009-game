@@ -46,5 +46,16 @@ class Hex:
 	
 		return Vector3(rx, ry, rz)
 		
+	static func hex_in_range(distance, hex, debug = false):
+		var hex_in_range = Array()
+		for i in range(-distance, distance+1):
+			for j in range(-distance, distance+1):
+				if -distance <= (i+j) and (i+j) <= distance and (i+j) != 0:
+					hex_in_range.push_back(Vector2(hex.x+i,hex.y+j))
+		if debug:
+			print("hex: " + str(hex))
+			print("in range: " + str(hex_in_range))
+		return hex_in_range
+		
 	static func hex_round_axial(hex):
 		return cube_to_axial(hex_round(axial_to_cube(hex)))
