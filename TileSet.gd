@@ -35,15 +35,21 @@ func onReset(isTriggered):
 				tile.set_region(true)
 				tile.set_region_rect(Rect2(x*tileSize_x, y*tileSize_y, tileSize_x, tileSize_y))
 				tile.position = (Vector2(x*tileSize_x+tileSize_x/2, y*tileSize_y+tileSize_y/2))
+				
 				#new code
-				var a2d = Area2D.new()
-				tile.add_child(a2d)
-				var collision = CollisionShape2D.new()
-				a2d.add_child(collision)
-				collision.shape = ConvexPolygonShape2D
-				var collision_points = PoolVector2Array()
-				collision_points.append([Vector2(-32,-56),Vector2(32,-56),
-				Vector2(-64,0),Vector2(32,56),Vector2(-32,56),Vector2(-32,0)])
-				collision.points = collision_points
+				#var sb2d = StaticBody2D.new()
+				#tile.add_child(sb2d)
+				#sb2d.set_owner(self)
+				#sb2d.position.y = 32
+				
+				#var collision = CollisionPolygon2D.new()
+				#var collision_points = PoolVector2Array([Vector2(-32,-56),Vector2(32,-56),
+				#Vector2(64,0),Vector2(32,56),Vector2(-32,56),Vector2(-64,0)])
+				#sb2d.add_child(collision)
+				#collision.set_owner(self)
+				#collision.polygon = collision_points
+				
+				
+				
 				
 
