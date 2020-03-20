@@ -2,25 +2,25 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/tilesActualSize.png-24bee49a41670c678b272180ded5df54.stex"
+path="res://.import/tilesActualSize - Copy.png-89fd5efb52ec83272bc6737efdda412c.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://tilesActualSize.png"
-dest_files=[ "res://.import/tilesActualSize.png-24bee49a41670c678b272180ded5df54.stex" ]
+source_file="res://tilesActualSize - Copy.png"
+dest_files=[ "res://.import/tilesActualSize - Copy.png-89fd5efb52ec83272bc6737efdda412c.stex" ]
 
 [params]
 
-compress/mode=3
+compress/mode=0
 compress/lossy_quality=0.7
 compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=false
+flags/filter=true
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2
