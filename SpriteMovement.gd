@@ -29,7 +29,7 @@ class a_star_node:
 		return distance
 		
 
-var speed = 50
+var speed = 15
 var moves = Array()
 var selected = true
 var hex_pos
@@ -46,10 +46,10 @@ func rand_move():
 	self.position = hex.hex_to_point(hex.hex_round_axial(hex_pos))
 	
 func heuristic_distance(destination, from):
-	return hex.hex_distance(destination,from)*10
+	return hex.hex_distance(destination,from)*5
 	
 #a* pathfinding algorithm	
-func find_path(destination,debug = false):
+func find_path(destination,debug = true):
 	var start = a_star_node.new(heuristic_distance(destination,hex_pos),0,hex_pos)
 	var path_found = false
 	var nodes = Array()
@@ -73,19 +73,38 @@ func find_path(destination,debug = false):
 		else:
 			var node_neighbors = hex.hex_in_range(1,current_node.hex_pos)
 			for i in node_neighbors:
-				nodes.push_back(a_star_node.new(heuristic_distance(destination,i),current_node.distance_traveled +2,i,current_node))
+				nodes.push_back(a_star_node.new(heuristic_distance(destination,i),current_node.distance_traveled + 1,i,current_node))
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if !moves.empty():
-		var velocity = moves.pop_front() - hex_pos;
-		if velocity * delta <= Vector2(speed,speed):
-			pass
-		else:
-			#velocity = velocity * (Vector2(speed,speed)*delta)
+		#print("moving")
+		var diff = moves.front() - hex_pos
+		#print("diff: " + str(diff))
+		var abs_distance = sqrt(pow(diff.x,2)+pow(diff.y,2))
+		var velocity = abs_distance / (speed * delta)
+		#print("vel: " + str(velocity))
+		var move_vector
+		if velocity <= 1:
 			moves.pop_front()
-			pass
-		hex_pos = hex_pos + velocity#delta)
+			move_vector = diff
+		else:
+			move_vector =  diff / velocity
+		#print("move: " + str(move_vector))
+		hex_pos = hex_pos + move_vector
 		var new_pos = hex.hex_to_point(hex_pos)
 		self.position = new_pos
+		
+		pass
+		#var velocity = moves.pop_front() - hex_pos
+		
+		#if velocity * delta <= Vector2(speed,speed):
+		#	pass
+		#else:
+			#velocity = velocity * (Vector2(speed,speed)*delta)
+		#	moves.pop_front()
+		#	pass
+		#hex_pos = hex_pos + velocity#delta)
+		#var new_pos = hex.hex_to_point(hex_pos)
+		#self.position = new_pos
 	pass

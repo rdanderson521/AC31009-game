@@ -15,8 +15,8 @@ pause_mode = 2
 z_as_relative = false
 mode = 2
 tile_set = ExtResource( 1 )
-cell_size = Vector2( 32, 28 )
-cell_custom_transform = Transform2D( 24, 14, 0, 28, -16, -22 )
+cell_size = Vector2( 32, 27 )
+cell_custom_transform = Transform2D( 24, 13.8564, 0, 27.7128, -16, -22 )
 cell_y_sort = true
 centered_textures = true
 format = 1
@@ -26,7 +26,6 @@ lakes = true
 mountains = true
 blob_num = 200
 blob_size = 60
-blob_effect = 1.0
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( -0.329773, -1.33946 )

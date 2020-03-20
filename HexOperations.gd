@@ -58,7 +58,9 @@ class Hex:
 		return hex_in_range
 	
 	static func hex_distance(hex_a, hex_b):
-		return max(abs(hex_a.x-hex_b.x),max(abs(hex_a.y-hex_b.y),abs((hex_a.x+hex_a.y) - (hex_b.x+hex_b.y))))	
+		var cube_a = axial_to_cube(hex_a)
+		var cube_b = axial_to_cube(hex_b)
+		return max(abs(cube_a.x-cube_b.x),max(abs(cube_a.y-cube_b.y),abs(cube_a.z- cube_b.z)))	
 	
 	static func hex_round_axial(hex):
 		return cube_to_axial(hex_round(axial_to_cube(hex)))
