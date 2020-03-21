@@ -50,7 +50,7 @@ class Hex:
 		var hex_in_range = Array()
 		for i in range(-distance, distance+1):
 			for j in range(-distance, distance+1):
-				if -distance <= (i+j) and (i+j) <= distance and (i+j) != 0:
+				if -distance <= (i+j) and (i+j) <= distance and (i != 0 or j != 0):
 					hex_in_range.push_back(Vector2(hex.x+i,hex.y+j))
 		if debug:
 			print("hex: " + str(hex))

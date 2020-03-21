@@ -72,6 +72,7 @@ func find_path(destination,debug = true):
 			self.moves = path
 		else:
 			var node_neighbors = hex.hex_in_range(1,current_node.hex_pos)
+			print("neighbors: " + str(node_neighbors))
 			for i in node_neighbors:
 				nodes.push_back(a_star_node.new(heuristic_distance(destination,i),current_node.distance_traveled + 1,i,current_node))
 
@@ -80,7 +81,6 @@ func _process(delta):
 	if !moves.empty():
 		#print("moving")
 		var diff = moves.front() - hex_pos
-		#print("diff: " + str(diff))
 		var abs_distance = sqrt(pow(diff.x,2)+pow(diff.y,2))
 		var velocity = abs_distance / (speed * delta)
 		#print("vel: " + str(velocity))
