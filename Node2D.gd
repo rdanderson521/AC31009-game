@@ -28,14 +28,19 @@ func on_click(click_position):
 		selected_sprite = sprites[hex_coord]
 		print("sprite selected")
 	elif selected_sprite != null:
-		print("finding path")
 		if hex.hex_distance(selected_sprite.hex_pos,hex_coord) <= selected_sprite.move_range:
-			selected_sprite.find_path(hex_coord)
+			print("finding path")
+			var sprite_hex = selected_sprite.hex_pos
+			if selected_sprite.find_path(hex_coord):
+				sprites.erase(sprite_hex)
+				sprites[selected_sprite.hex_pos] = selected_sprite
+				selected_sprite = null
+			
 		#var sprite_range = hex.hex_in_range(selected_sprite.move_range,hex_coord)
 		
 		#sprite.rand_move()
 		#sprites.erase(hex_coord)
-		#sprites[sprite.hex_pos] = sprite
+		
 	#var hex_centre = hex.hex_to_point(hex_coord)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
