@@ -2,6 +2,14 @@ extends Sprite
 
 var hex = load("res://HexOperations.gd").Hex
 
+var speed = 15
+var moves = Array()
+var selected = true
+var hex_pos
+var move_range = 6
+var type = "test"
+
+
 class a_star_node:
 	var distance_heuristic
 	var distance_traveled
@@ -28,12 +36,6 @@ class a_star_node:
 			curr_node = curr_node.parent
 		return distance
 		
-
-var speed = 15
-var moves = Array()
-var selected = true
-var hex_pos
-var move_range = 6
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -70,12 +72,14 @@ func find_path(destination,debug = true):
 				current_node = current_node.parent 
 			path_found = true
 			self.moves = path
+			return true
 		else:
 			var node_neighbors = hex.hex_in_range(1,current_node.hex_pos)
 			print("neighbors: " + str(node_neighbors))
 			for i in node_neighbors:
 				nodes.push_back(a_star_node.new(heuristic_distance(destination,i),current_node.distance_traveled + 1,i,current_node))
-
+	return false 
+	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if !moves.empty():
