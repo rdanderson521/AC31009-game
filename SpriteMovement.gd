@@ -1,4 +1,4 @@
-extends Sprite
+extends Node2D
 
 var hex = load("res://HexOperations.gd").Hex
 
@@ -99,16 +99,3 @@ func _process(delta):
 		var new_pos = hex.hex_to_point(hex_pos)
 		self.position = new_pos
 		
-		pass
-		#var velocity = moves.pop_front() - hex_pos
-		
-		#if velocity * delta <= Vector2(speed,speed):
-		#	pass
-		#else:
-			#velocity = velocity * (Vector2(speed,speed)*delta)
-		#	moves.pop_front()
-		#	pass
-		#hex_pos = hex_pos + velocity#delta)
-		#var new_pos = hex.hex_to_point(hex_pos)
-		#self.position = new_pos
-	pass
