@@ -41,3 +41,8 @@ func on_click(click_position):
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
+
+
+func _on_Sprite_sprite_clicked(sprite):
+	selected_sprite = sprite
+	pass # Replace with function body.

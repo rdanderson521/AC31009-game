@@ -2,7 +2,7 @@ extends Node2D
 
 var hex = load("res://HexOperations.gd").Hex
 
-var speed = 15
+var speed = 10
 var moves = Array()
 var selected = true
 var hex_pos
@@ -106,7 +106,9 @@ func _process(delta):
 		#print("moving")
 		var diff = moves.front() - hex_pos
 		var abs_distance = sqrt(pow(diff.x,2)+pow(diff.y,2))
-		var velocity = abs_distance / (speed * delta)
+		var velocity = 0
+		if delta > 0:
+			velocity = abs_distance / (speed * delta)
 		#print("vel: " + str(velocity))
 		var move_vector
 		if velocity <= 1:
@@ -119,3 +121,10 @@ func _process(delta):
 		var new_pos = hex.hex_to_point(hex_pos)
 		self.position = new_pos
 		
+signal sprite_clicked(sprite)
+
+func _on_input_event(viewport, event, shape_idx):
+	if event is InputEventMouseButton \
+	and event.button_index == BUTTON_LEFT \
+	and event.is_pressed():
+		emit_signal("sprite_clicked",self)
