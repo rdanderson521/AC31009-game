@@ -11,6 +11,8 @@ func _ready():
 	sprites = Dictionary()
 	sprites[$Sprite.hex_pos] = $Sprite
 
+signal tilemap_clicked(hex_pos)
+
 func _input(event):
 	if event is InputEventMouseButton \
 	and event.button_index == BUTTON_LEFT \
@@ -23,18 +25,19 @@ func on_click(click_position):
 	var global_click_position =  (camera.get_camera_position() + (( click_position - camera.get_viewport().get_visible_rect().size/2) * camera.scale * camera.get_zoom()))
 
 	var hex_coord = hex.point_to_hex(global_click_position)
+	emit_signal("tilemap_clicked",hex_coord)
 	print("hex_coord: " + str(hex_coord))
-	if sprites.has(hex_coord):
-		selected_sprite = sprites[hex_coord]
-		print("sprite selected")
-	elif selected_sprite != null:
-		if hex.hex_distance(selected_sprite.hex_pos,hex_coord) <= selected_sprite.move_range:
-			print("finding path")
-			var sprite_hex = selected_sprite.hex_pos
-			if selected_sprite.find_path(hex_coord):
-				sprites.erase(sprite_hex)
-				sprites[selected_sprite.hex_pos] = selected_sprite
-				selected_sprite = null
+	#if sprites.has(hex_coord):
+	#	selected_sprite = sprites[hex_coord]
+	#	print("sprite selected")
+	#elif selected_sprite != null:
+	#	if hex.hex_distance(selected_sprite.hex_pos,hex_coord) <= selected_sprite.move_range:
+	#		print("finding path")
+	#		var sprite_hex = selected_sprite.hex_pos
+	#		if selected_sprite.find_path(hex_coord):
+	#			sprites.erase(sprite_hex)
+	#			sprites[selected_sprite.hex_pos] = selected_sprite
+	#			selected_sprite = null
 			
 		#var sprite_range = hex.hex_in_range(selected_sprite.move_range,hex_coord)
 		

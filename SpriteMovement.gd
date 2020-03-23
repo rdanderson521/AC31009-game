@@ -4,11 +4,17 @@ var hex = load("res://HexOperations.gd").Hex
 
 var speed = 10
 var moves = Array()
-var selected = true
+var selected = false setget set_selected
 var hex_pos
 var move_range = 6
 var type = "test"
 
+signal is_selected(val)
+
+func set_selected(selected_val):
+	emit_signal("is_selected",selected_val)
+	selected = selected_val
+	pass
 
 class a_star_node:
 	var distance_heuristic
@@ -71,7 +77,7 @@ func heuristic_distance(destination, from, start = null):
 	return  heuristic
 	
 #a* pathfinding algorithm	
-func find_path(destination,debug = true):
+func find_path(destination,debug = false):
 	var start = a_star_node.new(heuristic_distance(destination,hex_pos,self.hex_pos),0,hex_pos)
 	var path_found = false
 	var nodes = Array()
@@ -109,6 +115,8 @@ func _process(delta):
 		var velocity = 0
 		if delta > 0:
 			velocity = abs_distance / (speed * delta)
+		else:
+			velocity = abs_distance / (speed * 0.001)
 		#print("vel: " + str(velocity))
 		var move_vector
 		if velocity <= 1:
@@ -127,4 +135,11 @@ func _on_input_event(viewport, event, shape_idx):
 	if event is InputEventMouseButton \
 	and event.button_index == BUTTON_LEFT \
 	and event.is_pressed():
+		self.selected = true
 		emit_signal("sprite_clicked",self)
+
+func _on_tilemap_clicked(click_hex_pos):
+	if hex.hex_distance(click_hex_pos, hex_pos) <= move_range:
+		find_path(click_hex_pos)
+	self.selected = false
+		
