@@ -1,6 +1,14 @@
-extends Sprite
+extends Node2D
 
 var hex = load("res://HexOperations.gd").Hex
+
+var speed = 10
+var moves = Array()
+var selected = true
+var hex_pos
+var move_range = 6
+var type = "test"
+
 
 class a_star_node:
 	var distance_heuristic
@@ -8,6 +16,8 @@ class a_star_node:
 	var hex_pos
 	var parent
 	var child
+	var start
+	var goal
 	
 	func _init(h,t,hex,parent=null):
 		distance_heuristic = h
@@ -15,9 +25,14 @@ class a_star_node:
 		hex_pos = hex
 		self.parent = parent
 		
-	static func sort_descending(a,b):
+	static func sort_nodes(a,b):
 		if (a.distance_heuristic+a.distance_traveled) < (b.distance_heuristic+b.distance_traveled):
 			return true
+		elif(a.distance_heuristic+a.distance_traveled) == (b.distance_heuristic+b.distance_traveled):
+			if(a.distance_heuristic < b.distance_heuristic):
+				return true
+			elif(a.distance_heuristic == b.distance_heuristic):
+				pass
 		return false
 		
 	func start_to_node_distance(node):
@@ -29,12 +44,6 @@ class a_star_node:
 		return distance
 		
 
-var speed = 15
-var moves = Array()
-var selected = true
-var hex_pos
-var move_range = 6
-
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	randomize()
@@ -45,12 +54,25 @@ func rand_move():
 	self.hex_pos = Vector2(int(rand_range(0,5)),int(rand_range(0,5)))
 	self.position = hex.hex_to_point(hex.hex_round_axial(hex_pos))
 	
-func heuristic_distance(destination, from):
-	return hex.hex_distance(destination,from)*5
+func heuristic_distance(destination, from, start = null):
+	var heuristic = hex.hex_distance(destination,from)*5
+	if start != null: #heuristic tie break from http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html#S1
+		var start_point = hex.hex_to_point(start)
+		var destination_point = hex.hex_to_point(destination)
+		var from_point = hex.hex_to_point(from)
+		
+		var dx1 = from_point.x - destination_point.x
+		var dy1 = from_point.y - destination_point.y
+		var dx2 = start_point.x - destination_point.x
+		var dy2 = start_point.y - destination_point.y
+		var cross = abs(dx1*dy2 - dx2*dy1)
+		heuristic += cross*0.1
+	
+	return  heuristic
 	
 #a* pathfinding algorithm	
 func find_path(destination,debug = true):
-	var start = a_star_node.new(heuristic_distance(destination,hex_pos),0,hex_pos)
+	var start = a_star_node.new(heuristic_distance(destination,hex_pos,self.hex_pos),0,hex_pos)
 	var path_found = false
 	var nodes = Array()
 	var visited_nodes = Array()
@@ -59,7 +81,7 @@ func find_path(destination,debug = true):
 		print("start: "+ str(hex_pos))
 		print("destination: "  + str(destination))
 	while !path_found and !nodes.empty():
-		nodes.sort_custom(a_star_node,"sort_descending")
+		nodes.sort_custom(a_star_node,"sort_nodes")
 		var current_node = nodes.pop_front()
 		if debug:
 			print("curr_node: " + str(current_node.hex_pos) )
@@ -70,19 +92,23 @@ func find_path(destination,debug = true):
 				current_node = current_node.parent 
 			path_found = true
 			self.moves = path
+			return true
 		else:
 			var node_neighbors = hex.hex_in_range(1,current_node.hex_pos)
 			print("neighbors: " + str(node_neighbors))
 			for i in node_neighbors:
-				nodes.push_back(a_star_node.new(heuristic_distance(destination,i),current_node.distance_traveled + 1,i,current_node))
-
+				nodes.push_back(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + 1,i,current_node))
+	return false 
+	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if !moves.empty():
 		#print("moving")
 		var diff = moves.front() - hex_pos
 		var abs_distance = sqrt(pow(diff.x,2)+pow(diff.y,2))
-		var velocity = abs_distance / (speed * delta)
+		var velocity = 0
+		if delta > 0:
+			velocity = abs_distance / (speed * delta)
 		#print("vel: " + str(velocity))
 		var move_vector
 		if velocity <= 1:
@@ -95,16 +121,10 @@ func _process(delta):
 		var new_pos = hex.hex_to_point(hex_pos)
 		self.position = new_pos
 		
-		pass
-		#var velocity = moves.pop_front() - hex_pos
-		
-		#if velocity * delta <= Vector2(speed,speed):
-		#	pass
-		#else:
-			#velocity = velocity * (Vector2(speed,speed)*delta)
-		#	moves.pop_front()
-		#	pass
-		#hex_pos = hex_pos + velocity#delta)
-		#var new_pos = hex.hex_to_point(hex_pos)
-		#self.position = new_pos
-	pass
+signal sprite_clicked(sprite)
+
+func _on_input_event(viewport, event, shape_idx):
+	if event is InputEventMouseButton \
+	and event.button_index == BUTTON_LEFT \
+	and event.is_pressed():
+		emit_signal("sprite_clicked",self)

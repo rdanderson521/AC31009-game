@@ -5,6 +5,7 @@ export(bool) var mountains = false
 export(int) var blob_num = 70
 export(int) var blob_size = 100
 export(float) var blob_effect = 1
+export(int) var blob_detirioration = 5
 export(int) var grid_x = 100
 export(int) var grid_y = 60
 export(bool) var generate = false setget onGenerate
@@ -89,37 +90,37 @@ func onGenerate(generate):
 					var y = curr_blob.pos.y+(int(x/2))
 					if y-1 >= 0: #y-1 x
 						blob_cells.push_back(map[(y-1)*grid_x+x])
-						blob_cells.back().power = curr_blob.power - rand_range(1,5)
+						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
 						
 					if y-1 >= 0: #y-1 x+1
 						if x+1 < grid_x:
 							blob_cells.push_back(map[(y-1)*grid_x+x+1])
 						else:
 							blob_cells.push_back(map[(y-1)*grid_x+0])
-						blob_cells.back().power = curr_blob.power - rand_range(1,5)
+						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
 						
 					if x+1 < grid_x: #y x+1
 						blob_cells.push_back(map[y*grid_x+x+1])
 					else:
 						blob_cells.push_back(map[y*grid_x+0])
-					blob_cells.back().power = curr_blob.power - rand_range(1,5)
+					blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
 						
 					if y+1 < grid_y: #y+1 x
 						blob_cells.push_back(map[(y+1)*grid_x+x])
-						blob_cells.back().power = curr_blob.power - rand_range(1,5)
+						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
 						
 					if y < grid_y-1:
 						if x-1 >= 0: #y+1 x-1
 							blob_cells.push_back(map[(y+1)*grid_x+x-1])
 						else:
 							blob_cells.push_back(map[(y+1)*grid_x+grid_x-1])
-						blob_cells.back().power = curr_blob.power - rand_range(1,5)
+						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
 					
 					if x-1 >= 0: #y x-1
 						blob_cells.push_back(map[y*grid_x+x-1])
 					else:
 						blob_cells.push_back(map[y*grid_x+grid_x-1])
-					blob_cells.back().power = curr_blob.power - rand_range(1,5)
+					blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
 				
 		for y in map:
 				print (str(y.pos.x) + "," + str(y.pos.y) + ": " + str(y.height))
