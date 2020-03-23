@@ -1,15 +1,12 @@
 extends Node2D
 
 var hex = preload("res://HexOperations.gd").Hex
-signal sprite_click
 
 var sprites
-var selected_sprite
 var draw_list = Array()
 
 func _ready():
-	sprites = Dictionary()
-	sprites[$Sprite.hex_pos] = $Sprite
+	pass
 
 signal tilemap_clicked(hex_pos)
 
@@ -27,30 +24,8 @@ func on_click(click_position):
 	var hex_coord = hex.point_to_hex(global_click_position)
 	emit_signal("tilemap_clicked",hex_coord)
 	print("hex_coord: " + str(hex_coord))
-	#if sprites.has(hex_coord):
-	#	selected_sprite = sprites[hex_coord]
-	#	print("sprite selected")
-	#elif selected_sprite != null:
-	#	if hex.hex_distance(selected_sprite.hex_pos,hex_coord) <= selected_sprite.move_range:
-	#		print("finding path")
-	#		var sprite_hex = selected_sprite.hex_pos
-	#		if selected_sprite.find_path(hex_coord):
-	#			sprites.erase(sprite_hex)
-	#			sprites[selected_sprite.hex_pos] = selected_sprite
-	#			selected_sprite = null
-			
-		#var sprite_range = hex.hex_in_range(selected_sprite.move_range,hex_coord)
-		
-		#sprite.rand_move()
-		#sprites.erase(hex_coord)
-		
-	#var hex_centre = hex.hex_to_point(hex_coord)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
 
-
-func _on_Sprite_sprite_clicked(sprite):
-	selected_sprite = sprite
-	pass # Replace with function body.

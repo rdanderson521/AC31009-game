@@ -5,16 +5,26 @@ var hex = load("res://HexOperations.gd").Hex
 var speed = 10
 var moves = Array()
 var selected = false setget set_selected
-var hex_pos
+var hex_pos 
 var move_range = 6
+var moves_left = 6
 var type = "test"
+
+func _init():
+	moves = Array()
+	selected = false
+	self.hex_pos = Vector2(int(rand_range(0,5)),int(rand_range(0,5)))
+	self.position = hex.hex_to_point(hex.hex_round_axial(hex_pos))
+	move_range = 6
+	moves_left = 6
+	type = str(rand_range(0,10))
+
 
 signal is_selected(val)
 
 func set_selected(selected_val):
 	emit_signal("is_selected",selected_val)
 	selected = selected_val
-	pass
 
 class a_star_node:
 	var distance_heuristic
