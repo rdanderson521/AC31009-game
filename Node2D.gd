@@ -22,8 +22,8 @@ func _ready():
 			print("units: " + str(units))
 			print("buildings: " + str(buildings))
 		
-	
 	sprites.push_back(sprite_template.instance())
+	
 	sprites.back().init()
 
 signal tilemap_clicked(hex_pos)

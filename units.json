@@ -12,6 +12,7 @@
 				"food":5
 			},
 			"texture":"icon.png"
+			"start":1
 		},
 		{
 			"name":"City Builder",
@@ -24,7 +25,8 @@
 			"cost":{
 				"food":5
 			},
-			"texture":"icon.png"
+			"texture":"icon.png",
+			"start":1
 		}
 	],
 	"buildings":[
