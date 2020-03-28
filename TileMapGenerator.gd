@@ -8,6 +8,7 @@ export(float) var blob_effect = 1
 export(int) var blob_detirioration = 5
 export(int) var grid_x = 100
 export(int) var grid_y = 60
+export(bool) var debug = false
 export(bool) var generate = false setget onGenerate
 export(bool) var clear = false setget onClear
 
@@ -123,60 +124,61 @@ func onGenerate(generate):
 					blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
 				
 		for y in map:
+			if debug:
 				print (str(y.pos.x) + "," + str(y.pos.y) + ": " + str(y.height))
-				
-				var rand
-				if y.temp > 1: #desert
-					if y.height < -0.5 and lakes: #water
-						set_cell(y.pos.x,y.pos.y,tiles["water"])
-					elif y.height > 1.2: #rocky
-						if rand_range(0,1) > 0.9 and mountains:
-							set_cell(y.pos.x,y.pos.y,tiles["desert_mountain"])
+			
+			var rand
+			if y.temp > 1: #desert
+				if y.height < -0.5 and lakes: #water
+					set_cell(y.pos.x,y.pos.y,tiles["water"])
+				elif y.height > 1.2: #rocky
+					if rand_range(0,1) > 0.9 and mountains:
+						set_cell(y.pos.x,y.pos.y,tiles["desert_mountain"])
+					else:
+						set_cell(y.pos.x,y.pos.y,tiles["desert_rocks"])
+				else: #normal
+					if y.humidity > 1.6: #oasis
+						set_cell(y.pos.x,y.pos.y,tiles["desert_oasis"])
+					else: #sandy
+						if rand_range(0,1)>0.5:
+							set_cell(y.pos.x,y.pos.y,tiles["desert"])
 						else:
-							set_cell(y.pos.x,y.pos.y,tiles["desert_rocks"])
-					else: #normal
-						if y.humidity > 1.6: #oasis
-							set_cell(y.pos.x,y.pos.y,tiles["desert_oasis"])
-						else: #sandy
-							if rand_range(0,1)>0.5:
-								set_cell(y.pos.x,y.pos.y,tiles["desert"])
-							else:
-								set_cell(y.pos.x,y.pos.y,tiles["desert_dunes"])
-								
-				elif y.temp < 0: #tundra
-					if y.height < -0.3 and lakes: #water
-						set_cell(y.pos.x,y.pos.y,tiles["water_ice"])
-					elif y.height > 1.2: #rocky
-						rand = rand_range(0,1)
-						if rand > 0.9 and mountains:
-							set_cell(y.pos.x,y.pos.y,tiles["mountain"])
-						elif rand > 0.6:
-							set_cell(y.pos.x,y.pos.y,tiles["snow_rocks_trees"])
-						else:
-							set_cell(y.pos.x,y.pos.y,tiles["snow_rocks"])
-					else: #snow
-						set_cell(y.pos.x,y.pos.y,tiles["snow"])
-						
-				else: #grass
-					if y.height < -0.3 and lakes: #water
-						set_cell(y.pos.x,y.pos.y,tiles["water"])
-					elif y.height > 1.2: #rocky
-						rand = rand_range(0,1)
-						if rand > 0.9 and mountains:
-							set_cell(y.pos.x,y.pos.y,tiles["mountain"])
-						elif rand > 0.6:
-							set_cell(y.pos.x,y.pos.y,tiles["grass_rocks_trees"])
-						else:
-							set_cell(y.pos.x,y.pos.y,tiles["grass_rocks"])
-					else: #normal
-						if y.humidity > 1.3: #rain forest
-							set_cell(y.pos.x,y.pos.y,tiles["rainforest"])
+							set_cell(y.pos.x,y.pos.y,tiles["desert_dunes"])
 							
-						else: #grass
-							if rand_range(0,1) > 0.7:
-								set_cell(y.pos.x,y.pos.y,tiles["grass_trees"])
-							else:
-								set_cell(y.pos.x,y.pos.y,tiles["grass"])
+			elif y.temp < 0: #tundra
+				if y.height < -0.3 and lakes: #water
+					set_cell(y.pos.x,y.pos.y,tiles["water_ice"])
+				elif y.height > 1.2: #rocky
+					rand = rand_range(0,1)
+					if rand > 0.9 and mountains:
+						set_cell(y.pos.x,y.pos.y,tiles["mountain"])
+					elif rand > 0.6:
+						set_cell(y.pos.x,y.pos.y,tiles["snow_rocks_trees"])
+					else:
+						set_cell(y.pos.x,y.pos.y,tiles["snow_rocks"])
+				else: #snow
+					set_cell(y.pos.x,y.pos.y,tiles["snow"])
+					
+			else: #grass
+				if y.height < -0.3 and lakes: #water
+					set_cell(y.pos.x,y.pos.y,tiles["water"])
+				elif y.height > 1.2: #rocky
+					rand = rand_range(0,1)
+					if rand > 0.9 and mountains:
+						set_cell(y.pos.x,y.pos.y,tiles["mountain"])
+					elif rand > 0.6:
+						set_cell(y.pos.x,y.pos.y,tiles["grass_rocks_trees"])
+					else:
+							set_cell(y.pos.x,y.pos.y,tiles["grass_rocks"])
+				else: #normal
+					if y.humidity > 1.3: #rain forest
+						set_cell(y.pos.x,y.pos.y,tiles["rainforest"])
+						
+					else: #grass
+						if rand_range(0,1) > 0.7:
+							set_cell(y.pos.x,y.pos.y,tiles["grass_trees"])
+						else:
+							set_cell(y.pos.x,y.pos.y,tiles["grass"])
 		
 
 func onClear(clear):

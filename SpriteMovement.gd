@@ -3,21 +3,42 @@ extends Node2D
 var hex = load("res://HexOperations.gd").Hex
 
 var speed = 10
+var type
+var move_range
+var health_max
+var damage
+var damage_range
+var can_build
+var can_build_city
+
 var moves = Array()
+var moves_left
+var health
 var selected = false setget set_selected
 var hex_pos 
-var move_range = 6
-var moves_left = 6
-var type = "test"
 
-func _init():
+
+
+func init(name, health, move_range, damage, damage_range, can_build, can_build_city, texture, hex_pos):
+	self.type = name
+	self.health_max = health
+	self.health = health
+	self.move_range = move_range
+	self.moves_left = move_range
+	self.damage = damage
+	self.damage_range = damage_range
+	self.can_build = can_build
+	self.can_build_city = can_build_city
+	$Area2D/CollisionPolygon2D/Sprite.texture = texture
+	self.hex_pos = hex_pos
+	self.position = hex.hex_to_point(hex_pos)
 	moves = Array()
 	selected = false
-	self.hex_pos = Vector2(int(rand_range(0,5)),int(rand_range(0,5)))
-	self.position = hex.hex_to_point(hex.hex_round_axial(hex_pos))
-	move_range = 6
-	moves_left = 6
-	type = str(rand_range(0,10))
+
+func _init():
+	print("newSprite")
+	
+	
 
 
 signal is_selected(val)
@@ -111,7 +132,8 @@ func find_path(destination,debug = false):
 			return true
 		else:
 			var node_neighbors = hex.hex_in_range(1,current_node.hex_pos)
-			print("neighbors: " + str(node_neighbors))
+			if debug:
+				print("neighbors: " + str(node_neighbors))
 			for i in node_neighbors:
 				nodes.push_back(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + 1,i,current_node))
 	return false 

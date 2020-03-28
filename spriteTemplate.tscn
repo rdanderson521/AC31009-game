@@ -13,7 +13,7 @@ script = ExtResource( 3 )
 polygon = PoolVector2Array( -8, -14, 8, -14, 16, 0, 8, 14, -8, 14, -16, 0 )
 
 [node name="Sprite" type="Sprite" parent="Area2D/CollisionPolygon2D"]
-scale = Vector2( 0.25, 0.25 )
+scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 2 )
 script = ExtResource( 1 )
 [connection signal="is_selected" from="." to="Area2D/CollisionPolygon2D/Sprite" method="_on_Node2D_is_selected"]
