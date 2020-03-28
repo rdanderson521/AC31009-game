@@ -1,11 +1,11 @@
 {
 	"units":[
 		{
-			"name":"warrior",
+			"name":"Warrior",
 			"health":20,
 			"damage":5,
 			"damage_range":1,
-			"move_range":4,
+			"move_range":3,
 			"build_cities":false,
 			"build_districs":false,
 			"cost":{
@@ -14,13 +14,13 @@
 			"texture":"icon.png"
 		},
 		{
-			"name":"builder",
+			"name":"City Builder",
 			"health":10,
 			"damage":1,
 			"damage_range":1,
-			"move_range":3,
+			"move_range":4,
 			"build_cities":true,
-			"build_districs":true,
+			"build_districs":false,
 			"cost":{
 				"food":5
 			},

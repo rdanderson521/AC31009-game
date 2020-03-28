@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://tiles/TilesetWithFog.tres" type="TileSet" id=1]
 [ext_resource path="res://TileMapGenerator.gd" type="Script" id=2]
 [ext_resource path="res://Camera2D.gd" type="Script" id=3]
 [ext_resource path="res://SpriteGui.gd" type="Script" id=4]
+[ext_resource path="res://MainGui.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Node2D.gd" type="Script" id=6]
 [ext_resource path="res://SpriteGui.tscn" type="PackedScene" id=7]
 [ext_resource path="res://spriteTemplate.tscn" type="PackedScene" id=8]
@@ -21,6 +22,9 @@ layer = 2
 [node name="SpriteGui" parent="Camera2D/CanvasLayer" instance=ExtResource( 7 )]
 visible = false
 script = ExtResource( 4 )
+
+[node name="MainGui" parent="Camera2D/CanvasLayer" instance=ExtResource( 5 )]
+visible = false
 
 [node name="TileMap" type="TileMap" parent="."]
 pause_mode = 2
