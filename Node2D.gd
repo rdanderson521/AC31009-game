@@ -1,6 +1,6 @@
 extends Node2D
 
-var hex = preload("res://HexOperations.gd").Hex
+var hex = preload("res://HexOperations.gd")
 var sprite_template = preload("res://spriteTemplate.tscn")
 
 var units 
@@ -17,14 +17,22 @@ func _ready():
 		print("file: " + str(f_text))
 		var f_parsed = JSON.parse(f_text)
 		if f_parsed.error == OK and typeof(f_parsed.result) == TYPE_DICTIONARY:
+			print("parse successful")
 			units = f_parsed.result["units"]
 			buildings = f_parsed.result["buildings"]
 			print("units: " + str(units))
 			print("buildings: " + str(buildings))
+			
+			var player = preload("res://player.gd").new(Vector2(2,2),units,self)
+			
+		else:
+			print("json parse error")
+			
 		
-	sprites.push_back(sprite_template.instance())
+		
+	#sprites.push_back(sprite_template.instance())
 	
-	sprites.back().init()
+	#sprites.back().init()
 
 signal tilemap_clicked(hex_pos)
 

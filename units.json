@@ -6,12 +6,12 @@
 			"damage":5,
 			"damage_range":1,
 			"move_range":3,
-			"build_cities":false,
-			"build_districs":false,
+			"can_build_cities":false,
+			"can_build_districts":false,
 			"cost":{
 				"food":5
 			},
-			"texture":"icon.png"
+			"texture":"icon.png",
 			"start":1
 		},
 		{
@@ -20,8 +20,8 @@
 			"damage":1,
 			"damage_range":1,
 			"move_range":4,
-			"build_cities":true,
-			"build_districs":false,
+			"can_build_cities":true,
+			"can_build_districts":false,
 			"cost":{
 				"food":5
 			},

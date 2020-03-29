@@ -9,12 +9,18 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Object",
+"base": "Node2D",
+"class": "Hex_ops",
+"language": "GDScript",
+"path": "res://HexOperations.gd"
+}, {
+"base": "Node",
 "class": "Player",
 "language": "GDScript",
 "path": "res://player.gd"
 } ]
 _global_script_class_icons={
+"Hex_ops": "",
 "Player": ""
 }
 

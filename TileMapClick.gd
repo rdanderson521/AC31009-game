@@ -4,7 +4,7 @@ extends TileMap
 # var a = 2
 # var b = "text"
 
-var hex = load("res://HexOperations.gd").Hex
+var hex = load("res://HexOperations.gd")
 
 var click_position
 var draw_list = Array()

@@ -20,11 +20,9 @@ script = ExtResource( 3 )
 layer = 2
 
 [node name="SpriteGui" parent="Camera2D/CanvasLayer" instance=ExtResource( 7 )]
-visible = false
 script = ExtResource( 4 )
 
 [node name="MainGui" parent="Camera2D/CanvasLayer" instance=ExtResource( 5 )]
-visible = false
 
 [node name="TileMap" type="TileMap" parent="."]
 pause_mode = 2
@@ -46,7 +44,8 @@ grid_x = 45
 grid_y = 30
 
 [node name="Sprite" parent="." instance=ExtResource( 8 )]
+visible = false
 [connection signal="tilemap_clicked" from="." to="Sprite" method="_on_tilemap_clicked"]
 [connection signal="is_selected" from="Sprite" to="Camera2D/CanvasLayer/SpriteGui" method="_on_Sprite_is_selected"]
-[connection signal="sprite_clicked" from="Sprite" to="." method="_on_Sprite_sprite_clicked"]
 [connection signal="sprite_clicked" from="Sprite" to="Camera2D/CanvasLayer/SpriteGui" method="_on_Sprite_sprite_clicked"]
+[connection signal="sprite_clicked" from="Sprite" to="." method="_on_Sprite_sprite_clicked"]

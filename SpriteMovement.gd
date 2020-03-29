@@ -1,6 +1,6 @@
 extends Node2D
 
-var hex = load("res://HexOperations.gd").Hex
+var hex = load("res://HexOperations.gd")
 
 var speed = 10
 var type
@@ -20,6 +20,7 @@ var hex_pos
 
 
 func init(name, health, move_range, damage, damage_range, can_build, can_build_city, texture, hex_pos):
+	print("sprite init")
 	self.type = name
 	self.health_max = health
 	self.health = health
@@ -29,14 +30,16 @@ func init(name, health, move_range, damage, damage_range, can_build, can_build_c
 	self.damage_range = damage_range
 	self.can_build = can_build
 	self.can_build_city = can_build_city
-	$Area2D/CollisionPolygon2D/Sprite.texture = texture
+	$Area2D/CollisionPolygon2D/Sprite.texture = load("res://"+texture)
 	self.hex_pos = hex_pos
 	self.position = hex.hex_to_point(hex_pos)
 	moves = Array()
 	selected = false
+	
 
 func _init():
-	print("newSprite")
+	#print("newSprite")
+	pass
 	
 	
 
@@ -171,7 +174,8 @@ func _on_input_event(viewport, event, shape_idx):
 		emit_signal("sprite_clicked",self)
 
 func _on_tilemap_clicked(click_hex_pos):
-	if hex.hex_distance(click_hex_pos, hex_pos) <= move_range:
-		find_path(click_hex_pos)
-	self.selected = false
+	if selected:
+		if hex.hex_distance(click_hex_pos, hex_pos) <= move_range:
+			find_path(click_hex_pos)
+		self.selected = false
 		
