@@ -36,6 +36,9 @@ func init(name, health, move_range, damage, damage_range, can_build, can_build_c
 	moves = Array()
 	selected = false
 	
+	self.connect("is_selected",get_tree().get_root().find_node("SpriteGui"),"_on_Sprite_is_selected")
+	self.connect("sprite_clicked",get_tree().get_root().find_node("SpriteGui"),"_on_Sprite_sprite_clicked")
+	
 
 func _init():
 	#print("newSprite")
@@ -87,8 +90,8 @@ class a_star_node:
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	randomize()
-	self.hex_pos = Vector2(int(rand_range(0,5)),int(rand_range(0,5)))
-	self.position = hex.hex_to_point(hex.hex_round_axial(hex_pos))
+	#self.hex_pos = Vector2(int(rand_range(0,5)),int(rand_range(0,5)))
+	#self.position = hex.hex_to_point(hex.hex_round_axial(hex_pos))
 
 func rand_move():
 	self.hex_pos = Vector2(int(rand_range(0,5)),int(rand_range(0,5)))

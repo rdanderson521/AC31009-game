@@ -1,9 +1,14 @@
 extends Sprite
 
-var selected = false
-var mouse_entered = false
+var selected
+var mouse_entered
+
+func _init():
+	selected = false
+	mouse_entered = false
 
 func _on_mouse_entered():
+	print("test")
 	if !selected:
 		self.scale.x += 0.1
 		self.scale.y += 0.1

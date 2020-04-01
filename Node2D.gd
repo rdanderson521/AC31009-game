@@ -28,11 +28,9 @@ func _ready():
 		else:
 			print("json parse error")
 			
-		
-		
-	#sprites.push_back(sprite_template.instance())
-	
-	#sprites.back().init()
+	var start_unit = sprite_template.instance()
+	start_unit.init("test",100,5,5,5,true,true,"icon2.png",Vector2(4,4))
+
 
 signal tilemap_clicked(hex_pos)
 
