@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Sprite.gd" type="Script" id=1]
+[ext_resource path="res://icon.png" type="Texture" id=2]
+[ext_resource path="res://SpriteMovement.gd" type="Script" id=3]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource( 3 )
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Area2D"]
+polygon = PoolVector2Array( -8, -14, 8, -14, 16, 0, 8, 14, -8, 14, -16, 0 )
+
+[node name="Sprite" type="Sprite" parent="Area2D/CollisionPolygon2D"]
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 2 )
+script = ExtResource( 1 )
+[connection signal="is_selected" from="." to="Area2D/CollisionPolygon2D/Sprite" method="_on_Node2D_is_selected"]
+[connection signal="sprite_clicked" from="." to="Area2D/CollisionPolygon2D/Sprite" method="_on_Node2D_sprite_clicked"]
+[connection signal="input_event" from="Area2D" to="." method="_on_input_event"]
+[connection signal="mouse_entered" from="Area2D" to="Area2D/CollisionPolygon2D/Sprite" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="Area2D/CollisionPolygon2D/Sprite" method="_on_mouse_exited"]
