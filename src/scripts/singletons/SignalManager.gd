@@ -1,16 +1,30 @@
 extends Node
 
+signal tech_tree_btn_click
+signal end_turn_btn_click
+signal unit_move_btn_click
+signal unit_attack_btn_click
+signal unit_build_btn_click
+signal mouse_entered_gui
+signal mouse_exited_gui
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
+func tech_tree_btn_click():
+	emit_signal("tech_tree_btn_click")
 
+func end_turn_btn_click():
+	emit_signal("end_turn_btn_click")
+	
+func unit_move_btn_click():
+	emit_signal("unit_move_btn_click")
+	
+func unit_attack_btn_click():
+	emit_signal("unit_attack_btn_click")
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+func unit_build_btn_click():
+	emit_signal("unit_build_btn_click")
+	
+func mouse_entered_gui():
+	emit_signal("mouse_entered_gui")
+	
+func mouse_exited_gui():
+	emit_signal("mouse_exited_gui")
