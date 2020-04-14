@@ -1,8 +1,5 @@
 extends Node2D
 
-var hex = preload("res://HexOperations.gd")
-var sprite_template = preload("res://spriteTemplate.tscn")
-
 var units 
 var buildings
 var sprites = Array()
