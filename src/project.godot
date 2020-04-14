@@ -9,12 +9,18 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Node2D",
+"class": "Hex_ops",
+"language": "GDScript",
+"path": "res://scripts/singletons/HexOperations.gd"
+}, {
 "base": "Node",
 "class": "Player",
 "language": "GDScript",
 "path": "res://scripts/Player.gd"
 } ]
 _global_script_class_icons={
+"Hex_ops": "",
 "Player": ""
 }
 
@@ -28,6 +34,7 @@ config/icon="res://icon.png"
 
 SignalManager="*res://scripts/singletons/SignalManager.gd"
 JsonParser="*res://scripts/singletons/JsonParser.gd"
+Hex="*res://scripts/singletons/HexOperations.gd"
 
 [display]
 

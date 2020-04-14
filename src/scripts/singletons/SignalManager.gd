@@ -10,6 +10,8 @@ signal mouse_exited_gui
 signal json_parse_error
 signal mouse_entered_game_obj(obj)
 signal mouse_exited_game_obj(obj)
+signal mouse_left_game_obj(obj)
+signal mouse_right_game_obj(obj)
 
 func tech_tree_btn_click():
 	emit_signal("tech_tree_btn_click")
@@ -35,5 +37,11 @@ func mouse_exited_gui():
 func mouse_entered_game_obj(obj):
 	emit_signal("mouse_entered_game_obj",obj)
 	
-func mouse_exites_game_obj(obj):
+func mouse_exited_game_obj(obj):
 	emit_signal("mouse_exited_game_obj",obj)
+
+func mouse_left_game_obj(obj):
+	emit_signal("mouse_left_game_obj",obj)
+
+func mouse_right_game_obj(obj):
+	emit_signal("mouse_right_game_obj",obj)

@@ -52,5 +52,5 @@ clear = false
 visible = false
 [connection signal="tilemap_clicked" from="." to="Sprite" method="_on_tilemap_clicked"]
 [connection signal="is_selected" from="Sprite" to="Camera2D/CanvasLayer/SpriteGui" method="_on_Sprite_is_selected"]
-[connection signal="sprite_clicked" from="Sprite" to="Camera2D/CanvasLayer/SpriteGui" method="_on_Sprite_sprite_clicked"]
 [connection signal="sprite_clicked" from="Sprite" to="." method="_on_Sprite_sprite_clicked"]
+[connection signal="sprite_clicked" from="Sprite" to="Camera2D/CanvasLayer/SpriteGui" method="_on_Sprite_sprite_clicked"]
