@@ -9,6 +9,16 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "GameObject",
+"class": "Building",
+"language": "GDScript",
+"path": "res://scripts/BuildingNode.gd"
+}, {
+"base": "Node2D",
+"class": "GameObject",
+"language": "GDScript",
+"path": "res://scripts/GameObjectBase.gd"
+}, {
 "base": "Node2D",
 "class": "Hex_ops",
 "language": "GDScript",
@@ -18,10 +28,18 @@ _global_script_classes=[ {
 "class": "Player",
 "language": "GDScript",
 "path": "res://scripts/Player.gd"
+}, {
+"base": "GameObject",
+"class": "Unit",
+"language": "GDScript",
+"path": "res://scripts/UnitNode.gd"
 } ]
 _global_script_class_icons={
+"Building": "",
+"GameObject": "",
 "Hex_ops": "",
-"Player": ""
+"Player": "",
+"Unit": ""
 }
 
 [application]
@@ -35,6 +53,8 @@ config/icon="res://icon.png"
 SignalManager="*res://scripts/singletons/SignalManager.gd"
 JsonParser="*res://scripts/singletons/JsonParser.gd"
 Hex="*res://scripts/singletons/HexOperations.gd"
+BuildingFactory="*res://scripts/singletons/factories/BuildingFactory.gd"
+UnitFactory="*res://scripts/singletons/factories/UnitFactory.gd"
 
 [display]
 

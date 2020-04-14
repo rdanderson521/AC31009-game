@@ -1,4 +1,6 @@
-extends Node2D
+extends GameObject
+
+class_name Unit
 
 var hex = load("res://HexOperations.gd")
 
