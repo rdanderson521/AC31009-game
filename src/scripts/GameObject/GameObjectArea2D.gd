@@ -12,8 +12,7 @@ func on_mouse_exited():
 	SignalManager.mouse_exited_game_obj(self.get_parent())
 	
 func on_input_event(viewport,event,shape_idx):
-	print (event.as_text())
-	if event == InputEventMouseButton:
+	if event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT and event.is_pressed():
 			SignalManager.mouse_left_game_obj(self.get_parent())
 		elif event.button_index == BUTTON_RIGHT and event.is_pressed():

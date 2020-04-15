@@ -20,27 +20,25 @@ var health
 var selected = false setget set_selected
 var hex_pos 
 
-
-
-func init(name, health, move_range, damage, damage_range, can_build, can_build_city, texture, hex_pos):
-	print("sprite init")
-	self.type = name
-	self.health_max = health
-	self.health = health
-	self.move_range = move_range
-	self.moves_left = move_range
-	self.damage = damage
-	self.damage_range = damage_range
-	self.can_build = can_build
-	self.can_build_city = can_build_city
-	$Area2D/CollisionPolygon2D/Sprite.texture = load("res://"+texture)
-	self.hex_pos = hex_pos
-	self.position = Hex.hex_to_point(hex_pos)
-	moves = Array()
-	selected = false
-	
-	self.connect("is_selected",get_tree().get_root().find_node("SpriteGui"),"_on_Sprite_is_selected")
-	self.connect("sprite_clicked",get_tree().get_root().find_node("SpriteGui"),"_on_Sprite_sprite_clicked")
+#func init(name, health, move_range, damage, damage_range, can_build, can_build_city, texture, hex_pos):
+#	print("sprite init")
+#	self.type = name
+#	self.health_max = health
+#	self.health = health
+#	self.move_range = move_range
+#	self.moves_left = move_range
+#	self.damage = damage
+#	self.damage_range = damage_range
+#	self.can_build = can_build
+#	self.can_build_city = can_build_city
+#	$Area2D/CollisionPolygon2D/Sprite.texture = load("res://"+texture)
+#	self.hex_pos = hex_pos
+#	self.position = Hex.hex_to_point(hex_pos)
+#	moves = Array()
+#	selected = false
+#
+#	self.connect("is_selected",get_tree().get_root().find_node("SpriteGui"),"_on_Sprite_is_selected")
+#	self.connect("sprite_clicked",get_tree().get_root().find_node("SpriteGui"),"_on_Sprite_sprite_clicked")
 	
 
 func _init():
