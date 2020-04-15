@@ -33,13 +33,19 @@ _global_script_classes=[ {
 "class": "Unit",
 "language": "GDScript",
 "path": "res://scripts/gameobject/unit/UnitNode.gd"
+}, {
+"base": "Node2D",
+"class": "main",
+"language": "GDScript",
+"path": "res://scripts/Main.gd"
 } ]
 _global_script_class_icons={
 "Building": "",
 "GameObject": "",
 "Hex_ops": "",
 "Player": "",
-"Unit": ""
+"Unit": "",
+"main": ""
 }
 
 [application]

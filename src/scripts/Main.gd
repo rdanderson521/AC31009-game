@@ -1,5 +1,6 @@
 extends Node2D
 
+class_name main
 
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed():
@@ -10,3 +11,17 @@ func _input(event):
 			SignalManager.mouse_left_tilemap(hex_coord)
 		elif event.button_index == BUTTON_RIGHT:
 			SignalManager.mouse_right_tilemap(hex_coord)
+
+func _ready():
+	init_players(1)
+
+func init_players(num_players):
+	for i in range(num_players):
+		var x = rand_range(1,10)
+		var y = rand_range(1,10)
+		y -= abs(x/2)
+		var start_hex = Vector2(x,y)
+		var player = Player.new(start_hex,self)
+		player.set_name("Player"+str(i))
+		self.add_child(player)
+		print(get_tree())
