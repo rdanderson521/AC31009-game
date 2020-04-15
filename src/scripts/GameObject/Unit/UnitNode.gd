@@ -2,7 +2,6 @@ extends GameObject
 
 class_name Unit
 
-var hex = load("res://HexOperations.gd")
 
 var speed = 10
 var type
@@ -12,6 +11,8 @@ var damage
 var damage_range
 var can_build
 var can_build_city
+var can_trade
+var texture setget set_texture
 
 var moves = Array()
 var moves_left
@@ -34,7 +35,7 @@ func init(name, health, move_range, damage, damage_range, can_build, can_build_c
 	self.can_build_city = can_build_city
 	$Area2D/CollisionPolygon2D/Sprite.texture = load("res://"+texture)
 	self.hex_pos = hex_pos
-	self.position = hex.hex_to_point(hex_pos)
+	self.position = Hex.hex_to_point(hex_pos)
 	moves = Array()
 	selected = false
 	
@@ -46,8 +47,8 @@ func _init():
 	#print("newSprite")
 	pass
 	
-	
-
+func set_texture(texture):
+	$Area2D/CollisionPolygon2D/Sprite.texture = load(texture)
 
 signal is_selected(val)
 
@@ -93,18 +94,18 @@ class a_star_node:
 func _ready():
 	randomize()
 	#self.hex_pos = Vector2(int(rand_range(0,5)),int(rand_range(0,5)))
-	#self.position = hex.hex_to_point(hex.hex_round_axial(hex_pos))
+	#self.position = Hex.hex_to_point(Hex.hex_round_axial(hex_pos))
 
 func rand_move():
 	self.hex_pos = Vector2(int(rand_range(0,5)),int(rand_range(0,5)))
-	self.position = hex.hex_to_point(hex.hex_round_axial(hex_pos))
+	self.position = Hex.hex_to_point(Hex.hex_round_axial(hex_pos))
 	
 func heuristic_distance(destination, from, start = null):
-	var heuristic = hex.hex_distance(destination,from)*5
+	var heuristic = Hex.hex_distance(destination,from)*5
 	if start != null: #heuristic tie break from http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html#S1
-		var start_point = hex.hex_to_point(start)
-		var destination_point = hex.hex_to_point(destination)
-		var from_point = hex.hex_to_point(from)
+		var start_point = Hex.hex_to_point(start)
+		var destination_point = Hex.hex_to_point(destination)
+		var from_point = Hex.hex_to_point(from)
 		
 		var dx1 = from_point.x - destination_point.x
 		var dy1 = from_point.y - destination_point.y
@@ -139,7 +140,7 @@ func find_path(destination,debug = false):
 			self.moves = path
 			return true
 		else:
-			var node_neighbors = hex.hex_in_range(1,current_node.hex_pos)
+			var node_neighbors = Hex.hex_in_range(1,current_node.hex_pos)
 			if debug:
 				print("neighbors: " + str(node_neighbors))
 			for i in node_neighbors:
@@ -166,7 +167,7 @@ func _process(delta):
 			move_vector =  diff / velocity
 		#print("move: " + str(move_vector))
 		hex_pos = hex_pos + move_vector
-		var new_pos = hex.hex_to_point(hex_pos)
+		var new_pos = Hex.hex_to_point(hex_pos)
 		self.position = new_pos
 		
 signal sprite_clicked(sprite)
@@ -180,7 +181,7 @@ func _on_input_event(viewport, event, shape_idx):
 
 func _on_tilemap_clicked(click_hex_pos):
 	if selected:
-		if hex.hex_distance(click_hex_pos, hex_pos) <= move_range:
+		if Hex.hex_distance(click_hex_pos, hex_pos) <= move_range:
 			find_path(click_hex_pos)
 		self.selected = false
 		

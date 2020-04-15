@@ -1,0 +1,43 @@
+[
+	{
+		"name":"Warrior",
+		"health":20,
+		"damage":5,
+		"damage_range":1,
+		"move_range":3,
+		"can_build_city":false,
+		"can_build":false,
+		"cost":{
+			"food":5
+		},
+		"texture":"res://icon.png",
+		"start":1
+	},
+	{
+		"name":"City Builder",
+		"health":10,
+		"damage":1,
+		"damage_range":1,
+		"move_range":4,
+		"can_build_city":true,
+		"can_build":false,
+		"cost":{
+			"food":5
+		},
+		"texture":"res://icon.png",
+		"start":1
+	},
+	{
+		"name":"Builder",
+		"health":10,
+		"damage":1,
+		"damage_range":1,
+		"move_range":4,
+		"can_build_city":true,
+		"can_build":false,
+		"cost":{
+			"food":10
+		},
+		"texture":"res://icon.png"
+	}
+]

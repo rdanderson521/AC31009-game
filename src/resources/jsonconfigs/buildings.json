@@ -1,0 +1,13 @@
+[
+	{
+		"name":"city",
+		"is_city":true,
+		"health":100,
+		"damage":5,
+		"damage_range":3,
+		"improvements":{
+			"food":1
+		},
+		"texture":"res://icon.png"
+	}
+]
