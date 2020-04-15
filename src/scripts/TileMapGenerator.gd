@@ -18,18 +18,19 @@ var tiles = {"grass":0,"grass_trees":1,"grass_forest":2,"grass_rocks":3,"grass_r
 	"water_ice":12,"water":13,"desert":14,"desert_rocks":15,"desert_dunes":16,"desert_mountain":17,
 	"desert_oasis":18,"fog":19,"fog_transparent":20}
 	
-const real_cell_size = 32
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	self.cell_custom_transform.x.x = ((3*real_cell_size)/4)
-	self.cell_custom_transform.x.y = (sqrt(3)*(self.cell_size.x/2))/2
-	self.cell_custom_transform.y.y = sqrt(3)*(self.cell_size.x/2)
+	self.cell_custom_transform.x.x = (3*Hex.width)/4
+	self.cell_custom_transform.x.y = Hex.height/2
+	self.cell_custom_transform.y.y = Hex.height
 	
-	self.cell_size.y = sqrt(3)*(self.cell_size.x/2)
+	self.cell_size.y = Hex.width
+	self.cell_size.y = Hex.height
+	
+	self.scale.y = Hex.height/28
 
 
-
-class Hex:
+class HexNode:
 	var pos
 	var height
 	var temp
@@ -53,7 +54,7 @@ func onGenerate(generate):
 		for y in range(grid_y):
 			for x in range(grid_x):
 				var offset = int(x/2)
-				map.push_back((Hex.new(Vector2(x,y-offset))))
+				map.push_back((HexNode.new(Vector2(x,y-offset))))
 		
 		for _i in range(blob_num):
 			var rand_x = int(rand_range(0,grid_x))
