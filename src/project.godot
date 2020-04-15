@@ -12,12 +12,12 @@ _global_script_classes=[ {
 "base": "GameObject",
 "class": "Building",
 "language": "GDScript",
-"path": "res://scripts/gameobject/building/BuildingNode.gd"
+"path": "res://scripts/GameObject/Building/BuildingNode.gd"
 }, {
 "base": "Node2D",
 "class": "GameObject",
 "language": "GDScript",
-"path": "res://scripts/gameobject/GameObjectBase.gd"
+"path": "res://scripts/GameObject/GameObjectBase.gd"
 }, {
 "base": "Node2D",
 "class": "Hex_ops",
@@ -32,7 +32,7 @@ _global_script_classes=[ {
 "base": "GameObject",
 "class": "Unit",
 "language": "GDScript",
-"path": "res://scripts/gameobject/unit/UnitNode.gd"
+"path": "res://scripts/GameObject/Unit/UnitNode.gd"
 } ]
 _global_script_class_icons={
 "Building": "",
