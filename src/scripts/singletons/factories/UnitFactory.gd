@@ -74,7 +74,7 @@ func check_templates(templates):
 			continue
 	return templates
 	
-func start_units(hex) -> Array:
+func start_units(hex,player) -> Array:
 	var start_area = Hex.hex_in_range(1,hex)
 	start_area.shuffle()
 	
@@ -86,8 +86,10 @@ func start_units(hex) -> Array:
 				if !start_area.empty():
 					var unit = init_unit()
 					unit.hex_pos = start_area.pop_back()
+					unit.position = Hex.hex_to_point(unit.hex_pos)
+					player.add_child(unit)
 					unit.type = i["name"]
-					unit.max_health = i["health"]
+					unit.health_max = i["health"]
 					unit.health = i["health"]
 					unit.damage = i["damage"]
 					unit.move_range = i["move_range"]

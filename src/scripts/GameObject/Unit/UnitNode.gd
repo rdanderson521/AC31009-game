@@ -3,22 +3,22 @@ extends GameObject
 class_name Unit
 
 
-var speed = 10
-var type
-var move_range
-var health_max
-var damage
-var damage_range
-var can_build
-var can_build_city
-var can_trade
-var texture setget set_texture
+var speed: int = 10
+var type: String
+var move_range: int
+var health_max: int
+var damage: int
+var damage_range: int
+var can_build: bool
+var can_build_city: bool
+var can_trade: bool 
+var texture: String setget set_texture
 
-var moves = Array()
-var moves_left
-var health
-var selected = false setget set_selected
-var hex_pos 
+var moves: Array = Array()
+var moves_left: int
+var health: float
+var selected: bool = false setget set_selected
+var hex_pos: Vector2
 
 #func init(name, health, move_range, damage, damage_range, can_build, can_build_city, texture, hex_pos):
 #	print("sprite init")

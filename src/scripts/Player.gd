@@ -16,4 +16,4 @@ func _init(start_hex,node,ai=false, debug=false):
 	
 	self.is_ai = ai
 	
-	self.units.append(UnitFactory.start_units(start_hex))
+	self.units.append(UnitFactory.start_units(start_hex,self))
