@@ -20,7 +20,7 @@ var moves_left: int
 var health: float
 var explore: bool
 var recover: bool
-var selected: bool = false #setget set_selected
+var selected: bool = false
 var hex_pos: Vector2
 
 
@@ -34,7 +34,6 @@ func set_texture(texture):
 func turn_start() -> bool:
 	if build_turns_left > 0:
 		build_turns_left -=1
-		#moves_left = -1
 		return false
 	elif build_turns_left == 0:
 		build_turns_left = -1
@@ -52,13 +51,6 @@ func turn_start() -> bool:
 			recover = false
 	return true
 		
-		
-#signal is_selected(val)
-#
-#func set_selected(selected_val):
-#	emit_signal("is_selected",selected_val)
-#	selected = selected_val
-
 class a_star_node:
 	var distance_heuristic
 	var distance_traveled
@@ -166,30 +158,3 @@ func _process(delta):
 		hex_pos = hex_pos + move_vector
 		var new_pos = Hex.hex_to_point(hex_pos)
 		self.position = new_pos
-
-
-
-
-
-
-
-
-
-
-
-
-#signal sprite_clicked(sprite)
-#
-#func _on_input_event(viewport, event, shape_idx):
-#	if event is InputEventMouseButton \
-#	and event.button_index == BUTTON_LEFT \
-#	and event.is_pressed():
-#		self.selected = true
-#		emit_signal("sprite_clicked",self)
-#
-#func _on_tilemap_clicked(click_hex_pos):
-#	if selected:
-#		if Hex.hex_distance(click_hex_pos, hex_pos) <= move_range:
-#			find_path(click_hex_pos)
-#		self.selected = false
-#

@@ -26,8 +26,6 @@ func _init():
 	
 	self.cell_size.y = Hex.width
 	self.cell_size.y = Hex.height
-	
-
 
 class HexNode:
 	var pos
@@ -60,9 +58,18 @@ func onGenerate(generate):
 			var rand_y = int(rand_range(0,grid_y))
 			var start_cell = map[rand_y*grid_x + rand_x]
 			start_cell.power = blob_size
-			var blob_temp = rand_range(-blob_effect,blob_effect)
-			var blob_height = rand_range(-blob_effect,blob_effect)
-			var blob_humidity = rand_range(-blob_effect,blob_effect)
+			
+			var blob_temp = rand_range(blob_effect/2,blob_effect)
+			if rand_range(0,1) > 0.5:
+				blob_temp = -blob_temp
+				
+			var blob_height = rand_range(blob_effect/2,blob_effect)
+			if rand_range(0,1) > 0.5:
+				blob_height = -blob_height
+				
+			var blob_humidity = rand_range(blob_effect/2,blob_effect)
+			if rand_range(0,1) > 0.5:
+				blob_humidity = -blob_humidity
 			
 			var blob_cells = Array()
 			var blob_visited = Dictionary()
@@ -89,41 +96,66 @@ func onGenerate(generate):
 					
 					blob_visited[curr_blob.pos] = curr_blob
 					
-					var x = curr_blob.pos.x
-					var y = curr_blob.pos.y+(int(x/2))
-					if y-1 >= 0: #y-1 x
-						blob_cells.push_back(map[(y-1)*grid_x+x])
-						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
-						
-					if y-1 >= 0: #y-1 x+1
-						if x+1 < grid_x:
-							blob_cells.push_back(map[(y-1)*grid_x+x+1])
-						else:
-							blob_cells.push_back(map[(y-1)*grid_x+0])
-						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
-						
-					if x+1 < grid_x: #y x+1
-						blob_cells.push_back(map[y*grid_x+x+1])
-					else:
-						blob_cells.push_back(map[y*grid_x+0])
-					blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
-						
-					if y+1 < grid_y: #y+1 x
-						blob_cells.push_back(map[(y+1)*grid_x+x])
-						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
-						
-					if y < grid_y-1:
-						if x-1 >= 0: #y+1 x-1
-							blob_cells.push_back(map[(y+1)*grid_x+x-1])
-						else:
-							blob_cells.push_back(map[(y+1)*grid_x+grid_x-1])
-						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
+					var arr_x = curr_blob.pos.x
+					var arr_y = curr_blob.pos.y+(int(arr_x/2))
 					
-					if x-1 >= 0: #y x-1
-						blob_cells.push_back(map[y*grid_x+x-1])
-					else:
-						blob_cells.push_back(map[y*grid_x+grid_x-1])
-					blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
+					var new_cells = Hex_ops.hex_in_range(1,curr_blob.pos)
+					for j in new_cells:
+						var pos_diff = j - curr_blob.pos
+						
+						if j.y+int(j.x/2) >= grid_y or j.y+int(j.x/2) < 0:
+							break
+						
+						if j.x < 0:
+							var old_x = j.x
+							var old_y = j.y
+							j.x = grid_x-1
+							j.y = old_y - int((j.x-old_x)/2)
+							
+						if j.x >= grid_x:
+							var old_x = j.x
+							var old_y = j.y
+							j.x = 0
+							j.y = old_y - int((j.x-old_x)/2)
+							
+						
+						blob_cells.push_back(map[(j.y+(int(j.x/2)))*grid_x+j.x])
+						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
+							
+					
+#					if y-1 >= 0: #y-1 x
+#						blob_cells.push_back(map[(y-1)*grid_x+x])
+#						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
+#
+#					if y-1 >= 0: #y-1 x+1
+#						if x+1 < grid_x:
+#							blob_cells.push_back(map[(y-1)*grid_x+x+1])
+#						else:
+#							blob_cells.push_back(map[(y-1)*grid_x+0])
+#						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
+#
+#					if x+1 < grid_x: #y x+1
+#						blob_cells.push_back(map[y*grid_x+x+1])
+#					else:
+#						blob_cells.push_back(map[y*grid_x+0])
+#					blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
+#
+#					if y+1 < grid_y: #y+1 x
+#						blob_cells.push_back(map[(y+1)*grid_x+x])
+#						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
+#
+#					if y < grid_y-1:
+#						if x-1 >= 0: #y+1 x-1
+#							blob_cells.push_back(map[(y+1)*grid_x+x-1])
+#						else:
+#							blob_cells.push_back(map[(y+1)*grid_x+grid_x-1])
+#						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
+#
+#					if x-1 >= 0: #y x-1
+#						blob_cells.push_back(map[y*grid_x+x-1])
+#					else:
+#						blob_cells.push_back(map[y*grid_x+grid_x-1])
+#					blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
 				
 		for y in map:
 			if debug:
