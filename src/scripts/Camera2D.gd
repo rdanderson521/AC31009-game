@@ -22,6 +22,8 @@
 
 extends Camera2D
 
+class_name PlayerCamera
+
 # Camera control settings:
 # key - by keyboard
 # drag - by clicking mouse button, right mouse button by default;

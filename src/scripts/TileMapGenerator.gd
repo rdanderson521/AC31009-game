@@ -19,7 +19,7 @@ const tiles = {"grass":0,"grass_trees":1,"grass_forest":2,"grass_rocks":3,"grass
 	"desert_oasis":18,"fog":19,"fog_transparent":20}
 	
 # Called when the node enters the scene tree for the first time.
-func _ready():
+func _init():
 	self.cell_custom_transform.x.x = (3*Hex.width)/4
 	self.cell_custom_transform.x.y = Hex.height/2
 	self.cell_custom_transform.y.y = Hex.height
@@ -27,7 +27,6 @@ func _ready():
 	self.cell_size.y = Hex.width
 	self.cell_size.y = Hex.height
 	
-	self.scale.y = Hex.height/28
 
 
 class HexNode:

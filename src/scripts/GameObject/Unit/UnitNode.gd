@@ -2,7 +2,6 @@ extends GameObject
 
 class_name Unit
 
-
 var speed: int = 10
 var type: String
 var move_range: int
@@ -15,45 +14,50 @@ var can_trade: bool
 var texture: String setget set_texture
 
 var moves: Array = Array()
+var build_turns_left: int
+var build_curr: String
 var moves_left: int
 var health: float
-var selected: bool = false setget set_selected
+var explore: bool
+var recover: bool
+var selected: bool = false #setget set_selected
 var hex_pos: Vector2
 
-#func init(name, health, move_range, damage, damage_range, can_build, can_build_city, texture, hex_pos):
-#	print("sprite init")
-#	self.type = name
-#	self.health_max = health
-#	self.health = health
-#	self.move_range = move_range
-#	self.moves_left = move_range
-#	self.damage = damage
-#	self.damage_range = damage_range
-#	self.can_build = can_build
-#	self.can_build_city = can_build_city
-#	$Area2D/CollisionPolygon2D/Sprite.texture = load("res://"+texture)
-#	self.hex_pos = hex_pos
-#	self.position = Hex.hex_to_point(hex_pos)
-#	moves = Array()
-#	selected = false
-#
-#	self.connect("is_selected",get_tree().get_root().find_node("SpriteGui"),"_on_Sprite_is_selected")
-#	self.connect("sprite_clicked",get_tree().get_root().find_node("SpriteGui"),"_on_Sprite_sprite_clicked")
-	
 
 func _init():
-	#print("newSprite")
 	pass
 	
 func set_texture(texture):
 	$Area2D/CollisionPolygon2D/Sprite.texture = load(texture)
 	pass
-
-signal is_selected(val)
-
-func set_selected(selected_val):
-	emit_signal("is_selected",selected_val)
-	selected = selected_val
+	
+func turn_start() -> bool:
+	if build_turns_left > 0:
+		build_turns_left -=1
+		#moves_left = -1
+		return false
+	elif build_turns_left == 0:
+		build_turns_left = -1
+		BuildingFactory.build(build_curr,hex_pos) ########## build func still needs made #########
+		
+	moves_left = move_range
+	if !moves.empty():
+		return false
+	if explore:
+		return false
+	if recover:
+		health += (rand_range(0.05,0.15)*health_max)
+		if health >= health_max-(0.05*health_max):
+			health = health_max
+			recover = false
+	return true
+		
+		
+#signal is_selected(val)
+#
+#func set_selected(selected_val):
+#	emit_signal("is_selected",selected_val)
+#	selected = selected_val
 
 class a_star_node:
 	var distance_heuristic
@@ -88,12 +92,6 @@ class a_star_node:
 			curr_node = curr_node.parent
 		return distance
 		
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	randomize()
-	#self.hex_pos = Vector2(int(rand_range(0,5)),int(rand_range(0,5)))
-	#self.position = Hex.hex_to_point(Hex.hex_round_axial(hex_pos))
 
 func rand_move():
 	self.hex_pos = Vector2(int(rand_range(0,5)),int(rand_range(0,5)))
@@ -168,19 +166,30 @@ func _process(delta):
 		hex_pos = hex_pos + move_vector
 		var new_pos = Hex.hex_to_point(hex_pos)
 		self.position = new_pos
-		
-signal sprite_clicked(sprite)
 
-func _on_input_event(viewport, event, shape_idx):
-	if event is InputEventMouseButton \
-	and event.button_index == BUTTON_LEFT \
-	and event.is_pressed():
-		self.selected = true
-		emit_signal("sprite_clicked",self)
 
-func _on_tilemap_clicked(click_hex_pos):
-	if selected:
-		if Hex.hex_distance(click_hex_pos, hex_pos) <= move_range:
-			find_path(click_hex_pos)
-		self.selected = false
-		
+
+
+
+
+
+
+
+
+
+
+#signal sprite_clicked(sprite)
+#
+#func _on_input_event(viewport, event, shape_idx):
+#	if event is InputEventMouseButton \
+#	and event.button_index == BUTTON_LEFT \
+#	and event.is_pressed():
+#		self.selected = true
+#		emit_signal("sprite_clicked",self)
+#
+#func _on_tilemap_clicked(click_hex_pos):
+#	if selected:
+#		if Hex.hex_distance(click_hex_pos, hex_pos) <= move_range:
+#			find_path(click_hex_pos)
+#		self.selected = false
+#
