@@ -160,7 +160,10 @@ func onGenerate(generate):
 					else:
 						set_cell(y.pos.x,y.pos.y,tiles["snow_rocks"])
 				else: #snow
-					set_cell(y.pos.x,y.pos.y,tiles["snow"])
+					if rand_range(0,1) > 0.7:
+						set_cell(y.pos.x,y.pos.y,tiles["snow_trees"])
+					else:
+						set_cell(y.pos.x,y.pos.y,tiles["snow"])
 					
 			else: #grass
 				if y.height < -0.3 and lakes: #water
