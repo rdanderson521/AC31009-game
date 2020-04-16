@@ -3,7 +3,7 @@ extends Node
 var game_object = preload("res://scenes/GameObject.tscn")
 var unit_script = preload("res://scripts/gameobject/unit/UnitNode.gd")
 
-var unit_templates
+var unit_templates: Array
 var debug = true
 
 func _init():

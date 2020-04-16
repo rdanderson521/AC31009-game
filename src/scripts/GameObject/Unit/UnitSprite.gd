@@ -1,7 +1,7 @@
 extends Sprite
 
-var selected
-var mouse_entered
+var selected: bool
+var mouse_entered: bool
 
 func _init():
 	selected = false

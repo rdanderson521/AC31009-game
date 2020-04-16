@@ -2,14 +2,14 @@ tool
 extends Node2D
 
 
-export(bool) var reset = false setget onReset
-export(int) var tileCount_x = 1
-export(int) var tileCount_y = 1
-export(Texture) var spritesheet
+export(bool) var reset: bool = false setget onReset
+export(int) var tileCount_x: int = 1
+export(int) var tileCount_y: int = 1
+export(Texture) var spritesheet: Texture
 
 #config
-var tileSize_x = 0
-var tileSize_y = 0
+var tileSize_x: int = 0
+var tileSize_y: int = 0
 #var spritesheet = preload("res://set_a.png")
 
 

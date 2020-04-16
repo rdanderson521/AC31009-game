@@ -1,19 +1,19 @@
 tool extends TileMap
 
-export(bool) var lakes = false
-export(bool) var mountains = false
-export(int) var blob_num = 70
-export(int) var blob_size = 100
-export(float) var blob_effect = 1
-export(int) var blob_detirioration = 5
-export(int) var grid_x = 100
-export(int) var grid_y = 60
-export(bool) var debug = false
-export(bool) var generate = false setget onGenerate
-export(bool) var clear = false setget onClear
+export(bool) var lakes: bool = false
+export(bool) var mountains: bool = false
+export(int) var blob_num: int = 70
+export(int) var blob_size: int = 100
+export(float) var blob_effect: float = 1
+export(int) var blob_detirioration: int = 5
+export(int) var grid_x: int = 100
+export(int) var grid_y: int = 60
+export(bool) var debug: bool = false
+export(bool) var generate: bool = false setget onGenerate
+export(bool) var clear: bool = false setget onClear
 
-var map = Array()
-var tiles = {"grass":0,"grass_trees":1,"grass_forest":2,"grass_rocks":3,"grass_rocks_trees":4,"mountain":5,
+var map: Array
+const tiles = {"grass":0,"grass_trees":1,"grass_forest":2,"grass_rocks":3,"grass_rocks_trees":4,"mountain":5,
 	"rainforest":6,"snow":7,"snow_trees":8,"snow_forest":9,"snow_rocks":10,"snow_rocks_trees":11,
 	"water_ice":12,"water":13,"desert":14,"desert_rocks":15,"desert_dunes":16,"desert_mountain":17,
 	"desert_oasis":18,"fog":19,"fog_transparent":20}

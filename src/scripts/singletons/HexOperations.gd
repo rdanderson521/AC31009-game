@@ -6,7 +6,6 @@ const width = 32
 const height = sqrt(3)*(width/2)
 const size = width/2
 
-
 func _init():
 	pass
 

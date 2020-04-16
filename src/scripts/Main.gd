@@ -2,6 +2,8 @@ extends Node2D
 
 class_name main
 
+var players: Array
+
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed():
 		var camera = $Camera2D

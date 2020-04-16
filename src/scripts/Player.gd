@@ -2,9 +2,9 @@ extends Node
 
 class_name Player
 
-var units
-var buildings
-var is_ai
+var units: Array
+var buildings: Array
+var is_ai: bool
 
 func _init(start_hex,node,ai=false, debug=false):
 	if debug:
