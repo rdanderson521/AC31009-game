@@ -9,14 +9,11 @@ export(int) var blob_detirioration: int = 5
 export(int) var grid_x: int = 100
 export(int) var grid_y: int = 60
 export(bool) var debug: bool = false
-export(bool) var generate: bool = false setget onGenerate
+export(bool) var generate: bool = false setget generate
 export(bool) var clear: bool = false setget onClear
 
 var map: Array
-const tiles = {"grass":0,"grass_trees":1,"grass_forest":2,"grass_rocks":3,"grass_rocks_trees":4,"mountain":5,
-	"rainforest":6,"snow":7,"snow_trees":8,"snow_forest":9,"snow_rocks":10,"snow_rocks_trees":11,
-	"water_ice":12,"water":13,"desert":14,"desert_rocks":15,"desert_dunes":16,"desert_mountain":17,
-	"desert_oasis":18,"fog":19,"fog_transparent":20}
+var tiles = GlobalConfig.biomes 
 	
 # Called when the node enters the scene tree for the first time.
 func _init():
@@ -42,7 +39,7 @@ class HexNode:
 		self.humidity = 0.5
 		self.biome = 0
 
-func onGenerate(generate):
+func generate(generate):
 	if generate:
 		generate = false
 		
@@ -118,44 +115,8 @@ func onGenerate(generate):
 							j.x = 0
 							j.y = old_y - int((j.x-old_x)/2)
 							
-						
 						blob_cells.push_back(map[(j.y+(int(j.x/2)))*grid_x+j.x])
 						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
-							
-					
-#					if y-1 >= 0: #y-1 x
-#						blob_cells.push_back(map[(y-1)*grid_x+x])
-#						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
-#
-#					if y-1 >= 0: #y-1 x+1
-#						if x+1 < grid_x:
-#							blob_cells.push_back(map[(y-1)*grid_x+x+1])
-#						else:
-#							blob_cells.push_back(map[(y-1)*grid_x+0])
-#						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
-#
-#					if x+1 < grid_x: #y x+1
-#						blob_cells.push_back(map[y*grid_x+x+1])
-#					else:
-#						blob_cells.push_back(map[y*grid_x+0])
-#					blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
-#
-#					if y+1 < grid_y: #y+1 x
-#						blob_cells.push_back(map[(y+1)*grid_x+x])
-#						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
-#
-#					if y < grid_y-1:
-#						if x-1 >= 0: #y+1 x-1
-#							blob_cells.push_back(map[(y+1)*grid_x+x-1])
-#						else:
-#							blob_cells.push_back(map[(y+1)*grid_x+grid_x-1])
-#						blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
-#
-#					if x-1 >= 0: #y x-1
-#						blob_cells.push_back(map[y*grid_x+x-1])
-#					else:
-#						blob_cells.push_back(map[y*grid_x+grid_x-1])
-#					blob_cells.back().power = curr_blob.power - rand_range(1,blob_detirioration)
 				
 		for y in map:
 			if debug:
@@ -216,8 +177,11 @@ func onGenerate(generate):
 							set_cell(y.pos.x,y.pos.y,tiles["grass_trees"])
 						else:
 							set_cell(y.pos.x,y.pos.y,tiles["grass"])
-		
-
+			
+			y.biome = get_cell(y.pos.x,y.pos.y)
+			GlobalConfig.map[Vector2(y.pos.x,y.pos.y)] = y.biome
+			GlobalConfig.map_size = Vector2(grid_x,grid_y)
+			
 func onClear(clear):
 	if clear:
 		clear = false
@@ -227,7 +191,3 @@ func onClear(clear):
 		for i in to_clear:
 			set_cell(i.x,i.y,-1)
 		
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	
-	pass

@@ -18,15 +18,34 @@ func _input(event):
 
 func _ready():
 	randomize()
+	$TileMap.generate(true)
 	init_players(1)
+	
 
 func init_players(num_players):
 	for i in range(num_players):
-		var x = int(rand_range(1,10))
-		var y = int(rand_range(10,20))
-		y -= abs(x/2)
-		var start_hex = Vector2(x,y)
-		var player = Player.new(start_hex,self)
-		player.set_name("Player"+str(i))
-		self.add_child(player)
-		print(get_tree())
+		var x
+		var y
+		var start_hex = Vector2()
+		var valid_start_pos = false
+		var j = 0
+		while !valid_start_pos and j < 10:
+			j += 1
+			x = int(rand_range(2,GlobalConfig.map_size.x-3))
+			y = int(rand_range(2,GlobalConfig.map_size.y-3))
+			y -= abs(x/2)
+			start_hex = Vector2(x,y)
+			if not GlobalConfig.map[start_hex] in GlobalConfig.impasible_biomes and not GlobalConfig.map[start_hex] in GlobalConfig.water_biomes:
+				var start_area = Hex.hex_in_range(2,start_hex)
+				var invalid_start = false
+				for k in start_area:
+					print(GlobalConfig.map[k])
+					if GlobalConfig.map[k] in GlobalConfig.impasible_biomes or GlobalConfig.map[k] in GlobalConfig.water_biomes:
+						invalid_start = true
+				if !invalid_start:
+					valid_start_pos = true
+		if valid_start_pos:
+			var player = Player.new(start_hex,self)
+			player.set_name("Player"+str(i))
+			self.add_child(player)
+	

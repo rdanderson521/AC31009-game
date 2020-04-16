@@ -67,6 +67,7 @@ JsonParser="*res://scripts/singletons/JsonParser.gd"
 Hex="*res://scripts/singletons/HexOperations.gd"
 BuildingFactory="*res://scripts/singletons/factories/BuildingFactory.gd"
 UnitFactory="*res://scripts/singletons/factories/UnitFactory.gd"
+GlobalConfig="*res://scripts/singletons/GlobalConfig.gd"
 
 [display]
 
