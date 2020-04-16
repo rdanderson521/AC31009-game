@@ -13,10 +13,8 @@ script = ExtResource( 5 )
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="MainGui" parent="CanvasLayer" instance=ExtResource( 4 )]
-visible = false
 
 [node name="UnitGui" parent="CanvasLayer" instance=ExtResource( 2 )]
-visible = false
 anchor_right = 0.095
 margin_right = 0.599991
 

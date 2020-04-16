@@ -31,8 +31,8 @@ func init_players(num_players):
 		var j = 0
 		while !valid_start_pos and j < 10:
 			j += 1
-			x = int(rand_range(2,GlobalConfig.map_size.x-3))
-			y = int(rand_range(2,GlobalConfig.map_size.y-3))
+			x = int(rand_range(2,15))#GlobalConfig.map_size.x-3))
+			y = int(rand_range(2,15))#GlobalConfig.map_size.y-3))
 			y -= abs(x/2)
 			start_hex = Vector2(x,y)
 			if not GlobalConfig.map[start_hex] in GlobalConfig.impasible_biomes and not GlobalConfig.map[start_hex] in GlobalConfig.water_biomes:

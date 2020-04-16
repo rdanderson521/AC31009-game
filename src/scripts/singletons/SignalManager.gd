@@ -7,7 +7,6 @@ signal unit_attack_btn_click
 signal unit_build_btn_click
 signal mouse_entered_gui
 signal mouse_exited_gui
-signal json_parse_error
 signal mouse_entered_game_obj(obj)
 signal mouse_exited_game_obj(obj)
 signal mouse_left_game_obj(obj)
