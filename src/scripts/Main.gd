@@ -16,12 +16,26 @@ func _input(event):
 			SignalManager.mouse_left_tilemap(hex_coord)
 		elif event.button_index == BUTTON_RIGHT:
 			SignalManager.mouse_right_tilemap(hex_coord)
+			
+func _init():
+	SignalManager.connect("player_turn_ended",self,"next_player")
+
+func next_player(player):
+	var player_idx = players.find(player)
+	print("player:" + str(player_idx))
+	print("size: " + str(players.size()))
+	if player_idx+1 == players.size():
+		curr_player = players[0]
+	else:
+		curr_player = players[player_idx+1]
+	curr_player.turn_start()
 
 func _ready():
 	randomize()
 	$TileMap.generate(true)
-	init_players(1)
-	curr_player = players[0]
+	init_players(2)
+	curr_player = players.front()
+	curr_player.turn_start()
 	
 	
 func init_players(num_players):
@@ -34,8 +48,8 @@ func init_players(num_players):
 		var j = 0
 		while !valid_start_pos and j < 10:
 			j += 1
-			x = int(rand_range(2,15))#GlobalConfig.map_size.x-3))
-			y = int(rand_range(2,15))#GlobalConfig.map_size.y-3))
+			x = int(rand_range(2,GlobalConfig.map_size.x-3))
+			y = int(rand_range(2,GlobalConfig.map_size.y-3))
 			y -= abs(x/2)
 			start_hex = Vector2(x,y)
 			if not GlobalConfig.map[start_hex] in GlobalConfig.impasible_biomes and not GlobalConfig.map[start_hex] in GlobalConfig.water_biomes:

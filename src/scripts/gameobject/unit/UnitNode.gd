@@ -36,6 +36,8 @@ func _init():
 	#SignalManager.connect("unit_move_btn_click",self,"move_test")
 	can_move_water = false
 	selected = false
+	explore = false
+	recover = false
 	pass
 	
 func move_test():
@@ -51,7 +53,7 @@ func turn_start() -> bool:
 		return false
 	elif build_turns_left == 0:
 		build_turns_left = -1
-		BuildingFactory.build(build_curr,hex_pos) ########## build func still needs made #########
+		#BuildingFactory.build(build_curr,hex_pos) ########## build func still needs made #########
 		
 	moves_left = move_range
 	if !moves.empty():

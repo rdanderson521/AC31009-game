@@ -28,3 +28,6 @@ blob_effect = 0.9
 blob_detirioration = 20
 grid_x = 66
 grid_y = 45
+debug = false
+generate = false
+clear = false

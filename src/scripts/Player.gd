@@ -27,9 +27,11 @@ func _init(start_hex,node,ai=false, debug=false):
 	self.selected_object = null
 	
 	self.is_ai = ai
-	self.is_turn = true
+	self.is_turn = false
 	
-	self.units.append(UnitFactory.start_units(start_hex,self))
+	self.units += UnitFactory.start_units(start_hex,self)
+	print(units)
+	
 	
 	if !ai:
 		SignalManager.connect("end_turn_btn_click",self,"turn_end")
@@ -42,6 +44,7 @@ func _init(start_hex,node,ai=false, debug=false):
 		camera.position = Hex.hex_to_point(start_hex)
 		camera.zoom = Vector2(0.3,0.3)
 		camera.current = true
+		$Camera2D/CanvasLayer/MainGui.visible = false
 		
 func game_object_clicked_left(obj):
 	if is_turn:
@@ -89,15 +92,21 @@ func tilemap_clicked_right(hex):
 #			else:
 #				selected_object = null
 #				SignalManager.unit_unselected()
-			
 
 func turn_start():
 	camera.current = true
 	is_turn = true
-	for i in units:
-		if i.turn_start():
-			units_attention_needed.push_back(i)
+	$Camera2D/CanvasLayer/MainGui.turn_started()
+	$Camera2D/CanvasLayer/MainGui.visible = true
+	if !units.empty():
+		for i in self.units:
+			print("unit:" + str(i))
+			if i.turn_start():
+				units_attention_needed.push_back(i)
 			
 func turn_end():
-	is_turn = false
-	SignalManager.player_turn_ended(self)
+	if is_turn:
+		is_turn = false
+		SignalManager.player_turn_ended(self)
+		$Camera2D/CanvasLayer/MainGui.visible = false
+		$Camera2D/CanvasLayer/MainGui.turn_ended()
