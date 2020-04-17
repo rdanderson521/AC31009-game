@@ -4,7 +4,7 @@
 [ext_resource path="res://scripts/buttons/UnitMoveBtn.gd" type="Script" id=2]
 [ext_resource path="res://scripts/buttons/UnitBuildBtn.gd" type="Script" id=3]
 [ext_resource path="res://scripts/buttons/UnitAttackBtn.gd" type="Script" id=4]
-[ext_resource path="res://scripts/gui/GuiPanel.gd" type="Script" id=5]
+[ext_resource path="res://scripts/gui/UnitGui.gd" type="Script" id=5]
 
 [node name="Control" type="Control"]
 anchor_top = 1.0
@@ -35,7 +35,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="SpriteName" type="Label" parent="SpritePanel/VBoxContainer"]
+[node name="UnitName" type="Label" parent="SpritePanel/VBoxContainer"]
 margin_right = 276.0
 margin_bottom = 14.0
 size_flags_vertical = 0
@@ -65,7 +65,7 @@ margin_right = 46.0
 margin_bottom = 23.0
 text = "Health:"
 
-[node name="ProgressBar" type="ProgressBar" parent="SpritePanel/VBoxContainer/HBoxContainer2"]
+[node name="HealthBar" type="ProgressBar" parent="SpritePanel/VBoxContainer/HBoxContainer2"]
 margin_left = 50.0
 margin_right = 276.0
 margin_bottom = 33.0
@@ -86,7 +86,7 @@ margin_right = 44.0
 margin_bottom = 23.0
 text = "Attack:"
 
-[node name="SpriteAttack" type="Label" parent="SpritePanel/VBoxContainer/HBoxContainer"]
+[node name="UnitAttack" type="Label" parent="SpritePanel/VBoxContainer/HBoxContainer"]
 margin_left = 48.0
 margin_top = 9.0
 margin_right = 48.0
@@ -104,7 +104,7 @@ margin_right = 57.0
 margin_bottom = 23.0
 text = "Defence:"
 
-[node name="SpriteDefence" type="Label" parent="SpritePanel/VBoxContainer/HBoxContainer3"]
+[node name="UnitDefence" type="Label" parent="SpritePanel/VBoxContainer/HBoxContainer3"]
 margin_left = 61.0
 margin_top = 9.0
 margin_right = 61.0
@@ -122,7 +122,7 @@ margin_right = 46.0
 margin_bottom = 23.0
 text = "Moves:"
 
-[node name="SpriteMoves" type="Label" parent="SpritePanel/VBoxContainer/HBoxContainer4"]
+[node name="UnitMoves" type="Label" parent="SpritePanel/VBoxContainer/HBoxContainer4"]
 margin_left = 50.0
 margin_top = 9.0
 margin_right = 50.0
@@ -140,6 +140,7 @@ columns = 3
 margin_right = 89.0
 margin_bottom = 72.0
 size_flags_horizontal = 3
+toggle_mode = true
 text = "Move"
 script = ExtResource( 2 )
 
@@ -158,5 +159,6 @@ margin_right = 275.0
 margin_bottom = 72.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+toggle_mode = true
 text = "Attack"
 script = ExtResource( 4 )

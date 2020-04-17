@@ -8,6 +8,7 @@ var move_range: int
 var health_max: int
 var damage: int
 var damage_range: int
+var defence: int
 var can_build: bool
 var can_build_city: bool
 var can_trade: bool 
@@ -21,15 +22,20 @@ var moves_left: int
 var health: float
 var explore: bool
 var recover: bool
-var selected: bool = false
+var selected: bool
 var hex_pos: Vector2
+var mode: int
 
-
-
+#### modes ####
+const DEFAULT = 0
+const MOVE = 1
+const ATTACK = 2
+const BUILD = 3
 
 func _init():
-	SignalManager.connect("unit_move_btn_click",self,"move_test")
+	#SignalManager.connect("unit_move_btn_click",self,"move_test")
 	can_move_water = false
+	selected = false
 	pass
 	
 func move_test():
@@ -65,9 +71,10 @@ class a_star_node:
 	var hex_pos
 	var hex_effort
 	var parent
-	var child
 	var start
 	var goal
+	var previous
+	var children
 	
 	func _init(h,t,hex,parent=null):
 		distance_heuristic = h
@@ -75,6 +82,11 @@ class a_star_node:
 		hex_pos = hex
 		hex_effort = GlobalConfig.biome_moves[GlobalConfig.map[hex_pos]]
 		self.parent = parent
+		self.children = Array()
+		self.previous = Array()
+		if parent != null:
+			self.previous.append(self.parent.previous)
+			self.previous.append(self.parent.hex_pos)
 		
 	static func sort_nodes(a,b):
 		if (a.distance_heuristic+a.distance_traveled) < (b.distance_heuristic+b.distance_traveled):
@@ -103,18 +115,18 @@ func rand_move():
 	
 
 func heuristic_distance(destination, from, start = null):
-	var heuristic = Hex.hex_distance(destination,from)*10
+	var heuristic = Hex.hex_distance(destination,from)*5
 	if start != null: #heuristic tie break from http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html#S1
-		var start_point = Hex.hex_to_point(start)
-		var destination_point = Hex.hex_to_point(destination)
-		var from_point = Hex.hex_to_point(from)
+		var start_point = Hex.hex_to_point(start)/32
+		var destination_point = Hex.hex_to_point(destination)/32
+		var from_point = Hex.hex_to_point(from)/32
 		
 		var dx1 = from_point.x - destination_point.x
 		var dy1 = from_point.y - destination_point.y
 		var dx2 = start_point.x - destination_point.x
 		var dy2 = start_point.y - destination_point.y
 		var cross = abs(dx1*dy2 - dx2*dy1)
-		heuristic += cross*0.1
+		heuristic += cross*0.01
 	
 	return  heuristic
 	
@@ -133,6 +145,11 @@ func find_path(destination,debug = false):
 	while !path_found and !nodes.empty() and idx < 500:
 		idx += 1
 		nodes.sort_custom(a_star_node,"sort_nodes")
+		if debug:
+			print("step: " + str(idx))
+			for i in nodes:
+				print("node: " + str(i.hex_pos) + " h:" + str(i.distance_heuristic) + " d:" + str(i.distance_traveled) )
+			
 		var current_node = nodes.pop_front()
 		if debug:
 			print("curr_node: " + str(current_node.hex_pos) )
@@ -156,8 +173,10 @@ func find_path(destination,debug = false):
 				if (GlobalConfig.map[i] in GlobalConfig.water_biomes) and (not can_move_water):
 					#print("water")
 					continue
-				nodes.push_back(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + current_node.hex_effort,i,current_node))
-	print("not found")
+				if (i in current_node.previous) or (i in current_node.children):
+					continue
+				nodes.push_front(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + current_node.hex_effort,i,current_node))
+				current_node.children.push_back(i)
 	return false 
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.

@@ -3,10 +3,11 @@ extends Node2D
 class_name main
 
 var players: Array
+var curr_player
 
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed():
-		var camera = $Camera2D
+		var camera = curr_player.camera
 		var global_click_position =  (camera.get_camera_position() + (( event.position - camera.get_viewport().get_visible_rect().size/2) * camera.scale * camera.get_zoom()))
 		var hex_coord = Hex.point_to_hex(global_click_position)
 		print("global click: " + str(global_click_position))
@@ -20,9 +21,11 @@ func _ready():
 	randomize()
 	$TileMap.generate(true)
 	init_players(1)
+	curr_player = players[0]
 	
-
+	
 func init_players(num_players):
+	players = Array()
 	for i in range(num_players):
 		var x
 		var y
@@ -47,5 +50,5 @@ func init_players(num_players):
 		if valid_start_pos:
 			var player = Player.new(start_hex,self)
 			player.set_name("Player"+str(i))
+			players.push_back(player)
 			self.add_child(player)
-	
