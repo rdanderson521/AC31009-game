@@ -65,7 +65,7 @@ func init_players(num_players):
 				var start_area = Hex.hex_in_range(2,start_hex)
 				var invalid_start = false
 				for k in start_area:
-					print(GlobalConfig.map[k])
+					#print(GlobalConfig.map[k])
 					if GlobalConfig.map[k] in GlobalConfig.impasible_biomes or GlobalConfig.map[k] in GlobalConfig.water_biomes:
 						invalid_start = true
 				if !invalid_start:

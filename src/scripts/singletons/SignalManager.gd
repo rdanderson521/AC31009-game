@@ -17,6 +17,8 @@ signal player_turn_ended(player)
 signal unit_selected(unit)
 signal unit_unselected
 signal health_change(obj,h)
+signal build_btn_click(building)
+signal building_file_read
 
 var mouse_entered: Array
 var mouse_over_gui: bool
@@ -48,12 +50,12 @@ func unit_build_btn_click(btn_down):
 func mouse_entered_gui():
 	self.mouse_over_gui = true
 	emit_signal("mouse_entered_gui")
-	#print("mouse_entered_gui")
+	print("mouse_entered_gui")
 	
 func mouse_exited_gui():
 	self.mouse_over_gui = false
 	emit_signal("mouse_exited_gui")
-	#print("mouse_exited_gui")
+	print("mouse_exited_gui")
 	
 func mouse_entered_game_obj(obj):
 	mouse_entered.append(obj)
@@ -66,20 +68,22 @@ func mouse_exited_game_obj(obj):
 	#print("mouse_exited_game_obj")
 
 func mouse_left_game_obj(obj):
-	emit_signal("mouse_left_game_obj",obj)
+	if !self.mouse_over_gui:
+		emit_signal("mouse_left_game_obj",obj)
 	#print("mouse_left_game_obj")
 
 func mouse_right_game_obj(obj):
-	emit_signal("mouse_right_game_obj",obj)
+	if !self.mouse_over_gui:
+		emit_signal("mouse_right_game_obj",obj)
 	#print("mouse_right_game_obj")
 	
 func mouse_left_tilemap(hex):
-	if self.mouse_entered.empty():
+	if self.mouse_entered.empty() and !self.mouse_over_gui:
 		emit_signal("mouse_left_tilemap",hex)
 		#print("mouse_left_tilemap")
 	
 func mouse_right_tilemap(hex):
-	if self.mouse_entered.empty():
+	if self.mouse_entered.empty() and !self.mouse_over_gui:
 		emit_signal("mouse_right_tilemap",hex)
 		#print("mouse_right_tilemap")
 		
@@ -97,3 +101,10 @@ func unit_unselected():
 	
 func health_change(obj,h):
 	emit_signal("health_change",obj,h)
+	
+func build_btn_click(building):
+	emit_signal("build_btn_click",building)
+
+func building_file_read():
+	emit_signal("building_file_read")
+	print("building file read")

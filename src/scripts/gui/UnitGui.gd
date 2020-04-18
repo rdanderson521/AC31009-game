@@ -6,7 +6,21 @@ func _init():
 	SignalManager.connect("unit_selected",self,"unit_selected")
 	SignalManager.connect("unit_unselected",self,"unit_unselected")
 	SignalManager.connect("health_change",self,"health_change")
+	SignalManager.connect("building_file_read",self,"add_building_buttons")
 	self.visible = false
+	
+func _ready():
+	var btn_list = self.find_node("BuildingBtnLst")
+	if btn_list != null:
+		print("building list")
+		for i in BuildingFactory.building_templates:
+			print("test: "+ str(i["name"]))
+			if i["is_city"] or i["is_district"]:
+				var btn = preload("res://scenes/gui/BuildBtn.tscn").instance()
+				btn.script = preload("res://scenes/gui/BuildBtn.gd")
+				btn.init(i)
+				btn_list.add_child(btn)
+			
 
 func unit_selected(unit):
 	self.curr_unit = unit

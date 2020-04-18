@@ -29,17 +29,16 @@ func _init():
 	selected = false
 	explore = false
 	recover = false
-	build_turns_left = -1
+	build_turns_left = 0
+	build_curr = ""
 	mode = DEFAULT
 	pass
-	
 	
 func set_hex_pos(h):
 	if hex_pos != null:
 		GlobalConfig.unit_tiles.erase(hex_pos)
 	GlobalConfig.unit_tiles[h] = self
 	hex_pos = h
-	
 	
 func turn_start() -> bool:
 	if mode == BUILD:
@@ -48,7 +47,9 @@ func turn_start() -> bool:
 			return false
 		elif build_turns_left == 0:
 			build_turns_left = -1
-			BuildingFactory.build(build_curr,hex_pos) ########## build func still needs made #########
+			var new_building = BuildingFactory.build_building(build_curr,hex_pos,self.get_parent())
+			self.get_parent().buildings.append(new_building)
+			self.get_parent().add_child(new_building)
 			mode = DEFAULT
 		
 	moves_left = move_range
@@ -121,7 +122,7 @@ func heuristic_distance(destination, from, start = null):
 		heuristic += cross*0.001
 	return  heuristic
 	
-#a* pathfinding algorithm	
+#a* pathfinding algorithm
 func find_path(destination,debug = false):
 	var start = a_star_node.new(heuristic_distance(destination,self.hex_pos,self.hex_pos),0,self.hex_pos)
 	var path_found = false
@@ -174,7 +175,6 @@ func find_path(destination,debug = false):
 	print("failed")
 	return false 
 	
-	
 func attack(enemy):
 	mode = ATTACK
 	if moves_left > 0:
@@ -210,6 +210,29 @@ func kill():
 	self.visible = false
 	self.get_parent().kill(self)
 	self.queue_free()
+	
+func can_build(building) -> bool:
+	if BuildingFactory.building_templates_by_name[building]["is_city"] and self.can_build_city:
+		return true
+	elif BuildingFactory.building_templates_by_name[building]["is_district"] and self.can_build:
+		return true
+	return false
+	
+func start_build(building):
+	print("start build")
+	if BuildingFactory.building_templates_by_name.has(building):
+		print("build started")
+		self.build_turns_left = BuildingFactory.building_templates_by_name[building]["build_turns"]
+		if build_turns_left == 0:
+			build_turns_left = -1
+			var new_building = BuildingFactory.build_building(building,hex_pos,self.get_parent())
+			self.get_parent().buildings.append(new_building) ###############################################move this somewhere else
+			mode = DEFAULT
+		else:
+			self.build_curr = building
+			self.mode = BUILD
+		
+		self.moves_left = 0
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

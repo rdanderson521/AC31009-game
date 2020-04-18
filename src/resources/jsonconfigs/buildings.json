@@ -2,12 +2,27 @@
 	{
 		"name":"city",
 		"is_city":true,
+		"is_district":false,
 		"health":100,
 		"damage":5,
 		"damage_range":3,
 		"improvements":{
-			"food":1
+			"food":1,
+			"gold":1,
+			
 		},
-		"texture":"res://icon.png"
+		"texture":"res://building.png"
+	},
+	{
+		"name":"farm",
+		"is_city":false,
+		"is_district":true,
+		"health":100,
+		"damage":5,
+		"damage_range":3,
+		"improvements":{
+			"food":2
+		},
+		"texture":"res://building.png"
 	}
 ]
