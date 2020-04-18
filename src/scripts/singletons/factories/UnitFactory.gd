@@ -23,6 +23,7 @@ func init_unit() -> Unit:
 	
 func check_templates(templates):
 	for i in templates:
+		
 		if !i.has("name"):
 			if debug:
 				print("err: check unit json")
@@ -105,5 +106,6 @@ func start_units(hex,player) -> Array:
 					unit.can_trade = i["can_trade"]
 					unit.texture = i["texture"]
 					start_units.push_back(unit)
+					
 	
 	return start_units

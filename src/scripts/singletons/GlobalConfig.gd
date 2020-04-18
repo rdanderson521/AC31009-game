@@ -13,6 +13,9 @@ const water_biomes = [12,13]
 var map: Dictionary
 var map_size: Vector2
 
+var unit_tiles: Dictionary
+
 func _init():
 	map = Dictionary()
+	unit_tiles = Dictionary()
 

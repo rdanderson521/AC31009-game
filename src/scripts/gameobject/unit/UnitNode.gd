@@ -3,28 +3,18 @@ extends GameObject
 class_name Unit
 
 var speed: int = 300
-var type: String
 var move_range: int
-var health_max: int
-var attack: int
-var attack_range: int
-var defence: int
 var can_build: bool
 var can_build_city: bool
 var can_trade: bool 
 var can_move_water: bool
-var texture: String setget set_texture
 
 var moves: Array = Array()
 var build_turns_left: int
 var build_curr: String
 var moves_left: int
-var health: float setget set_health
 var explore: bool
 var recover: bool
-var selected: bool
-var hex_pos: Vector2
-var mode: int
 
 #### modes ####
 const DEFAULT = 0
@@ -35,7 +25,6 @@ const ATTACK_MOVE = 4
 const BUILD = 5
 
 func _init():
-	#SignalManager.connect("unit_move_btn_click",self,"move_test")
 	can_move_water = false
 	selected = false
 	explore = false
@@ -44,16 +33,13 @@ func _init():
 	mode = DEFAULT
 	pass
 	
-func move_test():
-	self.find_path(hex_pos+Vector2(3,3))
 	
-func set_texture(texture):
-	$Area2D/CollisionPolygon2D/Sprite.texture = load(texture)
-	pass
+func set_hex_pos(h):
+	if hex_pos != null:
+		GlobalConfig.unit_tiles.erase(hex_pos)
+	GlobalConfig.unit_tiles[h] = self
+	hex_pos = h
 	
-func set_health(h):
-	health = h
-	SignalManager.health_change(self,h)
 	
 func turn_start() -> bool:
 	if mode == BUILD:
@@ -137,7 +123,7 @@ func heuristic_distance(destination, from, start = null):
 	
 #a* pathfinding algorithm	
 func find_path(destination,debug = false):
-	var start = a_star_node.new(heuristic_distance(destination,hex_pos,self.hex_pos),0,hex_pos)
+	var start = a_star_node.new(heuristic_distance(destination,self.hex_pos,self.hex_pos),0,self.hex_pos)
 	var path_found = false
 	var nodes = Array()
 	var visited_nodes = Array()
@@ -180,6 +166,8 @@ func find_path(destination,debug = false):
 					#print("water")
 					continue
 				if (i in current_node.previous):
+					continue
+				if (i in GlobalConfig.unit_tiles.keys()):
 					continue
 					
 				nodes.push_front(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + (current_node.hex_effort*5),i,current_node))
@@ -232,8 +220,12 @@ func _process(delta):
 				while moves.front().hex_pos == self.hex_pos:
 					moves.pop_front()
 				var move = moves.pop_front()
-				hex_pos = move.hex_pos
-				moves_left -= move.hex_effort
+				if GlobalConfig.unit_tiles.has(move.hex_pos) and GlobalConfig.unit_tiles[move.hex_pos] != self:
+					moves.clear()
+					mode = DEFAULT
+				else:
+					self.hex_pos = move.hex_pos
+					moves_left -= move.hex_effort
 				
 		else:
 			var diff = Hex.hex_to_point(self.hex_pos) - self.position
