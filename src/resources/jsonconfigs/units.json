@@ -32,7 +32,7 @@
 		"health":10,
 		"damage":1,
 		"damage_range":1,
-		"move_range":4,
+		"move_range":3,
 		"can_build_city":true,
 		"can_build":false,
 		"cost":{

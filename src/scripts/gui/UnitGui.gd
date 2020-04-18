@@ -10,7 +10,7 @@ func unit_selected(unit):
 	find_node("SpriteTexture").texture = unit.find_node("Sprite").texture
 	find_node("HealthBar").max_value = unit.health_max
 	find_node("HealthBar").value = unit.health
-	find_node("UnitAttack").text = str(unit.damage)
+	find_node("UnitAttack").text = str(unit.attack)
 	find_node("UnitDefence").text = str(unit.defence)
 	find_node("UnitMoves").text = str(unit.moves_left)
 	self.visible = true
