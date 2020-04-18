@@ -16,6 +16,7 @@ signal mouse_right_tilemap(hex)
 signal player_turn_ended(player)
 signal unit_selected(unit)
 signal unit_unselected
+signal health_change(obj,h)
 
 var mouse_entered: Array
 var mouse_over_gui: bool
@@ -93,3 +94,6 @@ func unit_selected(unit):
 func unit_unselected():
 	emit_signal("unit_unselected")
 	#print("unit_unselected")
+	
+func health_change(obj,h):
+	emit_signal("health_change",obj,h)

@@ -44,6 +44,11 @@ func check_templates(templates):
 			i["damage_range"] = 0
 			if debug:
 				print("err: check unit json")
+				
+		if !i.has("defence"):
+			i["defence"] = 0
+			if debug:
+				print("err: check unit json")
 		
 		if !i.has("move_range"):
 			if debug:
@@ -93,6 +98,7 @@ func start_units(hex,player) -> Array:
 					unit.health = i["health"]
 					unit.attack = i["damage"]
 					unit.attack_range = i["damage_range"]
+					unit.defence = i["defence"]
 					unit.move_range = i["move_range"]
 					unit.can_build_city = i["can_build_city"]
 					unit.can_build = i["can_build"]

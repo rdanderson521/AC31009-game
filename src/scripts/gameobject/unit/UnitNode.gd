@@ -19,7 +19,7 @@ var moves: Array = Array()
 var build_turns_left: int
 var build_curr: String
 var moves_left: int
-var health: float
+var health: float setget set_health
 var explore: bool
 var recover: bool
 var selected: bool
@@ -50,6 +50,10 @@ func move_test():
 func set_texture(texture):
 	$Area2D/CollisionPolygon2D/Sprite.texture = load(texture)
 	pass
+	
+func set_health(h):
+	health = h
+	SignalManager.health_change(self,h)
 	
 func turn_start() -> bool:
 	if mode == BUILD:
@@ -114,13 +118,6 @@ class a_star_node:
 			distance += curr_node.parent.hex_effort
 			curr_node = curr_node.parent
 		return distance
-		
-
-func rand_move():
-	self.hex_pos = Vector2(int(rand_range(0,5)),int(rand_range(0,5)))
-	self.position = Hex.hex_to_point(Hex.hex_round_axial(hex_pos))
-	
-	
 	
 
 func heuristic_distance(destination, from, start = null):
@@ -136,7 +133,6 @@ func heuristic_distance(destination, from, start = null):
 		var dy2 = start_point.y - destination_point.y
 		var cross = abs(dx1*dy2 - dx2*dy1)
 		heuristic += cross*0.001
-	
 	return  heuristic
 	
 #a* pathfinding algorithm	
@@ -186,21 +182,6 @@ func find_path(destination,debug = false):
 				if (i in current_node.previous):
 					continue
 					
-#				var node_found = false
-#				for j in nodes:
-#					if j.hex_pos == i:
-#						if j.distance_traveled > current_node.distance_traveled + (current_node.hex_effort*5):
-#							nodes.push_front(a_star_node.new(j.distance_heuristic,current_node.distance_traveled + (current_node.hex_effort*5),i,current_node))
-#							nodes.erase(j)
-#							print("node replaced")
-#							node_found = true
-#							break
-#						else:
-#							node_found = true
-#							break
-#				if node_found:
-#					continue
-							
 				nodes.push_front(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + (current_node.hex_effort*5),i,current_node))
 	print("failed")
 	return false 
@@ -208,28 +189,34 @@ func find_path(destination,debug = false):
 	
 func attack(enemy):
 	mode = ATTACK
-	if enemy.hex_pos in Hex.hex_in_range(self.attack_range,self.hex_pos):
-		if self.attack_range > 1:
-			var damage = rand_range(0.8*self.attack,self.attack)
-			damage -= rand_range(0.1*enemy.defence,0.25*enemy.defence)
-			damage = max(damage,0)
-			enemy.health -= damage
-		else:
-			var damage = rand_range(0.8*self.attack,self.attack)
-			damage -= rand_range(0.1*enemy.defence,0.25*enemy.defence)
-			damage = max(damage,0)
+	if moves_left > 0:
+		if enemy.hex_pos in Hex.hex_in_range(self.attack_range,self.hex_pos):
+			print("atk rng: " + str(attack_range))
+			if self.attack_range > 1:
+				var damage = rand_range(0.8*self.attack,self.attack)
+				damage = damage * (moves_left+move_range)/(2*move_range)
+				damage -= rand_range(0.1*enemy.defence,0.25*enemy.defence)
+				damage = max(damage,0)
+				enemy.health = enemy.health - damage
+			else:
+				var damage = rand_range(0.8*self.attack,self.attack)
+				damage = damage * (moves_left+move_range)/(2*move_range)
+				damage -= rand_range(0.1*enemy.defence,0.25*enemy.defence)
+				damage = max(damage,0)
+				print("damage: " + str(damage))
+				
+				var enemy_damage = rand_range(0.8*enemy.defence,enemy.defence)
+				enemy_damage = enemy_damage * (enemy.moves_left+enemy.move_range)/(2*enemy.move_range)
+				enemy_damage -= rand_range(0.2*self.defence,0.4*self.defence)
+				enemy_damage = max(enemy_damage,0)
+				print("en damage: " + str(enemy_damage))
+				enemy.health = enemy.health - damage
+				self.health = self.health - enemy_damage
 			
-			var enemy_damage = rand_range(0.8*enemy.defence,enemy.defence)
-			enemy_damage -= rand_range(0.2*self.defence,0.4*self.defence)
-			enemy_damage = max(enemy_damage,0)
-			
-			enemy.health -= damage
-			self.health -= enemy_damage
-		
-		if self.health < 0:
-			self.kill()
-		if enemy.health < 0:
-			enemy.kill()
+			if self.health < 0:
+				self.kill()
+			if enemy.health < 0:
+				enemy.kill()
 			
 func kill():
 	self.visible = false
@@ -239,9 +226,17 @@ func kill():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if mode == MOVE or (mode == MOVE_WAIT and !self.get_parent().is_turn):
-		if !moves.empty() and moves_left > 0:
-			var diff = Hex.hex_to_point(moves.front().hex_pos) - self.position
-			print("move diff: " + str(diff))
+		
+		if self.position == Hex.hex_to_point(self.hex_pos):
+			if !moves.empty() and moves_left > 0:
+				while moves.front().hex_pos == self.hex_pos:
+					moves.pop_front()
+				var move = moves.pop_front()
+				hex_pos = move.hex_pos
+				moves_left -= move.hex_effort
+				
+		else:
+			var diff = Hex.hex_to_point(self.hex_pos) - self.position
 			var abs_distance = sqrt(pow(diff.x,2)+pow(diff.y,2))
 			var velocity = 0
 			if delta > 0:
@@ -252,15 +247,13 @@ func _process(delta):
 			
 			if velocity <= 1:
 				move_vector = diff
-				var move = moves.pop_front()
-				hex_pos = move.hex_pos
-				moves_left -= move.hex_effort
 				if moves_left <= 0:
 					moves_left = 0
 					if !moves.empty():
 						mode = MOVE_WAIT
 					else:
 						mode = DEFAULT
+				
 			else:
 				move_vector =  diff / velocity
 				
