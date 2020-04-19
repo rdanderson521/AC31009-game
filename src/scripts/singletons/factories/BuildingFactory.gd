@@ -93,11 +93,14 @@ func check_templates(templates):
 func build_building(to_build,hex,player):
 	var building = init_building()
 	var template = building_templates_by_name[to_build]
-	
+	print("hex: " + str(hex))
 	building.hex_pos = hex
 	building.position = Hex.hex_to_point(hex)
 	building.type = template["name"]
 	building.is_city = template["is_city"]
+	if building.is_city:
+		building.area = Hex.hex_in_range(1,hex)
+		building.area.append(building.hex_pos)
 	building.is_district = template["is_district"]
 	building.health_max = template["health"]
 	building.health = template["health"]

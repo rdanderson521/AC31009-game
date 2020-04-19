@@ -10,12 +10,15 @@ signal mouse_exited_gui
 signal mouse_entered_game_obj(obj)
 signal mouse_exited_game_obj(obj)
 signal mouse_left_game_obj(obj)
+signal mouse_double_left_game_obj(obj)
 signal mouse_right_game_obj(obj)
 signal mouse_left_tilemap(hex)
 signal mouse_right_tilemap(hex)
 signal player_turn_ended(player)
 signal unit_selected(unit)
 signal unit_unselected
+signal building_selected(building)
+signal building_unselected
 signal health_change(obj,h)
 signal build_btn_click(building)
 signal building_file_read
@@ -23,6 +26,7 @@ signal moves_left_change(unit,m)
 
 var mouse_entered: Array
 var mouse_over_gui: bool
+var last_clicked: GameObject
 
 func _init():
 	self.mouse_entered = Array()
@@ -51,12 +55,12 @@ func unit_build_btn_click(btn_down):
 func mouse_entered_gui():
 	self.mouse_over_gui = true
 	emit_signal("mouse_entered_gui")
-	print("mouse_entered_gui")
+	#print("mouse_entered_gui")
 	
 func mouse_exited_gui():
 	self.mouse_over_gui = false
 	emit_signal("mouse_exited_gui")
-	print("mouse_exited_gui")
+	#print("mouse_exited_gui")
 	
 func mouse_entered_game_obj(obj):
 	mouse_entered.append(obj)
@@ -68,10 +72,14 @@ func mouse_exited_game_obj(obj):
 	emit_signal("mouse_exited_game_obj",obj)
 	#print("mouse_exited_game_obj")
 
-func mouse_left_game_obj(obj):
+func mouse_left_game_obj(obj,double = false):
 	if !self.mouse_over_gui:
-		emit_signal("mouse_left_game_obj",obj)
-	#print("mouse_left_game_obj")
+		if double:
+			emit_signal("mouse_double_left_game_obj",obj)
+			print("mouse_double_left_game_obj")
+		else:
+			emit_signal("mouse_left_game_obj",obj)
+			print("mouse_left_game_obj")
 
 func mouse_right_game_obj(obj):
 	if !self.mouse_over_gui:
@@ -98,6 +106,14 @@ func unit_selected(unit):
 	
 func unit_unselected():
 	emit_signal("unit_unselected")
+	#print("unit_unselected")
+	
+func building_selected(building):
+	emit_signal("building_selected",building)
+	#print("building_selected")
+	
+func building_unselected():
+	emit_signal("building_unselected")
 	#print("unit_unselected")
 	
 func health_change(obj,h):

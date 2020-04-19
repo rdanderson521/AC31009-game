@@ -107,7 +107,7 @@ func init_players(num_players,start_areas):
 	start_areas.shuffle()
 	for i in range(num_players):
 		var player = Player.new(start_areas.pop_back(),self)
-		player.colour = Color(rand_range(0.2,1),rand_range(0.2,1),rand_range(0.2,1),0.3)
+		player.colour = Color(1,0,0,0.3)
 		player.set_name("Player"+str(i))
 		players.push_back(player)
 		self.add_child(player)

@@ -14,6 +14,9 @@ func on_mouse_exited():
 func on_input_event(viewport,event,shape_idx):
 	if event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT and event.is_pressed():
-			SignalManager.mouse_left_game_obj(self.get_parent())
+			if event.doubleclick:
+				SignalManager.mouse_left_game_obj(self.get_parent(),true)
+			else:
+				SignalManager.mouse_left_game_obj(self.get_parent(),false)
 		elif event.button_index == BUTTON_RIGHT and event.is_pressed():
 			SignalManager.mouse_right_game_obj(self.get_parent())

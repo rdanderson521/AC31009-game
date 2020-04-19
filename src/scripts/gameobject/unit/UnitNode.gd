@@ -52,8 +52,7 @@ func turn_start() -> bool:
 		elif build_turns_left == 0:
 			build_turns_left = -1
 			var new_building = BuildingFactory.build_building(build_curr,hex_pos,self.get_parent())
-			self.get_parent().buildings.append(new_building)
-			self.get_parent().add_child(new_building)
+			self.get_parent().new_building(new_building)
 			mode = DEFAULT
 		
 	self.moves_left = move_range
@@ -230,7 +229,7 @@ func start_build(building):
 		if build_turns_left == 0:
 			build_turns_left = -1
 			var new_building = BuildingFactory.build_building(building,hex_pos,self.get_parent())
-			self.get_parent().buildings.append(new_building) ###############################################move this somewhere else
+			self.get_parent().new_building(new_building)
 			mode = DEFAULT
 		else:
 			self.build_curr = building
@@ -241,7 +240,6 @@ func start_build(building):
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if mode == MOVE or (mode == MOVE_WAIT and !self.get_parent().is_turn):
-		print("mode: " + str(mode))
 		if self.position == Hex.hex_to_point(self.hex_pos):
 			if !moves.empty() and self.moves_left > 0:
 				while moves.front().hex_pos == self.hex_pos:

@@ -12,6 +12,7 @@ var selected_object: GameObject setget set_selected_object
 var start_hex: Vector2
 var turn: int
 var mode: int
+var area: Array
 var colour: Color
 
 const DEFAULT = 0
@@ -39,6 +40,7 @@ func _init(start_hex,node,ai=false, debug=false):
 	if !ai:
 #		SignalManager.connect("end_turn_btn_click",self,"turn_end")
 		SignalManager.connect("mouse_left_game_obj",self,"game_object_clicked_left")
+		SignalManager.connect("mouse_double_left_game_obj",self,"game_object_double_clicked_left")
 		SignalManager.connect("mouse_right_game_obj",self,"game_object_clicked_right")
 		SignalManager.connect("mouse_left_tilemap",self,"tilemap_clicked_left")
 		SignalManager.connect("mouse_right_tilemap",self,"tilemap_clicked_right")
@@ -55,25 +57,35 @@ func _ready():
 		self.add_child(i)
 		
 func unit_start_build(building):
-	if selected_object is Unit:
-		if selected_object.can_build(building):
-			selected_object.start_build(building)
+	if is_turn:
+		if selected_object is Unit:
+			if selected_object.can_build(building):
+				selected_object.start_build(building)
 
 func set_selected_object(obj):
 	if obj is Unit:
 		selected_object = obj
+		SignalManager.building_unselected()
 		SignalManager.unit_selected(obj)
 	elif obj is Building:
-		pass
+		selected_object = obj
+		SignalManager.unit_unselected()
+		SignalManager.building_selected(obj)
 	else:
 		SignalManager.unit_unselected()
-		
 		
 func game_object_clicked_left(obj):
 	if is_turn:
 		if obj.get_parent() == self:
-			self.selected_object = obj
-			self.mode = 0
+			if obj is Building:
+				print("obj is building")
+				if !obj.hex_pos in GlobalConfig.unit_tiles.keys():
+					self.selected_object = obj
+					self.mode = 0
+			else:
+				print("obj is unit")
+				self.selected_object = obj
+				self.mode = 0
 		elif selected_object != null and mode == ATTACK:
 			if selected_object is Unit:
 				selected_object.attack(obj)
@@ -83,6 +95,12 @@ func game_object_clicked_left(obj):
 		else:
 			self.selected_object = null
 			SignalManager.unit_unselected()
+			
+func game_object_double_clicked_left(obj):
+	if is_turn:
+		if obj.get_parent() == self and obj is Building:
+			self.selected_object = obj
+			self.mode = 0
 			
 func game_object_clicked_right(obj):
 	if is_turn:
@@ -127,6 +145,7 @@ func turn_start():
 func turn_end():
 	if is_turn:
 		is_turn = false
+		selected_object = null
 		$Camera2D/CanvasLayer/MainGui.visible = false
 		$Camera2D/CanvasLayer/MainGui.turn_ended()
 		SignalManager.player_turn_ended(self)
@@ -141,3 +160,13 @@ func kill(obj):
 			
 	elif obj is Building:
 		buildings.erase(obj)
+		
+func new_building(building):
+	self.add_child(building)
+	self.buildings.append(building)
+		
+		
+		
+		
+		
+		

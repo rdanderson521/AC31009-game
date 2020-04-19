@@ -22,5 +22,6 @@ func set_health(h):
 	SignalManager.health_change(self,h)
 	
 func set_hex_pos(h):
+	hex_pos = h
 	pass
 
