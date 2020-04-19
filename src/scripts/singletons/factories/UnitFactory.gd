@@ -93,7 +93,6 @@ func start_units(hex,player) -> Array:
 					var unit = init_unit()
 					unit.hex_pos = start_area.pop_back()
 					unit.position = Hex.hex_to_point(unit.hex_pos)
-					player.add_child(unit)
 					unit.type = i["name"]
 					unit.health_max = i["health"]
 					unit.health = i["health"]

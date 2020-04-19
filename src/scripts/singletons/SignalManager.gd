@@ -19,6 +19,7 @@ signal unit_unselected
 signal health_change(obj,h)
 signal build_btn_click(building)
 signal building_file_read
+signal moves_left_change(unit,m)
 
 var mouse_entered: Array
 var mouse_over_gui: bool
@@ -107,4 +108,8 @@ func build_btn_click(building):
 
 func building_file_read():
 	emit_signal("building_file_read")
-	print("building file read")
+	#print("building file read")
+	
+func moves_left_change(unit,m):
+	emit_signal("moves_left_change",unit,m)
+	#print("moves left change")

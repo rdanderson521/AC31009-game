@@ -6,6 +6,7 @@ func _init():
 	SignalManager.connect("unit_selected",self,"unit_selected")
 	SignalManager.connect("unit_unselected",self,"unit_unselected")
 	SignalManager.connect("health_change",self,"health_change")
+	SignalManager.connect("moves_left_change",self,"moves_left_change")
 	SignalManager.connect("building_file_read",self,"add_building_buttons")
 	self.visible = false
 	
@@ -40,3 +41,7 @@ func unit_unselected():
 func health_change(obj,h):
 	if obj == curr_unit:
 		find_node("HealthBar").value = h
+		
+func moves_left_change(unit,m):
+	if unit == curr_unit:
+		find_node("UnitMoves").text = str(m)

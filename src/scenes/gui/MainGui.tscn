@@ -125,7 +125,7 @@ margin_right = 31.0
 margin_bottom = 14.0
 text = "Year:"
 
-[node name="Label2" type="Label" parent="HBoxContainer3/VBoxContainer"]
+[node name="TurnLbl" type="Label" parent="HBoxContainer3/VBoxContainer"]
 margin_top = 18.0
 margin_right = 31.0
 margin_bottom = 32.0

@@ -9,7 +9,8 @@ var camera: PlayerCamera
 var units_attention_needed: Array
 var is_turn: bool
 var selected_object: GameObject setget set_selected_object
-
+var start_hex: Vector2
+var turn: int
 var mode: int
 
 const DEFAULT = 0
@@ -21,19 +22,18 @@ const BUILD = 5
 func _init(start_hex,node,ai=false, debug=false):
 	if debug:
 		print("player init")
-	node.add_child(self)
+	#node.add_child(self)
 	
 	self.units = Array()
 	self.buildings = Array()
+	self.turn = 0
+	
+	self.start_hex = start_hex
 	
 	self.selected_object = null
 	
 	self.is_ai = ai
 	self.is_turn = false
-	
-	self.units += UnitFactory.start_units(start_hex,self)
-	print(units)
-	
 	
 	if !ai:
 #		SignalManager.connect("end_turn_btn_click",self,"turn_end")
@@ -48,7 +48,11 @@ func _init(start_hex,node,ai=false, debug=false):
 		camera.zoom = Vector2(0.3,0.3)
 		$Camera2D/CanvasLayer/MainGui.visible = false
 		
-
+func _ready():
+	self.units += UnitFactory.start_units(self.start_hex,self)
+	for i in self.units:
+		self.add_child(i)
+		
 func unit_start_build(building):
 	if selected_object is Unit:
 		if selected_object.can_build(building):
@@ -107,9 +111,10 @@ func tilemap_clicked_right(hex):
 
 func turn_start():
 	is_turn = true
+	self.turn += 1
 	if !is_ai:
 		camera.make_current()
-		$Camera2D/CanvasLayer/MainGui.turn_started()
+		$Camera2D/CanvasLayer/MainGui.turn_started(self.turn)
 		$Camera2D/CanvasLayer/MainGui.visible = true
 		
 	if !units.empty():

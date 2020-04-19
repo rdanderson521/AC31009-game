@@ -12,7 +12,7 @@ var can_move_water: bool
 var moves: Array = Array()
 var build_turns_left: int
 var build_curr: String
-var moves_left: int
+var moves_left: int setget set_moves_left
 var explore: bool
 var recover: bool
 
@@ -34,6 +34,10 @@ func _init():
 	mode = DEFAULT
 	pass
 	
+func set_moves_left(m):
+	moves_left = m
+	SignalManager.moves_left_change(self,m)
+
 func set_hex_pos(h):
 	if hex_pos != null:
 		GlobalConfig.unit_tiles.erase(hex_pos)
@@ -52,7 +56,7 @@ func turn_start() -> bool:
 			self.get_parent().add_child(new_building)
 			mode = DEFAULT
 		
-	moves_left = move_range
+	self.moves_left = move_range
 
 	if mode in [MOVE_WAIT,ATTACK_MOVE]:
 		return false
@@ -177,24 +181,24 @@ func find_path(destination,debug = false):
 	
 func attack(enemy):
 	mode = ATTACK
-	if moves_left > 0:
+	if self.moves_left > 0:
 		if enemy.hex_pos in Hex.hex_in_range(self.attack_range,self.hex_pos):
 			print("atk rng: " + str(attack_range))
 			if self.attack_range > 1:
 				var damage = rand_range(0.8*self.attack,self.attack)
-				damage = damage * (moves_left+move_range)/(2*move_range)
+				damage = damage * (self.moves_left+move_range)/(2*move_range)
 				damage -= rand_range(0.1*enemy.defence,0.25*enemy.defence)
 				damage = max(damage,0)
 				enemy.health = enemy.health - damage
 			else:
 				var damage = rand_range(0.8*self.attack,self.attack)
-				damage = damage * (moves_left+move_range)/(2*move_range)
+				damage = damage * (self.moves_left+move_range)/(2*move_range)
 				damage -= rand_range(0.1*enemy.defence,0.25*enemy.defence)
 				damage = max(damage,0)
 				print("damage: " + str(damage))
 				
 				var enemy_damage = rand_range(0.8*enemy.defence,enemy.defence)
-				enemy_damage = enemy_damage * (enemy.moves_left+enemy.move_range)/(2*enemy.move_range)
+				enemy_damage = enemy_damage * (enemy.self.moves_left+enemy.move_range)/(2*enemy.move_range)
 				enemy_damage -= rand_range(0.2*self.defence,0.4*self.defence)
 				enemy_damage = max(enemy_damage,0)
 				print("en damage: " + str(enemy_damage))
@@ -237,9 +241,9 @@ func start_build(building):
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if mode == MOVE or (mode == MOVE_WAIT and !self.get_parent().is_turn):
-		
+		print("mode: " + str(mode))
 		if self.position == Hex.hex_to_point(self.hex_pos):
-			if !moves.empty() and moves_left > 0:
+			if !moves.empty() and self.moves_left > 0:
 				while moves.front().hex_pos == self.hex_pos:
 					moves.pop_front()
 				var move = moves.pop_front()
@@ -248,7 +252,10 @@ func _process(delta):
 					mode = DEFAULT
 				else:
 					self.hex_pos = move.hex_pos
-					moves_left -= move.hex_effort
+					self.moves_left -= move.hex_effort
+					
+			elif self.moves_left <= 0:
+				self.mode = MOVE_WAIT
 				
 		else:
 			var diff = Hex.hex_to_point(self.hex_pos) - self.position
@@ -262,8 +269,8 @@ func _process(delta):
 			
 			if velocity <= 1:
 				move_vector = diff
-				if moves_left <= 0:
-					moves_left = 0
+				if self.moves_left <= 0:
+					self.moves_left = 0
 					if !moves.empty():
 						mode = MOVE_WAIT
 					else:
