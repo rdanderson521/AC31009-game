@@ -14,6 +14,9 @@ func _ready():
 	print(self.get_parent())
 	#update()
 
+func set_hex_pos(h):
+	hex_pos = h
+	GlobalConfig.building_tiles[h] = self
 
 func _draw():
 	print("draw")

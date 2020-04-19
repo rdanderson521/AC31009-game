@@ -22,4 +22,3 @@ margin_right = 0.599991
 visible = false
 
 [node name="BuildingGui" parent="CanvasLayer" instance=ExtResource( 1 )]
-visible = false

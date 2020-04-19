@@ -17,8 +17,8 @@ func _ready():
 		for i in BuildingFactory.building_templates:
 			print("test: "+ str(i["name"]))
 			if i["is_city"] or i["is_district"]:
-				var btn = preload("res://scenes/gui/BuildBtn.tscn").instance()
-				btn.script = preload("res://scenes/gui/BuildBtn.gd")
+				var btn = preload("res://scenes/gui/UnitGuiBuildBtn.tscn").instance()
+				btn.script = preload("res://scripts/gui/UnitGuiBuildBtn.gd")
 				btn.init(i)
 				btn_list.add_child(btn)
 			

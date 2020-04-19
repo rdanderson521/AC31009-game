@@ -25,3 +25,4 @@ func unit_selected(unit):
 		self.visible = true
 	else:
 		self.visible = false
+	

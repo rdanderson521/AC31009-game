@@ -89,7 +89,6 @@ class a_star_node:
 		if parent != null:
 			self.previous += self.parent.previous
 			self.previous.append(self.parent.hex_pos)
-			print("previous: " + str(previous) )
 		
 	static func sort_nodes(a,b):
 		if (a.distance_heuristic+a.distance_traveled) < (b.distance_heuristic+b.distance_traveled):
@@ -215,6 +214,8 @@ func kill():
 	self.queue_free()
 	
 func can_build(building) -> bool:
+	if self.hex_pos in GlobalConfig.building_tiles.keys():
+		return false
 	if BuildingFactory.building_templates_by_name[building]["is_city"] and self.can_build_city:
 		return true
 	elif BuildingFactory.building_templates_by_name[building]["is_district"] and self.can_build:
@@ -222,20 +223,19 @@ func can_build(building) -> bool:
 	return false
 	
 func start_build(building):
-	print("start build")
-	if BuildingFactory.building_templates_by_name.has(building):
-		print("build started")
-		self.build_turns_left = BuildingFactory.building_templates_by_name[building]["build_turns"]
-		if build_turns_left == 0:
-			build_turns_left = -1
-			var new_building = BuildingFactory.build_building(building,hex_pos,self.get_parent())
-			self.get_parent().new_building(new_building)
-			mode = DEFAULT
-		else:
-			self.build_curr = building
-			self.mode = BUILD
-		
-		self.moves_left = 0
+	if moves_left > 0:
+		if BuildingFactory.building_templates_by_name.has(building):
+			self.build_turns_left = BuildingFactory.building_templates_by_name[building]["build_turns"]
+			if build_turns_left == 0:
+				build_turns_left = -1
+				var new_building = BuildingFactory.build_building(building,hex_pos,self.get_parent())
+				self.get_parent().new_building(new_building)
+				mode = DEFAULT
+			else:
+				self.build_curr = building
+				self.mode = BUILD
+			
+			self.moves_left = 0
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

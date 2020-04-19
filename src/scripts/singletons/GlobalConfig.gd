@@ -14,8 +14,10 @@ var map: Dictionary
 var map_size: Vector2
 
 var unit_tiles: Dictionary
+var building_tiles: Dictionary
 
 func _init():
 	map = Dictionary()
 	unit_tiles = Dictionary()
+	building_tiles = Dictionary()
 

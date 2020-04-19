@@ -95,6 +95,7 @@ func game_object_clicked_left(obj):
 		else:
 			self.selected_object = null
 			SignalManager.unit_unselected()
+			SignalManager.building_unselected()
 			
 func game_object_double_clicked_left(obj):
 	if is_turn:
@@ -110,8 +111,12 @@ func game_object_clicked_right(obj):
 			elif selected_object is Building:
 				if selected_object.in_range(obj):###########make in range func################
 					selected_object.attack(obj)############make attack func##############
-		elif obj.get_parent() == self:
+		elif obj.get_parent() == self and obj is Unit:
 			print("cannot attack own unit")
+		elif obj.get_parent() == self and obj is Building and !(obj.hex_pos in GlobalConfig.unit_tiles.keys()):
+			if selected_object is Unit:
+				selected_object.find_path(obj.hex_pos)
+			
 			
 func tilemap_clicked_left(hex):
 	if is_turn:
@@ -121,6 +126,7 @@ func tilemap_clicked_left(hex):
 			else:
 				self.selected_object = null
 				SignalManager.unit_unselected()
+				SignalManager.building_unselected()
 				
 func tilemap_clicked_right(hex):
 	if is_turn:

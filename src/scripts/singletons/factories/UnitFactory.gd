@@ -106,5 +106,4 @@ func start_units(hex,player) -> Array:
 					unit.texture = i["texture"]
 					start_units.push_back(unit)
 					
-	
 	return start_units

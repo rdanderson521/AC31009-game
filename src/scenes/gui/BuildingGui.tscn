@@ -1,24 +1,22 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://scenes/gui/BuildingInfoGui.tscn" type="PackedScene" id=1]
-[ext_resource path="res://scripts/gui/GuiPanel.gd" type="Script" id=5]
+[ext_resource path="res://scripts/gui/BuildingGui.gd" type="Script" id=2]
 
 [node name="Control" type="Control"]
 anchor_top = 1.0
 anchor_bottom = 1.0
-margin_top = -904.0
+margin_top = -610.0
 margin_right = 369.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="InfoPanel" type="PanelContainer" parent="."]
-anchor_top = 1.0
+anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = -900.0
-margin_right = 300.0
 size_flags_vertical = 3
-script = ExtResource( 5 )
+script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -26,16 +24,14 @@ __meta__ = {
 [node name="VBoxContainer" parent="InfoPanel" instance=ExtResource( 1 )]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 293.0
-margin_bottom = 893.0
+margin_right = 362.0
+margin_bottom = 603.0
 
 [node name="BuildPanel" type="PanelContainer" parent="."]
-anchor_top = 1.0
+anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = -900.0
-margin_right = 450.0
 size_flags_vertical = 3
-script = ExtResource( 5 )
+script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -43,23 +39,23 @@ __meta__ = {
 [node name="HBoxContainer" type="HBoxContainer" parent="BuildPanel"]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 443.0
-margin_bottom = 893.0
+margin_right = 362.0
+margin_bottom = 603.0
 
 [node name="VBoxContainer" parent="BuildPanel/HBoxContainer" instance=ExtResource( 1 )]
-margin_right = 288.0
-margin_bottom = 886.0
+margin_right = 234.0
+margin_bottom = 596.0
 size_flags_stretch_ratio = 2.0
 
 [node name="ScrollContainer" type="ScrollContainer" parent="BuildPanel/HBoxContainer"]
-margin_left = 292.0
-margin_right = 436.0
-margin_bottom = 886.0
+margin_left = 238.0
+margin_right = 355.0
+margin_bottom = 596.0
 size_flags_horizontal = 3
 scroll_horizontal_enabled = false
 
-[node name="VBoxContainer" type="VBoxContainer" parent="BuildPanel/HBoxContainer/ScrollContainer"]
-margin_right = 144.0
-margin_bottom = 886.0
+[node name="BuildingBtnLst" type="VBoxContainer" parent="BuildPanel/HBoxContainer/ScrollContainer"]
+margin_right = 117.0
+margin_bottom = 596.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
