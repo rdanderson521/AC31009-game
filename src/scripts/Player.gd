@@ -12,6 +12,7 @@ var selected_object: GameObject setget set_selected_object
 var start_hex: Vector2
 var turn: int
 var mode: int
+var colour: Color
 
 const DEFAULT = 0
 const MOVE = 1

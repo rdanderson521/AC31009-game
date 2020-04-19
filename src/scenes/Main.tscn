@@ -8,7 +8,7 @@
 script = ExtResource( 8 )
 
 [node name="TileMap" type="TileMap" parent="."]
-position = Vector2( -15, -32 )
+position = Vector2( -16, -32 )
 mode = 2
 tile_set = ExtResource( 4 )
 cell_size = Vector2( 64, 27 )
