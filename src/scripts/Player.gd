@@ -24,15 +24,10 @@ const MOVE = 1
 const ATTACK = 3
 const BUILD = 5
 
-func _init(start_hex:Vector2,node,ai=false, debug=false):
+func _init(start_hex:Vector2,node,ai=false, debug=true):
 	if debug:
 		print("player init")
 	#node.add_child(self)
-	
-	fow_canvas = preload("res://scripts/DrawFogOfWar.gd").new()###############
-	fow_canvas.visible = false
-	self.add_child(fow_canvas)
-	
 	
 	self.units = Array()
 	self.buildings = Array()
@@ -60,6 +55,10 @@ func _init(start_hex:Vector2,node,ai=false, debug=false):
 		camera.zoom = Vector2(0.3,0.3)
 		$Camera2D/CanvasLayer/MainGui.visible = false
 		
+		fow_canvas = preload("res://scripts/DrawFogOfWar.gd").new()###############
+		fow_canvas.visible = false
+		self.add_child(fow_canvas)
+		
 func _ready():
 	self.units += UnitFactory.start_units(self.start_hex,self)
 	for i in self.units:
@@ -70,8 +69,10 @@ func _ready():
 	start_area_hex.append(self.start_hex)
 	for i in start_area_hex:
 		fow.erase(i)
+	
 	self.reset_visible_tiles()
-	fow_canvas.draw_fow(fow)
+	if !is_ai:
+		fow_canvas.draw_fow(fow)
 
 func reset_visible_tiles():
 	for i in self.units:
