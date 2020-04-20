@@ -1,5 +1,8 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=7 format=2]
 
+[ext_resource path="res://scripts/TilemapFog.gd" type="Script" id=1]
+[ext_resource path="res://scenes/Camera.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scripts/Player.gd" type="Script" id=3]
 [ext_resource path="res://resources/tilesets/Tileset.tres" type="TileSet" id=4]
 [ext_resource path="res://scripts/TileMapGenerator.gd" type="Script" id=5]
 [ext_resource path="res://scripts/Main.gd" type="Script" id=8]
@@ -11,11 +14,12 @@ script = ExtResource( 8 )
 position = Vector2( -16, -32 )
 mode = 2
 tile_set = ExtResource( 4 )
-cell_size = Vector2( 64, 27 )
+cell_size = Vector2( 32, 48 )
 cell_custom_transform = Transform2D( 24, 13.8564, 0, 27.7128, 0, 0 )
 cell_y_sort = true
+centered_textures = true
 format = 1
-tile_data = PoolIntArray( 0, 0, 0 )
+tile_data = PoolIntArray( 0, 0, 0, 1, 0, 0 )
 script = ExtResource( 5 )
 lakes = true
 mountains = true
@@ -25,3 +29,12 @@ blob_effect = 0.9
 blob_detirioration = 20
 grid_x = 56
 grid_y = 40
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource( 3 )
+
+[node name="Camera2D" parent="Node" instance=ExtResource( 2 )]
+
+[node name="TileMap" type="TileMap" parent="Node"]
+format = 1
+script = ExtResource( 1 )

@@ -46,7 +46,6 @@ func _ready():
 	randomize()
 	start_game()
 	
-	
 func start_game():
 	var map_made = false
 	var player_start_areas
@@ -111,8 +110,8 @@ func init_player_start_areas(num_players):
 	
 func init_players(num_players,start_areas):
 	self.players = Array()
-	start_areas.shuffle()
 	for i in range(num_players):
+		start_areas.shuffle()
 		var player = Player.new(start_areas.pop_back(),self)
 		player.colour = Color(1,0,0,0.3)
 		player.set_name("Player"+str(i))

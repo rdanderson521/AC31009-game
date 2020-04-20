@@ -42,6 +42,7 @@ func set_hex_pos(h):
 	if hex_pos != null:
 		GlobalConfig.unit_tiles.erase(hex_pos)
 	GlobalConfig.unit_tiles[h] = self
+	SignalManager.unit_moved(self,hex_pos,h)
 	hex_pos = h
 	
 func turn_start() -> bool:
@@ -222,17 +223,17 @@ func can_build(building) -> bool:
 		return true
 	return false
 	
-func start_build(building):
+func start_build(building_name:String):
 	if moves_left > 0:
-		if BuildingFactory.building_templates_by_name.has(building):
-			self.build_turns_left = BuildingFactory.building_templates_by_name[building]["build_turns"]
+		if BuildingFactory.building_templates_by_name.has(building_name):
+			self.build_turns_left = BuildingFactory.building_templates_by_name[building_name]["build_turns"]
 			if build_turns_left == 0:
 				build_turns_left = -1
-				var new_building = BuildingFactory.build_building(building,hex_pos,self.get_parent())
+				var new_building = BuildingFactory.build_building(building_name,hex_pos,self.get_parent())
 				self.get_parent().new_building(new_building)
 				mode = DEFAULT
 			else:
-				self.build_curr = building
+				self.build_curr = building_name
 				self.mode = BUILD
 			
 			self.moves_left = 0

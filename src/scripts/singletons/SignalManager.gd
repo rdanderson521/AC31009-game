@@ -23,6 +23,7 @@ signal health_change(obj,h)
 signal build_btn_click(building)
 signal building_file_read
 signal moves_left_change(unit,m)
+signal unit_moved(unit,from,to)
 
 var mouse_entered: Array
 var mouse_over_gui: bool
@@ -129,3 +130,6 @@ func building_file_read():
 func moves_left_change(unit,m):
 	emit_signal("moves_left_change",unit,m)
 	#print("moves left change")
+	
+func unit_moved(unit,from,to):
+	emit_signal("unit_moved",unit,from,to)
