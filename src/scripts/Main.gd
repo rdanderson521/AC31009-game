@@ -3,8 +3,10 @@ extends Node2D
 class_name main
 
 var players: Array
+var raiders: Array
 var curr_player: Player
 var curr_camera: Camera2D
+var game_turn: int
 
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed():
@@ -21,6 +23,7 @@ func _input(event):
 func _init():
 	SignalManager.connect("player_turn_ended",self,"next_player")
 	SignalManager.connect("end_turn_btn_click",self,"end_turn_btn_click")
+	self.game_turn = 0
 	
 func end_turn_btn_click():
 	curr_player.turn_end()
@@ -41,7 +44,10 @@ func next_player(player):
 
 func _ready():
 	randomize()
+	start_game()
 	
+	
+func start_game():
 	var map_made = false
 	var player_start_areas
 	var idx = 0
@@ -56,6 +62,7 @@ func _ready():
 	curr_player = players.front()
 	curr_player.turn_start()
 	curr_camera = curr_player.camera
+	self.game_turn = 0
 	
 func init_player_start_areas(num_players):
 	var start_areas = Array()
