@@ -1,6 +1,9 @@
 extends "res://scripts/Player.gd"
-
 class_name Human
+
+var camera: PlayerCamera
+var fow: Array
+var fow_canvas: Node2D
 
 func _init(start_hex:Vector2).(start_hex,false):
 	SignalManager.connect("end_turn_btn_click",self,"turn_end")
@@ -21,6 +24,15 @@ func _init(start_hex:Vector2).(start_hex,false):
 	fow_canvas.visible = false
 	self.add_child(fow_canvas)
 
+func _ready():
+	self.fow = GlobalConfig.map.keys()
+	var start_area_hex = Hex.hex_in_range(4,self.start_hex)
+	start_area_hex.append(self.start_hex)
+	
+	for i in start_area_hex:
+		fow.erase(i)
+		
+	fow_canvas.draw_fow(fow)
 
 func game_object_clicked_left(obj:GameObject):
 	if is_turn:
@@ -34,6 +46,7 @@ func game_object_clicked_left(obj:GameObject):
 				print("obj is unit")
 				self.selected_object = obj
 				self.mode = 0
+				
 		elif selected_object != null and mode == ATTACK:
 			if selected_object is Unit:
 				selected_object.attack(obj)
@@ -84,16 +97,15 @@ func tilemap_clicked_right(hex:Vector2):
 				
 				
 func turn_start():
+	print("turn start")
 	is_turn = true
 	self.turn += 1
-	camera.make_current()
-	self.fow_canvas.visible = true
 	self.fow_canvas.draw()
+	
+	camera.make_current()
 	$Camera2D/CanvasLayer/MainGui.turn_started(self.turn)
-		
 	if !units.empty():
 		for i in self.units:
-			#print("unit:" + str(i))
 			if i.turn_start():
 				units_attention_needed.push_back(i)
 			
@@ -103,8 +115,9 @@ func turn_end():
 		selected_object = null
 		$Camera2D/CanvasLayer/MainGui.visible= false
 		$Camera2D/CanvasLayer/MainGui.turn_ended()
-		SignalManager.player_turn_ended(self)
 		self.fow_canvas.visible = false
+		SignalManager.player_turn_ended(self)
+		
 		
 		
 func unit_moved(unit:Unit,from:Vector2,to:Vector2):

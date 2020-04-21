@@ -13,6 +13,7 @@ func draw_visible(v:Array):
 	
 func draw():
 	print("draw")
+	self.visible = true
 	self.update()
 
 func _draw():

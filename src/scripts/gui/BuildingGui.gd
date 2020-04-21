@@ -14,9 +14,9 @@ func _init():
 func _ready():
 	var btn_list = self.find_node("BuildingBtnLst")
 	if btn_list != null:
-		print("building list")
+		#print("building list")
 		for i in UnitFactory.unit_templates:
-			print("test: "+ str(i["name"]))
+			#print("test: "+ str(i["name"]))
 			var btn = preload("res://scenes/gui/BuildingGuiBuildBtn.tscn").instance()
 			btn.script = preload("res://scripts/gui/BuildingGuiBuildBtn.gd")
 			btn.init(i)
@@ -24,7 +24,6 @@ func _ready():
 			
 
 func building_selected(building):
-	print("testtest")
 	self.curr_building = building
 	find_node("BuildingName").text = building.type
 	find_node("BuildingTexture").texture = building.find_node("Sprite").texture

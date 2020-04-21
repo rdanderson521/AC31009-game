@@ -33,8 +33,10 @@ func next_player(player):
 		curr_player = players[0]
 	else:
 		curr_player = players[player_idx+1]
+		
 	curr_player.turn_start()
-	if !curr_player.is_ai:
+	
+	if curr_player is Human:
 		curr_camera = curr_player.camera
 
 func _ready():

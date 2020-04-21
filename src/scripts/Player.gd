@@ -1,11 +1,8 @@
 extends Node
-
 class_name Player
 
 var units: Array
 var buildings: Array
-var is_ai: bool
-var camera: PlayerCamera
 var units_attention_needed: Array
 var is_turn: bool
 var selected_object: GameObject setget set_selected_object
@@ -14,10 +11,7 @@ var turn: int
 var mode: int
 var area: Array
 var colour: Color
-var fow: Array
 var visible_tiles: Array
-var fow_canvas: Node2D
-# 0.37
 
 const DEFAULT = 0
 const MOVE = 1
@@ -25,28 +19,21 @@ const ATTACK = 3
 const BUILD = 5
 
 
-func _init(start_hex:Vector2,ai ,debug=true):
+func _init(start_hex:Vector2,debug=true):
 	if debug:
 		print("player init")
 	self.units = Array()
 	self.buildings = Array()
 	self.turn = 0
-	self.is_ai = ai
 	self.start_hex = start_hex
 	self.selected_object = null
 
 func _ready():
+	print("ready player")
 	self.units += UnitFactory.start_units(self.start_hex,self)
 	for i in self.units:
 		self.add_child(i)
-	self.fow = GlobalConfig.map.keys()
-	var start_area_hex = Hex.hex_in_range(4,self.start_hex)
-	start_area_hex.append(self.start_hex)
-	for i in start_area_hex:
-		fow.erase(i)
-	self.reset_visible_tiles()
-	if !is_ai:
-		fow_canvas.draw_fow(fow)
+	reset_visible_tiles()
 
 func reset_visible_tiles():
 	for i in self.units:

@@ -17,7 +17,6 @@ func init(building):
 	self.connect("pressed",self,"pressed")
 
 func pressed():
-	print("build pressed")
 	SignalManager.build_btn_click(self.building)
 	
 func unit_selected(unit):
