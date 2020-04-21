@@ -68,6 +68,10 @@ func turn_start() -> bool:
 			health = health_max
 			recover = false
 	return true
+	
+func turn_end():
+	if self.mode == MOVE_WAIT and self.moves_left > 0:
+		self.mode = MOVE
 		
 class a_star_node:
 	var distance_heuristic
@@ -131,13 +135,19 @@ func find_path(destination,debug = false):
 	var path_found = false
 	var nodes = Array()
 	var visited_nodes = Array()
+	 
+	if (GlobalConfig.map[destination] in GlobalConfig.impasible_biomes) or ((GlobalConfig.map[destination] in GlobalConfig.water_biomes) and (not can_move_water)):
+		if !destination in self.get_parent().fow:
+			print("invalid destination")
+			return false
+	
 	nodes.push_back(start)
 	if debug:
 		print("start: "+ str(hex_pos))
 		print("destination: "  + str(destination))
 		
 	var idx = 0
-	while !path_found and !nodes.empty() and idx < 2000:
+	while !path_found and !nodes.empty() and idx < 1500:
 		idx += 1
 		nodes.sort_custom(a_star_node,"sort_nodes")
 		if debug:
@@ -163,18 +173,20 @@ func find_path(destination,debug = false):
 			if debug:
 				print("neighbors: " + str(node_neighbors))
 			for i in node_neighbors:
-				if (GlobalConfig.map[i] in GlobalConfig.impasible_biomes):
-					#print("mountain")
-					continue
-				if (GlobalConfig.map[i] in GlobalConfig.water_biomes) and (not can_move_water):
-					#print("water")
-					continue
-				if (i in current_node.previous):
-					continue
-				if (i in GlobalConfig.unit_tiles.keys()):
-					continue
-					
-				nodes.push_front(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + (current_node.hex_effort*5),i,current_node))
+				if i in self.get_parent().fow:
+					nodes.push_front(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + 5,i,current_node))
+				else:
+					if (GlobalConfig.map[i] in GlobalConfig.impasible_biomes):
+						#print("mountain")
+						continue
+					if (GlobalConfig.map[i] in GlobalConfig.water_biomes) and (not can_move_water):
+						#print("water")
+						continue
+					if (i in current_node.previous):
+						continue
+					if (i in GlobalConfig.unit_tiles.keys()):
+						continue
+					nodes.push_front(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + (current_node.hex_effort*5),i,current_node))
 	print("failed")
 	return false 
 	
@@ -238,19 +250,27 @@ func start_build(building_name:String):
 			
 			self.moves_left = 0
 	
+func re_find_path(dest):
+	find_path(dest)	
+	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if mode == MOVE or (mode == MOVE_WAIT and !self.get_parent().is_turn):
+	if mode == MOVE:# or (mode == MOVE_WAIT and !self.get_parent().is_turn):
 		if self.position == Hex.hex_to_point(self.hex_pos):
 			if !moves.empty() and self.moves_left > 0:
 				while moves.front().hex_pos == self.hex_pos:
 					moves.pop_front()
-				var move = moves.pop_front()
-				if GlobalConfig.unit_tiles.has(move.hex_pos) and GlobalConfig.unit_tiles[move.hex_pos] != self:
-					moves.clear()
-					mode = DEFAULT
+					
+				var move = moves.front()
+				if (GlobalConfig.unit_tiles.has(move.hex_pos) and GlobalConfig.unit_tiles[move.hex_pos] != self) or \
+					(GlobalConfig.map[move.hex_pos] in GlobalConfig.impasible_biomes) or (GlobalConfig.map[move.hex_pos] in GlobalConfig.water_biomes and !self.can_move_water):
+					if !(find_path(moves.back().hex_pos)):
+						moves.clear()
+						mode = DEFAULT
+					
 				else:
 					self.hex_pos = move.hex_pos
+					self.moves.pop_front()
 					self.moves_left -= move.hex_effort
 					
 			elif self.moves_left <= 0:

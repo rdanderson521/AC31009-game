@@ -2,7 +2,6 @@ extends "res://scripts/Player.gd"
 class_name Human
 
 var camera: PlayerCamera
-var fow: Array
 var fow_canvas: Node2D
 
 func _init(start_hex:Vector2).(start_hex,false):
@@ -116,7 +115,10 @@ func turn_end():
 		$Camera2D/CanvasLayer/MainGui.visible= false
 		$Camera2D/CanvasLayer/MainGui.turn_ended()
 		self.fow_canvas.visible = false
+		for i in units:
+			i.turn_end()
 		SignalManager.player_turn_ended(self)
+		
 		
 		
 		

@@ -12,6 +12,7 @@ var mode: int
 var area: Array
 var colour: Color
 var visible_tiles: Array
+var fow: Array
 
 const DEFAULT = 0
 const MOVE = 1
@@ -24,6 +25,7 @@ func _init(start_hex:Vector2,debug=true):
 		print("player init")
 	self.units = Array()
 	self.buildings = Array()
+	self.fow = Array()
 	self.turn = 0
 	self.start_hex = start_hex
 	self.selected_object = null
