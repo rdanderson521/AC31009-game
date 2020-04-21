@@ -9,5 +9,3 @@ func _init():
 	hexagon.append(Vector2(-Hex.width/4,Hex.height/2))
 	hexagon.append(Vector2(-Hex.width/2,0))
 	self.polygon = hexagon
-	
-

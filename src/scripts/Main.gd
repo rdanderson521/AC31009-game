@@ -22,17 +22,12 @@ func _input(event):
 			
 func _init():
 	SignalManager.connect("player_turn_ended",self,"next_player")
-	SignalManager.connect("end_turn_btn_click",self,"end_turn_btn_click")
 	self.game_turn = 0
 	
-func end_turn_btn_click():
-	curr_player.turn_end()
 
 func next_player(player):
+	print ("next turn")
 	var player_idx = players.find(player)
-	
-	print("player:" + str(player_idx))
-	print("size: " + str(players.size()))
 	
 	if player_idx+1 == players.size():
 		curr_player = players[0]
@@ -111,8 +106,15 @@ func init_player_start_areas(num_players):
 func init_players(num_players,start_areas):
 	self.players = Array()
 	for i in range(num_players):
+		print(i)
 		start_areas.shuffle()
-		var player = Player.new(start_areas.pop_back(),self)
+		var player
+		if i == 0:
+			print("player")
+			player = Human.new(start_areas.pop_back())
+		else:
+			print("ai")
+			player = AI.new(start_areas.pop_back())
 		player.colour = Color(1,0,0,0.3)
 		player.set_name("Player"+str(i))
 		players.push_back(player)
