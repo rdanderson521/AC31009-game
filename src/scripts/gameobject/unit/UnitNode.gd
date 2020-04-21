@@ -250,9 +250,6 @@ func start_build(building_name:String):
 			
 			self.moves_left = 0
 	
-func re_find_path(dest):
-	find_path(dest)	
-	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if mode == MOVE:# or (mode == MOVE_WAIT and !self.get_parent().is_turn):

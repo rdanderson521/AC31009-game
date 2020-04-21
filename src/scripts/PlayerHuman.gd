@@ -120,7 +120,14 @@ func turn_end():
 		SignalManager.player_turn_ended(self)
 		
 		
-		
+func start_build(to_build:String):
+	if is_turn:
+		if selected_object is Unit:
+			if selected_object.can_build(to_build):
+				selected_object.start_build(to_build)
+		elif selected_object is Building:
+			if selected_object.can_build(to_build):
+				selected_object.start_build(to_build)
 		
 func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 	print("testtest1")

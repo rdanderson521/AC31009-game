@@ -45,12 +45,6 @@ func reset_visible_tiles():
 	for i in self.buildings:
 		visible_tiles += Hex.hex_in_range(3,i.hex_pos)
 		visible_tiles.append(i.hex_pos)
-		
-func unit_start_build(building_name:String):
-	if is_turn:
-		if selected_object is Unit:
-			if selected_object.can_build(building_name):
-				selected_object.start_build(building_name)
 
 func set_selected_object(obj:GameObject):
 	if obj is Unit:

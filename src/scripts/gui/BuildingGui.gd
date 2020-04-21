@@ -1,7 +1,7 @@
 extends "res://scripts/gui/GuiPanel.gd"
 
 
-var curr_building: Unit
+var curr_building: Building
 
 func _init():
 	SignalManager.connect("building_selected",self,"building_selected")
@@ -14,11 +14,12 @@ func _init():
 func _ready():
 	var btn_list = self.find_node("BuildingBtnLst")
 	if btn_list != null:
-		#print("building list")
 		for i in UnitFactory.unit_templates:
-			#print("test: "+ str(i["name"]))
 			var btn = preload("res://scenes/gui/BuildingGuiBuildBtn.tscn").instance()
 			btn.script = preload("res://scripts/gui/BuildingGuiBuildBtn.gd")
+			btn.find_node("Name").text = str(i["name"])
+			btn.find_node("Turns").text = str(i["cost"])
+			btn.find_node("Icon").texture = load(str(i["texture"]))
 			btn.init(i)
 			btn_list.add_child(btn)
 			
