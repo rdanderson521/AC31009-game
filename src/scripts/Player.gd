@@ -4,6 +4,7 @@ class_name Player
 var units: Array
 var buildings: Array
 var units_attention_needed: Array
+var buildings_attention_needed: Array
 var is_turn: bool
 var selected_object: GameObject setget set_selected_object
 var start_hex: Vector2
@@ -29,6 +30,8 @@ func _init(start_hex:Vector2,debug=true):
 	self.turn = 0
 	self.start_hex = start_hex
 	self.selected_object = null
+	self.units_attention_needed = Array()
+	self.buildings_attention_needed = Array()
 
 func _ready():
 	print("ready player")
@@ -98,6 +101,11 @@ func new_building(building:Building):
 	self.add_child(building)
 	self.buildings.append(building)
 	self.visible_tiles += Hex.hex_in_range(3,building.hex_pos)
+	
+func new_unit(unit:Unit):
+	self.add_child(unit)
+	self.units.append(unit)
+	self.visible_tiles += Hex.hex_in_range(2,unit.hex_pos)
 
 func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 	print("testtest2")

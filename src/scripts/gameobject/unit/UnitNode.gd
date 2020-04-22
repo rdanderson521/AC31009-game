@@ -236,6 +236,7 @@ func can_build(building) -> bool:
 	return false
 	
 func start_build(building_name:String):
+	print("start build")
 	if moves_left > 0:
 		if BuildingFactory.building_templates_by_name.has(building_name):
 			self.build_turns_left = BuildingFactory.building_templates_by_name[building_name]["build_turns"]

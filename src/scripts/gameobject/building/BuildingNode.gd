@@ -6,14 +6,19 @@ var is_city: bool
 var is_district: bool
 var improvements: Dictionary
 var area: Array
-var food_per_turn: float
+var resources_per_turn: Dictionary
+var build_curr: String
+var build_resources_left: Dictionary
 
+const DEFAULT = 0
+const ATTACK = 3
+const BUILD = 5
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	self.get_parent().area += self.area
 	print(self.get_parent())
-	self.food_per_turn = 3
+	self.resources_per_turn = {"food":3}
 	#update()
 
 func set_hex_pos(h):
@@ -21,57 +26,66 @@ func set_hex_pos(h):
 	GlobalConfig.building_tiles[h] = self
 	
 func turn_start() -> bool:
-	if mode == BUILD:
-		if build_turns_left > 0:
-			build_turns_left -=1
-			return false
-		elif build_turns_left == 0:
-			build_turns_left = -1
-			var new_building = BuildingFactory.build_building(build_curr,hex_pos,self.get_parent())
-			self.get_parent().new_building(new_building)
-			mode = DEFAULT
+	if self.mode == BUILD:
+		var build_finished = true
+		for i in self.build_resources_left.keys():
+			print("key: " + str(i))
+			self.build_resources_left[i] -= self.resources_per_turn[i]
+			print(self.build_resources_left[i])
+			if self.build_resources_left[i] > 0:
+				build_finished = false
 		
-	self.moves_left = move_range
+		if build_finished:
+			self.build_resources_left = Dictionary()
+			var new_unit = UnitFactory.build_unit(build_curr,hex_pos,self.get_parent())
+			self.get_parent().new_unit(new_unit)
+			mode = DEFAULT
+		else:
+			return false
+			
 
-	if mode in [MOVE_WAIT,ATTACK_MOVE]:
-		return false
-	if explore:
-		return false
-	if recover:
-		health += (rand_range(0.05,0.15)*health_max)
-		if health >= health_max-(0.05*health_max):
-			health = health_max
-			recover = false
 	return true
 	
 func turn_end():
-	if self.mode == MOVE_WAIT and self.moves_left > 0:
-		self.mode = MOVE
+	pass
 
 func can_build(building) -> bool:
-	if self.hex_pos in GlobalConfig.building_tiles.keys():
+	if self.mode == BUILD:
 		return false
-	if BuildingFactory.building_templates_by_name[building]["is_city"] and self.can_build_city:
+	if UnitFactory.unit_templates_by_name.keys().has(building):
+		var cost = UnitFactory.unit_templates_by_name[building]["cost"]
+		for i in cost.keys():
+			if !i in self.resources_per_turn.keys():
+				return false
+			elif resources_per_turn[i] <= 0:
+				return false
 		return true
-	elif BuildingFactory.building_templates_by_name[building]["is_district"] and self.can_build:
-		return true
+#	elif BuildingFactory.building_templates_by_name[building]["is_upgrade"]:
+#		return true
 	return false
 
 func start_build(building_name:String):
-	if moves_left > 0:
+	if self.can_build(building_name):
 		if BuildingFactory.building_templates_by_name.has(building_name):
-			self.build_turns_left = BuildingFactory.building_templates_by_name[building_name]["build_turns"]
-			if build_turns_left == 0:
-				build_turns_left = -1
-				var new_building = BuildingFactory.build_building(building_name,hex_pos,self.get_parent())
-				self.get_parent().new_building(new_building)
-				mode = DEFAULT
-			else:
-				self.build_curr = building_name
-				self.mode = BUILD
+			pass
+#			self.build_turns_left = BuildingFactory.building_templates_by_name[building_name]["build_turns"]
+#			if build_turns_left == 0:
+#				build_turns_left = -1
+#				var new_building = BuildingFactory.build_building(building_name,hex_pos,self.get_parent())
+#				self.get_parent().new_building(new_building)
+#				mode = DEFAULT
+#			else:
+#				self.build_curr = building_name
+#				self.mode = BUILD
+		elif UnitFactory.unit_templates_by_name.has(building_name):
+			print("building start unit")
+			self.build_resources_left = UnitFactory.unit_templates_by_name[building_name]["cost"].duplicate()
+			self.build_curr = building_name
+			self.mode = BUILD
+	else:
+		return false
 			
-			self.moves_left = 0
-
+			
 func _draw():
 	print("draw")
 	if is_city:

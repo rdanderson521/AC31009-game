@@ -20,6 +20,7 @@ func _ready():
 			btn.find_node("Name").text = str(i["name"])
 			btn.find_node("Turns").text = str(i["cost"])
 			btn.find_node("Icon").texture = load(str(i["texture"]))
+			btn.thing_to_make = str(i["name"])
 			btn.init(i)
 			btn_list.add_child(btn)
 			

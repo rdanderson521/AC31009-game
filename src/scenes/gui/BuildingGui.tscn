@@ -51,6 +51,7 @@ size_flags_stretch_ratio = 2.0
 margin_left = 238.0
 margin_right = 355.0
 margin_bottom = 596.0
+mouse_filter = 1
 size_flags_horizontal = 3
 scroll_horizontal_enabled = false
 

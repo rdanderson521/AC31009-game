@@ -29,7 +29,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://scripts/singletons/HexOperations.gd"
 }, {
-"base": "Node",
+"base": "Player",
 "class": "Human",
 "language": "GDScript",
 "path": "res://scripts/PlayerHuman.gd"

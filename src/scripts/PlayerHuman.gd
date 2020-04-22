@@ -1,4 +1,4 @@
-extends "res://scripts/Player.gd"
+extends Player
 class_name Human
 
 var camera: PlayerCamera
@@ -11,7 +11,7 @@ func _init(start_hex:Vector2).(start_hex,false):
 	SignalManager.connect("mouse_right_game_obj",self,"game_object_clicked_right")
 	SignalManager.connect("mouse_left_tilemap",self,"tilemap_clicked_left")
 	SignalManager.connect("mouse_right_tilemap",self,"tilemap_clicked_right")
-	SignalManager.connect("build_btn_click",self,"unit_start_build")
+	SignalManager.connect("build_btn_click",self,"start_build")
 	SignalManager.connect("unit_moved",self,"unit_moved")
 	self.camera = preload("res://scenes/Camera.tscn").instance()
 	self.add_child(self.camera)
@@ -107,6 +107,10 @@ func turn_start():
 		for i in self.units:
 			if i.turn_start():
 				units_attention_needed.push_back(i)
+	if !buildings.empty():
+		for i in self.buildings:
+			if i.turn_start():
+				buildings_attention_needed.push_back(i)
 			
 func turn_end():
 	if is_turn:
@@ -121,12 +125,15 @@ func turn_end():
 		
 		
 func start_build(to_build:String):
+	print("build btn")
 	if is_turn:
 		if selected_object is Unit:
 			if selected_object.can_build(to_build):
 				selected_object.start_build(to_build)
 		elif selected_object is Building:
+			print("building building")
 			if selected_object.can_build(to_build):
+				print("can build")
 				selected_object.start_build(to_build)
 		
 func unit_moved(unit:Unit,from:Vector2,to:Vector2):

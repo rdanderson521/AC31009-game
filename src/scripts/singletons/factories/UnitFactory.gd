@@ -4,7 +4,8 @@ var game_object = preload("res://scenes/GameObject.tscn")
 var unit_script = preload("res://scripts/gameobject/unit/UnitNode.gd")
 
 var unit_templates: Array
-var debug = true
+var unit_templates_by_name: Dictionary
+var debug = false
 
 func _init():
 	var templates = JsonParser.parse_json_file("res://resources/jsonconfigs/units.json")
@@ -12,6 +13,9 @@ func _init():
 		print("units imported")
 		templates = check_templates(templates)
 		self.unit_templates = templates
+		self.unit_templates_by_name = Dictionary()
+		for i in unit_templates:
+			unit_templates_by_name[i.name] = i
 	else:
 		print("err reading units config")
 		
@@ -107,3 +111,23 @@ func start_units(hex,player) -> Array:
 					start_units.push_back(unit)
 					
 	return start_units
+	
+func build_unit(unit_to_build,hex,player) -> Unit:
+
+	var unit_template = unit_templates_by_name[unit_to_build]
+	var unit = init_unit()
+	unit.hex_pos = hex
+	unit.position = Hex.hex_to_point(unit.hex_pos)
+	unit.type = unit_template["name"]
+	unit.health_max = unit_template["health"]
+	unit.health = unit_template["health"]
+	unit.attack = unit_template["damage"]
+	unit.attack_range = unit_template["damage_range"]
+	unit.defence = unit_template["defence"]
+	unit.move_range = unit_template["move_range"]
+	unit.can_build_city = unit_template["can_build_city"]
+	unit.can_build = unit_template["can_build"]
+	unit.can_trade = unit_template["can_trade"]
+	unit.texture = unit_template["texture"]
+	player.add_child(unit)
+	return unit
