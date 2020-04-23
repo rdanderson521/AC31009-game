@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://scripts/gameobject/GameObjectArea2D.gd" type="Script" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
 [ext_resource path="res://scripts/gameobject/GameObjectCollisionPolygon2D.gd" type="Script" id=3]
+[ext_resource path="res://scripts/gameobject/GameObjectSprite.gd" type="Script" id=4]
 
 [node name="Node2D" type="Node2D"]
 
@@ -17,3 +18,4 @@ script = ExtResource( 3 )
 scale = Vector2( 0.25, 0.25 )
 z_index = 1
 texture = ExtResource( 2 )
+script = ExtResource( 4 )
