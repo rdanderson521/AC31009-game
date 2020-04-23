@@ -19,7 +19,6 @@ func _ready():
 	self.get_parent().area += self.area
 	print(self.get_parent())
 	self.resources_per_turn = {"food":3}
-	#update()
 
 func set_hex_pos(h):
 	hex_pos = h

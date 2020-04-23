@@ -19,6 +19,9 @@ func _init(start_hex:Vector2).(start_hex,false):
 	camera.zoom = Vector2(0.3,0.3)
 	$Camera2D/CanvasLayer/MainGui.visible = false
 	
+	self.unit_vis_range = 2
+	self.building_vis_range = 3
+	
 	fow_canvas = preload("res://scripts/DrawFogOfWar.gd").new()###############
 	fow_canvas.visible = false
 	self.add_child(fow_canvas)

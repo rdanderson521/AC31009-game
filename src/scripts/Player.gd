@@ -12,6 +12,8 @@ var turn: int
 var mode: int
 var area: Array
 var colour: Color
+var unit_vis_range: int
+var building_vis_range: int
 var visible_tiles: Array
 var fow: Array
 
@@ -41,14 +43,16 @@ func _ready():
 	reset_visible_tiles()
 
 func reset_visible_tiles():
+	visible_tiles = Array()
 	for i in self.units:
-		visible_tiles += Hex.hex_in_range(2,i.hex_pos)
+		visible_tiles += Hex.hex_in_range(self.unit_vis_range,i.hex_pos)
 		visible_tiles.append(i.hex_pos)
-		
+		fow.erase(i.hex_pos)
 	for i in self.buildings:
-		visible_tiles += Hex.hex_in_range(3,i.hex_pos)
+		visible_tiles += Hex.hex_in_range(self.building_vis_range,i.hex_pos)
 		visible_tiles.append(i.hex_pos)
-
+		fow.erase(i.hex_pos)
+		
 func set_selected_object(obj:GameObject):
 	if obj is Unit:
 		selected_object = obj
@@ -100,21 +104,25 @@ func kill(obj:GameObject):
 func new_building(building:Building):
 	self.add_child(building)
 	self.buildings.append(building)
-	self.visible_tiles += Hex.hex_in_range(3,building.hex_pos)
+	self.visible_tiles += Hex.hex_in_range(self.building_vis_range,building.hex_pos)
+	self.reset_visible_tiles()
+	if building.turn_start():
+		self.buildings_attention_needed.append(building)
 	
 func new_unit(unit:Unit):
 	self.add_child(unit)
 	self.units.append(unit)
-	self.visible_tiles += Hex.hex_in_range(2,unit.hex_pos)
+	self.visible_tiles += Hex.hex_in_range(self.unit_vis_range,unit.hex_pos)
+	self.reset_visible_tiles()
+	if unit.turn_start():
+		self.units_attention_needed.append(unit)
 
 func unit_moved(unit:Unit,from:Vector2,to:Vector2):
-	print("testtest2")
 	if unit in self.units:
-		var old_visible = Hex.hex_in_range(2,from) 
+		var old_visible = Hex.hex_in_range(self.unit_vis_range,from) 
 		old_visible.append(from)
-		var new_visible = Hex.hex_in_range(2,to)
+		var new_visible = Hex.hex_in_range(self.unit_vis_range,to)
 		new_visible.append(to)
-		print ("unit moved")
 		
 		for i in old_visible:
 			if i in new_visible:

@@ -3,6 +3,8 @@ extends Player
 class_name AI
 
 func _init(start_hex:Vector2).(start_hex,true):
+	self.unit_vis_range = 5
+	self.building_vis_range = 7
 	pass
 		
 func turn_start():

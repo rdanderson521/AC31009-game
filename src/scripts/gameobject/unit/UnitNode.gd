@@ -32,6 +32,7 @@ func _init():
 	build_turns_left = 0
 	build_curr = ""
 	mode = DEFAULT
+	self.z_index += 1
 	pass
 	
 func set_moves_left(m):
