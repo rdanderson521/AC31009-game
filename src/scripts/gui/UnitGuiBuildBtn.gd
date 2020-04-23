@@ -5,7 +5,6 @@ var is_city: bool
 var is_district: bool
 
 func _ready():
-	self.connect("pressed",self,"pressed")
 	SignalManager.connect("unit_selected",self,"unit_selected")
 
 func init(building):

@@ -7,8 +7,6 @@ func _init():
 	SignalManager.connect("building_selected",self,"building_selected")
 	SignalManager.connect("building_unselected",self,"building_unselected")
 	SignalManager.connect("health_change",self,"health_change")
-	SignalManager.connect("moves_left_change",self,"moves_left_change")
-	SignalManager.connect("building_file_read",self,"add_building_buttons")
 	self.visible = false
 	
 func _ready():

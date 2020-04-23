@@ -9,18 +9,12 @@ var is_turn: bool
 var selected_object: GameObject setget set_selected_object
 var start_hex: Vector2
 var turn: int
-var mode: int
 var area: Array
 var colour: Color
 var unit_vis_range: int
 var building_vis_range: int
 var visible_tiles: Array
 var fow: Array
-
-const DEFAULT = 0
-const MOVE = 1
-const ATTACK = 3
-const BUILD = 5
 
 
 func _init(start_hex:Vector2,debug=true):
@@ -45,12 +39,18 @@ func _ready():
 func reset_visible_tiles():
 	visible_tiles = Array()
 	for i in self.units:
-		visible_tiles += Hex.hex_in_range(self.unit_vis_range,i.hex_pos)
+		var hex_area = Hex.hex_in_range(self.unit_vis_range,i.hex_pos)
+		visible_tiles += hex_area
 		visible_tiles.append(i.hex_pos)
+		for j in hex_area:
+			fow.erase(j)
 		fow.erase(i.hex_pos)
 	for i in self.buildings:
-		visible_tiles += Hex.hex_in_range(self.building_vis_range,i.hex_pos)
+		var hex_area = Hex.hex_in_range(self.building_vis_range,i.hex_pos)
+		visible_tiles += hex_area
 		visible_tiles.append(i.hex_pos)
+		for j in hex_area:
+			fow.erase(j)
 		fow.erase(i.hex_pos)
 		
 func set_selected_object(obj:GameObject):
@@ -100,11 +100,12 @@ func kill(obj:GameObject):
 			
 	elif obj is Building:
 		buildings.erase(obj)
+		if obj == selected_object:
+			self.selected_object = null
 		
 func new_building(building:Building):
 	self.add_child(building)
 	self.buildings.append(building)
-	self.visible_tiles += Hex.hex_in_range(self.building_vis_range,building.hex_pos)
 	self.reset_visible_tiles()
 	if building.turn_start():
 		self.buildings_attention_needed.append(building)
@@ -134,8 +135,5 @@ func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 			self.visible_tiles.append(i)
 			if i in self.fow:
 				self.fow.erase(i)
-	self.fow_canvas.fog_of_war = self.fow
-	self.fow_canvas.visible_tiles = self.visible_tiles
-	self.fow_canvas.draw()
 	
 

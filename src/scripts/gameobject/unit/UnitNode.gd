@@ -210,7 +210,7 @@ func attack(enemy):
 				print("damage: " + str(damage))
 				
 				var enemy_damage = rand_range(0.8*enemy.defence,enemy.defence)
-				enemy_damage = enemy_damage * (enemy.self.moves_left+enemy.move_range)/(2*enemy.move_range)
+				enemy_damage = enemy_damage * (enemy.moves_left+enemy.move_range)/(2*enemy.move_range)
 				enemy_damage -= rand_range(0.2*self.defence,0.4*self.defence)
 				enemy_damage = max(enemy_damage,0)
 				print("en damage: " + str(enemy_damage))
@@ -221,9 +221,11 @@ func attack(enemy):
 				self.kill()
 			if enemy.health < 0:
 				enemy.kill()
+			mode = DEFAULT
 			
 func kill():
 	self.visible = false
+	GlobalConfig.unit_tiles.erase(self.hex_pos)
 	self.get_parent().kill(self)
 	self.queue_free()
 	
@@ -245,6 +247,8 @@ func start_build(building_name:String):
 				build_turns_left = -1
 				var new_building = BuildingFactory.build_building(building_name,hex_pos,self.get_parent())
 				self.get_parent().new_building(new_building)
+				if new_building.is_city:
+					self.kill()
 				mode = DEFAULT
 			else:
 				self.build_curr = building_name

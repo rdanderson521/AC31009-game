@@ -4,6 +4,13 @@ class_name Human
 var camera: PlayerCamera
 var fow_canvas: Node2D
 
+var mode: int
+
+const DEFAULT = 0
+const MOVE = 1
+const ATTACK = 3
+const BUILD = 5
+
 func _init(start_hex:Vector2).(start_hex,false):
 	SignalManager.connect("end_turn_btn_click",self,"turn_end")
 	SignalManager.connect("mouse_left_game_obj",self,"game_object_clicked_left")
@@ -44,10 +51,10 @@ func game_object_clicked_left(obj:GameObject):
 				if !obj.hex_pos in GlobalConfig.unit_tiles.keys():
 					self.selected_object = obj
 					self.mode = 0
-			else:
+			elif obj is Unit:
 				print("obj is unit")
 				self.selected_object = obj
-				self.mode = 0
+				self.mode = DEFAULT
 				
 		elif selected_object != null and mode == ATTACK:
 			if selected_object is Unit:
@@ -64,7 +71,7 @@ func game_object_double_clicked_left(obj:GameObject):
 	if is_turn:
 		if obj.get_parent() == self and obj is Building:
 			self.selected_object = obj
-			self.mode = 0
+			self.mode = DEFAULT
 			
 func game_object_clicked_right(obj:GameObject):
 	if is_turn:
@@ -128,16 +135,33 @@ func turn_end():
 		
 		
 func start_build(to_build:String):
-	print("build btn")
 	if is_turn:
 		if selected_object is Unit:
 			if selected_object.can_build(to_build):
 				selected_object.start_build(to_build)
 		elif selected_object is Building:
-			print("building building")
 			if selected_object.can_build(to_build):
-				print("can build")
 				selected_object.start_build(to_build)
+				
+func reset_visible_tiles():
+	visible_tiles = Array()
+	for i in self.units:
+		var hex_area = Hex.hex_in_range(self.unit_vis_range,i.hex_pos)
+		visible_tiles += hex_area
+		visible_tiles.append(i.hex_pos)
+		for j in hex_area:
+			fow.erase(j)
+		fow.erase(i.hex_pos)
+	for i in self.buildings:
+		var hex_area = Hex.hex_in_range(self.building_vis_range,i.hex_pos)
+		visible_tiles += hex_area
+		visible_tiles.append(i.hex_pos)
+		for j in hex_area:
+			fow.erase(j)
+		fow.erase(i.hex_pos)
+	self.fow_canvas.fog_of_war = self.fow
+	self.fow_canvas.visible_tiles = self.visible_tiles
+	self.fow_canvas.draw()
 		
 func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 	print("testtest1")
