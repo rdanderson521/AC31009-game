@@ -9,6 +9,7 @@
 		"improvements":{
 			"food":1,
 			"gold":1,
+			"science":2
 			
 		},
 		"texture":"res://building.png"

@@ -9,7 +9,8 @@ var can_build_city: bool
 var can_trade: bool 
 var can_move_water: bool
 
-var moves: Array = Array()
+var moves: Array
+var moves_mutex: Mutex
 var build_turns_left: int
 var build_curr: String
 var moves_left: int setget set_moves_left
@@ -29,6 +30,8 @@ func _init():
 	selected = false
 	explore = false
 	recover = false
+	moves = Array()
+	moves_mutex = Mutex.new()
 	build_turns_left = 0
 	build_curr = ""
 	mode = DEFAULT
@@ -256,9 +259,15 @@ func start_build(building_name:String):
 			
 			self.moves_left = 0
 	
+func try_refind_path(dest):
+	moves.clear()
+	if !(find_path(dest)):
+		moves.clear()
+		mode = DEFAULT
+	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if mode == MOVE:# or (mode == MOVE_WAIT and !self.get_parent().is_turn):
+	if mode == MOVE or (mode == MOVE_WAIT and !self.get_parent().is_turn):
 		if self.position == Hex.hex_to_point(self.hex_pos):
 			if !moves.empty() and self.moves_left > 0:
 				while moves.front().hex_pos == self.hex_pos:
@@ -267,9 +276,10 @@ func _process(delta):
 				var move = moves.front()
 				if (GlobalConfig.unit_tiles.has(move.hex_pos) and GlobalConfig.unit_tiles[move.hex_pos] != self) or \
 					(GlobalConfig.map[move.hex_pos] in GlobalConfig.impasible_biomes) or (GlobalConfig.map[move.hex_pos] in GlobalConfig.water_biomes and !self.can_move_water):
-					if !(find_path(moves.back().hex_pos)):
-						moves.clear()
-						mode = DEFAULT
+					
+					moves.clear()
+					var t = Thread.new()
+					t.start(self,"try_refind_path",moves.back().hex_pos)
 					
 				else:
 					self.hex_pos = move.hex_pos
