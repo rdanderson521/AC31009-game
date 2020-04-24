@@ -49,6 +49,13 @@ func set_hex_pos(h):
 	SignalManager.unit_moved(self,hex_pos,h)
 	hex_pos = h
 	
+func set_mode(m):
+	if mode == MOVE and m in [MOVE_WAIT,DEFAULT]:
+		print("mode set")
+		SignalManager.move_wait_finished(self)
+	mode = m
+	
+	
 func turn_start() -> bool:
 	if mode == BUILD:
 		if build_turns_left > 0:
@@ -73,9 +80,14 @@ func turn_start() -> bool:
 			recover = false
 	return true
 	
-func turn_end():
+func turn_end() -> bool:
+	print(self.type)
 	if self.mode == MOVE_WAIT and self.moves_left > 0:
 		self.mode = MOVE
+		print ("moves left")
+		return false
+	print("done")
+	return true
 		
 class a_star_node:
 	var distance_heuristic
@@ -89,8 +101,8 @@ class a_star_node:
 	var children
 	
 	func _init(h,t,hex,parent=null):
-		distance_heuristic = h
-		distance_traveled = t
+		self.distance_heuristic = h
+		self.distance_traveled = t
 		hex_pos = hex
 		hex_effort = GlobalConfig.biome_moves[GlobalConfig.map[hex_pos]]
 		self.parent = parent
@@ -98,6 +110,7 @@ class a_star_node:
 		if parent != null:
 			self.previous += self.parent.previous
 			self.previous.append(self.parent.hex_pos)
+	
 		
 	static func sort_nodes(a,b):
 		if (a.distance_heuristic+a.distance_traveled) < (b.distance_heuristic+b.distance_traveled):
@@ -261,13 +274,11 @@ func start_build(building_name:String):
 	
 func try_refind_path(dest):
 	moves.clear()
-	if !(find_path(dest)):
-		moves.clear()
-		mode = DEFAULT
+	
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if mode == MOVE or (mode == MOVE_WAIT and !self.get_parent().is_turn):
+	if mode == MOVE:# or (mode == MOVE_WAIT and !self.get_parent().is_turn):
 		if self.position == Hex.hex_to_point(self.hex_pos):
 			if !moves.empty() and self.moves_left > 0:
 				while moves.front().hex_pos == self.hex_pos:
@@ -276,11 +287,9 @@ func _process(delta):
 				var move = moves.front()
 				if (GlobalConfig.unit_tiles.has(move.hex_pos) and GlobalConfig.unit_tiles[move.hex_pos] != self) or \
 					(GlobalConfig.map[move.hex_pos] in GlobalConfig.impasible_biomes) or (GlobalConfig.map[move.hex_pos] in GlobalConfig.water_biomes and !self.can_move_water):
-					
-					moves.clear()
-					var t = Thread.new()
-					t.start(self,"try_refind_path",moves.back().hex_pos)
-					
+					if !(find_path(moves.back().hex_pos)):
+						moves.clear()
+						self.mode = DEFAULT
 				else:
 					self.hex_pos = move.hex_pos
 					self.moves.pop_front()
@@ -304,9 +313,9 @@ func _process(delta):
 				if self.moves_left <= 0:
 					self.moves_left = 0
 					if !moves.empty():
-						mode = MOVE_WAIT
+						self.mode = MOVE_WAIT
 					else:
-						mode = DEFAULT
+						self.mode = DEFAULT
 				
 			else:
 				move_vector =  diff / velocity

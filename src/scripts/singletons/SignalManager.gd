@@ -24,6 +24,7 @@ signal build_btn_click(building)
 signal building_file_read
 signal moves_left_change(unit,m)
 signal unit_moved(unit,from,to)
+signal move_wait_finished(unit)
 
 var mouse_entered: Array
 var mouse_over_gui: bool
@@ -133,3 +134,6 @@ func moves_left_change(unit,m):
 	
 func unit_moved(unit,from,to):
 	emit_signal("unit_moved",unit,from,to)
+	
+func move_wait_finished(unit):
+	emit_signal("move_wait_finished",unit)
