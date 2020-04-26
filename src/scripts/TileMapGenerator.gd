@@ -9,6 +9,7 @@ export(int) var blob_detirioration: int = 5
 export(int) var grid_x: int = 100
 export(int) var grid_y: int = 60
 export(bool) var debug: bool = false
+export(bool) var inGame: bool = true
 export(bool) var generate: bool = false setget generate
 export(bool) var clear: bool = false setget onClear
 
@@ -182,8 +183,9 @@ func generate(generate):
 							set_cell(y.pos.x,y.pos.y,tiles["grass"])
 			
 			y.biome = get_cell(y.pos.x,y.pos.y)
-			GlobalConfig.map[Vector2(y.pos.x,y.pos.y)] = y.biome
-			GlobalConfig.map_size = Vector2(grid_x,grid_y)
+			if inGame:
+				GlobalConfig.map[Vector2(y.pos.x,y.pos.y)] = y.biome
+				GlobalConfig.map_size = Vector2(grid_x,grid_y)
 			
 func onClear(clear):
 	if clear:

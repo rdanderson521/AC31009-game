@@ -8,9 +8,9 @@ var can_build: bool
 var can_build_city: bool
 var can_trade: bool 
 var can_move_water: bool
+var player
 
 var moves: Array
-var moves_mutex: Mutex
 var build_turns_left: int
 var build_curr: String
 var moves_left: int setget set_moves_left
@@ -31,7 +31,6 @@ func _init():
 	explore = false
 	recover = false
 	moves = Array()
-	moves_mutex = Mutex.new()
 	build_turns_left = 0
 	build_curr = ""
 	mode = DEFAULT

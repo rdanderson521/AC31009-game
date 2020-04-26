@@ -12,7 +12,6 @@ func draw_visible(v:Array):
 	update()
 	
 func draw():
-	print("draw")
 	self.visible = true
 	self.update()
 

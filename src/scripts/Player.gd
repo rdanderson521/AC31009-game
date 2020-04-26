@@ -15,6 +15,7 @@ var unit_vis_range: int
 var building_vis_range: int
 var visible_tiles: Array
 var fow: Array
+var not_fow: Array
 
 
 func _init(start_hex:Vector2,debug=true):
@@ -23,6 +24,7 @@ func _init(start_hex:Vector2,debug=true):
 	self.units = Array()
 	self.buildings = Array()
 	self.fow = Array()
+	self.not_fow = Array()
 	self.turn = 0
 	self.start_hex = start_hex
 	self.selected_object = null
@@ -31,27 +33,29 @@ func _init(start_hex:Vector2,debug=true):
 
 func _ready():
 	print("ready player")
-	self.units += UnitFactory.start_units(self.start_hex,self)
-	for i in self.units:
-		self.add_child(i)
-	reset_visible_tiles()
+	var start_units = UnitFactory.start_units(self.start_hex,self)
+	for i in start_units:
+		self.new_unit(i)
 
-func reset_visible_tiles():
+func reset_visible():
 	visible_tiles = Array()
 	for i in self.units:
 		var hex_area = Hex.hex_in_range(self.unit_vis_range,i.hex_pos)
+		hex_area.append(i.hex_pos)
 		visible_tiles += hex_area
 		visible_tiles.append(i.hex_pos)
 		for j in hex_area:
-			fow.erase(j)
-		fow.erase(i.hex_pos)
+			if fow.erase(j):
+				not_fow.append(j)
+				
 	for i in self.buildings:
 		var hex_area = Hex.hex_in_range(self.building_vis_range,i.hex_pos)
+		hex_area.append(i.hex_pos)
 		visible_tiles += hex_area
 		visible_tiles.append(i.hex_pos)
 		for j in hex_area:
-			fow.erase(j)
-		fow.erase(i.hex_pos)
+			if fow.erase(j):
+				not_fow.append(j)
 		
 func set_selected_object(obj:GameObject):
 	if obj is Unit:
@@ -106,7 +110,7 @@ func kill(obj:GameObject):
 func new_building(building:Building):
 	self.add_child(building)
 	self.buildings.append(building)
-	self.reset_visible_tiles()
+	self.reset_visible()
 	if building.turn_start():
 		self.buildings_attention_needed.append(building)
 	
@@ -114,7 +118,7 @@ func new_unit(unit:Unit):
 	self.add_child(unit)
 	self.units.append(unit)
 	self.visible_tiles += Hex.hex_in_range(self.unit_vis_range,unit.hex_pos)
-	self.reset_visible_tiles()
+	self.reset_visible()
 	if unit.turn_start():
 		self.units_attention_needed.append(unit)
 

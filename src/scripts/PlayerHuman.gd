@@ -108,7 +108,7 @@ func tilemap_clicked_right(hex:Vector2):
 				
 func turn_start():
 	print("turn start")
-	is_turn = true
+	self.is_turn = true
 	self.turn += 1
 	self.fow_canvas.draw()
 	
@@ -124,23 +124,21 @@ func turn_start():
 				buildings_attention_needed.push_back(i)
 			
 func turn_end(unit = null):
-	print(" try end turn")
 	var all_units_done = true
-	if is_turn:
+	if is_turn and unit == null:
 		is_turn = false
 		selected_object = null
 		$Camera2D/CanvasLayer/MainGui.turn_ended()
-		
-	for i in units:
-		if !i.turn_end():
-			print("cant end")
-			all_units_done = false
-				
-	if all_units_done:
-		print ("all done")
-		self.fow_canvas.visible = false
-		$Camera2D/CanvasLayer/MainGui.visible = false
-		SignalManager.player_turn_ended(self)
+	if !is_turn:
+		for i in units:
+			if !i.turn_end():
+				all_units_done = false
+				break
+					
+		if all_units_done:
+			self.fow_canvas.visible = false
+			$Camera2D/CanvasLayer/MainGui.visible = false
+			SignalManager.player_turn_ended(self)
 		
 		
 func start_build(to_build:String):
@@ -152,7 +150,7 @@ func start_build(to_build:String):
 			if selected_object.can_build(to_build):
 				selected_object.start_build(to_build)
 				
-func reset_visible_tiles():
+func reset_visible():
 	visible_tiles = Array()
 	for i in self.units:
 		var hex_area = Hex.hex_in_range(self.unit_vis_range,i.hex_pos)
@@ -173,7 +171,6 @@ func reset_visible_tiles():
 	self.fow_canvas.draw()
 		
 func unit_moved(unit:Unit,from:Vector2,to:Vector2):
-	print("testtest1")
 	if unit in self.units:
 		var old_visible = Hex.hex_in_range(2,from) 
 		old_visible.append(from)

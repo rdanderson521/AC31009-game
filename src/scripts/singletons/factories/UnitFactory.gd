@@ -129,5 +129,6 @@ func build_unit(unit_to_build,hex,player) -> Unit:
 	unit.can_build = unit_template["can_build"]
 	unit.can_trade = unit_template["can_trade"]
 	unit.texture = unit_template["texture"]
+	unit.player = player
 	player.add_child(unit)
 	return unit
