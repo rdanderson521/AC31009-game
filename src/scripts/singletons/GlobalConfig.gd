@@ -27,4 +27,15 @@ func _init():
 	map = Dictionary()
 	unit_tiles = Dictionary()
 	building_tiles = Dictionary()
+	
+func units_on(hex):
+	var units = Array()
+	if hex is Array:
+		for i in hex:
+			if self.unit_tiles.has(i):
+				units.append(unit_tiles[i])
+	elif hex is Vector2:
+		if self.unit_tiles.has(hex):
+				units.append(unit_tiles[hex])
+	return units
 

@@ -5,6 +5,16 @@ class_name AI
 var state: int
 var unit_profiles: Dictionary
 
+var attack_score: float
+var defence_score: float
+var city_socre: float
+var city_defence_score: float
+
+var attack_priority: float
+var defence_priority: float
+var build_priority: float
+
+
 const EXPLORE = 0
 const BUILD = 1
 const ATTACK = 2
@@ -13,6 +23,15 @@ const READY_ATTACK = 3
 func _init(start_hex:Vector2).(start_hex,true):
 	self.unit_vis_range = 5
 	self.building_vis_range = 7
+	
+	self.attack_score = 0
+	self.defence_score = 0
+	self.city_socre = 0
+	
+	self.attack_priority = rand_range(0.5,2)
+	self.defence_priority = rand_range(0.5,2)
+	self.build_priority = rand_range(0.5,2)
+	
 	self.state = EXPLORE
 	self.unit_profiles = Dictionary()
 	pass
@@ -26,28 +45,22 @@ func turn_start():
 	
 	if !units.empty():
 		for i in self.units:
-			unit_profiles[i].select_task()
+			unit_profiles[i].update_scores()
 			if i.turn_start():
-				#units_attention_needed.push_back(i)
-				pass
+				units_attention_needed.push_back(unit_profiles[i])
 					
 	if !buildings.empty():
 		for i in self.buildings:
 			if i.turn_start():
 				buildings_attention_needed.push_back(i)
-				
-				
-	self.turn_end()
+			
+	self.turn_decisions()
 
 func turn_end():
 	if is_turn:
 		is_turn = false
 		selected_object = null
 		SignalManager.player_turn_ended(self)
-		
-func building_decisions():
-	for i in self.buildings_attention_needed:
-		var building_resources = i.resources_per_turn
 		
 func new_unit(unit:Unit):
 	self.add_child(unit)
@@ -57,6 +70,21 @@ func new_unit(unit:Unit):
 	self.reset_visible()
 	if unit.turn_start():
 		self.units_attention_needed.append(unit)
+
+##################### AI code below ########################
+
+func turn_decisions():
+	for i in self.units_attention_needed:
+		i.select_task()
+		
+		
+	self.turn_end()
+	
+
+
+
+
+
 
 class UnitProfile:
 	var player: Player
@@ -84,22 +112,36 @@ class UnitProfile:
 		self.explore_score = (self.unit.move_range * (self.unit.health / self.unit.health_max))
 		
 	func select_task():
-		self.update_scores()
-		if self.is_builder and self.unit.can_build_city:
-			print("is builder")
+		if self.is_builder:
+			self.builder_select_task()
+	
+	
+	func builder_select_task():
+		if self.unit.can_build_city and self.unit.can_build: ################### CHANGE: make ai build buildings around city if not building city
 			var new_city_location = self.find_new_city_location()
 			if new_city_location == null:
 				#self.explore()
 				print("explore")
 			else:
-				print("build city")
 				if self.unit.hex_pos == new_city_location:
-					print("build")
 					self.unit.start_build("city")
 				else:
-					print("got to build")
 					self.unit.find_path(new_city_location)
-			
+		elif self.unit.can_build_city:
+			var new_city_location = self.find_new_city_location()
+			if new_city_location == null:
+				#self.explore()
+				print("explore")
+			else:
+				if self.unit.hex_pos == new_city_location:
+					self.unit.start_build("city")
+				else:
+					self.unit.find_path(new_city_location)
+		elif self.unit.can_build:
+			pass
+	
+	
+	
 	static func sort_city_locations(a,b):
 		if a["total"] < b["total"]:
 			return true

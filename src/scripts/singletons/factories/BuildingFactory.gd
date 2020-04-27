@@ -100,7 +100,6 @@ func build_building(to_build,hex,player):
 	building.is_city = template["is_city"]
 	if building.is_city:
 		building.area = Hex.hex_in_range(1,hex)
-		building.area.append(building.hex_pos)
 	building.is_district = template["is_district"]
 	building.health_max = template["health"]
 	building.health = template["health"]

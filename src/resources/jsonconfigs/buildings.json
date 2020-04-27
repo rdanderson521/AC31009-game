@@ -3,11 +3,12 @@
 		"name":"city",
 		"is_city":true,
 		"is_district":false,
-		"health":100,
+		"health":250,
 		"damage":5,
 		"damage_range":3,
 		"improvements":{
 			"food":1,
+			"construction":1,
 			"gold":1,
 			"science":2
 			
@@ -24,6 +25,7 @@
 		"improvements":{
 			"food":2
 		},
+		"build_turns":4,
 		"texture":"res://building.png"
 	}
 ]

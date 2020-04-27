@@ -18,8 +18,23 @@ const BUILD = 5
 func _ready():
 	self.get_parent().area += self.area
 	print(self.get_parent())
-	self.resources_per_turn = {"food":3}
-
+	for i in self.area:
+		var tile_resources =  GlobalConfig.biome_resources[GlobalConfig.map[i]]
+		for j in tile_resources.keys():
+			if self.resources_per_turn.keys().has(j):
+				self.resources_per_turn[j] += tile_resources[j]
+			else:
+				self.resources_per_turn[j] = tile_resources[j]
+				
+	for i in self.improvements.keys():
+			if self.resources_per_turn.keys().has(i):
+				self.resources_per_turn[i] += improvements[i]
+			else:
+				self.resources_per_turn[i] = improvements[i]
+				
+	print("resources: ", self.resources_per_turn)
+	
+	
 func set_hex_pos(h):
 	hex_pos = h
 	GlobalConfig.building_tiles[h] = self
@@ -89,7 +104,6 @@ func _draw():
 	print("draw")
 	if is_city:
 		print("draw city")
-		
 		for i in self.area:
 			var points = Array()
 			var pos = Hex.hex_to_point(i)
