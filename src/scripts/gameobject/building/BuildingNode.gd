@@ -10,6 +10,7 @@ var resources_per_turn: Dictionary
 var build_curr: String
 var build_resources_left: Dictionary
 var build_options: Dictionary
+var build_options_outdated: bool
 
 const DEFAULT = 0
 const ATTACK = 3
@@ -17,6 +18,7 @@ const BUILD = 5
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	self.build_options_outdated = true
 	self.get_parent().area += self.area
 	print(self.get_parent())
 	if self.is_city:
@@ -66,19 +68,21 @@ func turn_start() -> bool:
 func turn_end():
 	pass
 
-func can_build(building) -> bool:
+func can_build(building = null) -> bool:
 	if self.mode == BUILD:
 		return false
-	if UnitFactory.unit_templates_by_name.keys().has(building):
-		var cost = UnitFactory.unit_templates_by_name[building]["cost"]
-		for i in cost.keys():
-			if !i in self.resources_per_turn.keys():
-				return false
-			elif resources_per_turn[i] <= 0:
-				return false
+	elif self.mode == DEFAULT and building == null:
 		return true
-#	elif BuildingFactory.building_templates_by_name[building]["is_upgrade"]:
-#		return true
+	if building != null:
+		self.update_build_options()
+		if self.build_options.has(building):
+			var cost = self.build_options[building]["cost"]
+			for i in cost.keys():
+				if !i in self.resources_per_turn.keys():
+					return false
+				elif resources_per_turn[i] <= 0:
+					return false
+			return true
 	return false
 
 func start_build(building_name:String):

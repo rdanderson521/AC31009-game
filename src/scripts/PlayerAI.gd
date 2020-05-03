@@ -20,10 +20,7 @@ var attack_bias: float
 var defence_bias: float
 var expand_bias: float
 
-const EXPLORE = 0
-const BUILD = 1
-const ATTACK = 2
-const READY_ATTACK = 3
+enum {EXPLORE,EXPAND,ATTACK,DEFEND}
 
 func _init(start_hex:Vector2).(start_hex,true):
 	self.unit_vis_range = 4
@@ -91,7 +88,7 @@ func new_unit(unit:Unit):
 	self.unit_profiles[unit] = UnitProfile.new(unit,self)
 	self.reset_visible()
 	if unit.turn_start():
-		self.units_attention_needed.append(unit)
+		self.units_attention_needed.append(self.unit_profiles[unit])
 		
 func new_building(building:Building):
 	self.add_child(building)
@@ -100,7 +97,8 @@ func new_building(building:Building):
 		self.city_profiles[building] = CityProfile.new(building,self)
 	self.reset_visible()
 	if building.turn_start():
-		self.buildings_attention_needed.append(building)
+		if building.is_city:
+			self.buildings_attention_needed.append(self.city_profiles[building])
 		
 func kill(obj:GameObject):
 	if obj is Unit:
@@ -123,6 +121,10 @@ func turn_decisions():
 	self.update_scores()
 	for i in self.units_attention_needed:
 		print(i.unit.type)
+		i.select_task()
+	
+	for i in self.buildings_attention_needed:
+		print(i.city.type)
 		i.select_task()
 		
 		
@@ -310,5 +312,24 @@ class CityProfile:
 				self.unit_defence_score += (i.defence_score/max(1,0.5*dist))
 				self.unit_defence.append(i)
 					
-			
-
+	func select_task(priority = EXPLORE):
+		if self.city.can_build():
+			var resources = self.city.resources_per_turn
+			var build_options = self.city.build_options
+			if priority == EXPLORE:
+				var best_option
+				var dist_per_turn = 0
+				for i in build_options.values():
+					if i["type"] == Unit:
+						var move_range = UnitFactory.unit_templates_by_name[i["name"]]["move_range"]
+						var cost = i["cost"]
+						var turns = -1
+						for j in cost.keys():
+							turns = max(turns,cost[j]/resources[j])
+						if move_range/turns > dist_per_turn:
+							dist_per_turn = move_range/turns
+							best_option = i["name"]
+				if city.can_build(best_option):
+					city.start_build(best_option)
+							
+				
