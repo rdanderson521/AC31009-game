@@ -2,7 +2,7 @@ extends "res://scripts/gui/GuiPanel.gd"
 
 func turn_ended():
 	self.find_node("EndTurnBtn").disabled = true
-	self.visible = false
+	#self.visible = false
 	print("end turn btn disabled")
 	
 func turn_started(turn):

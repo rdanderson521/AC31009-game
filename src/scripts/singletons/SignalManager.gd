@@ -25,6 +25,7 @@ signal building_file_read
 signal moves_left_change(unit,m)
 signal unit_moved(unit,from,to)
 signal move_wait_finished(unit)
+signal make_unit_move(unit_to_move,unit_sender)
 
 var mouse_entered: Array
 var mouse_over_gui: bool
@@ -40,7 +41,7 @@ func tech_tree_btn_click():
 
 func end_turn_btn_click():
 	emit_signal("end_turn_btn_click")
-	print("end_turn_btn_click")
+	#print("end_turn_btn_click")
 	
 func unit_move_btn_click(btn_down):
 	emit_signal("unit_move_btn_click",btn_down)
@@ -78,10 +79,10 @@ func mouse_left_game_obj(obj,double = false):
 	if !self.mouse_over_gui:
 		if double:
 			emit_signal("mouse_double_left_game_obj",obj)
-			print("mouse_double_left_game_obj")
+			#print("mouse_double_left_game_obj")
 		else:
 			emit_signal("mouse_left_game_obj",obj)
-			print("mouse_left_game_obj")
+			#print("mouse_left_game_obj")
 
 func mouse_right_game_obj(obj):
 	if !self.mouse_over_gui:
@@ -137,3 +138,6 @@ func unit_moved(unit,from,to):
 	
 func move_wait_finished(unit):
 	emit_signal("move_wait_finished",unit)
+	
+func make_unit_move(unit_to_move,unit_sender):
+	emit_signal("make_unit_move",unit_to_move,unit_sender)

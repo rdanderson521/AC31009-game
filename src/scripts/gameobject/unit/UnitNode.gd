@@ -65,9 +65,9 @@ func turn_start() -> bool:
 			var new_building = BuildingFactory.build_building(build_curr,hex_pos,self.get_parent())
 			self.get_parent().new_building(new_building)
 			mode = DEFAULT
-		
 	self.moves_left = move_range
-
+	
+	print(mode)
 	if mode in [MOVE_WAIT,ATTACK_MOVE]:
 		return false
 	if explore:
@@ -83,9 +83,7 @@ func turn_end() -> bool:
 	print(self.type)
 	if self.mode == MOVE_WAIT and self.moves_left > 0:
 		self.mode = MOVE
-		print ("moves left")
 		return false
-	print("done")
 	return true
 		
 class a_star_node:
@@ -152,8 +150,12 @@ func find_path(destination,debug = false):
 	var nodes = Array()
 	var visited_nodes = Array()
 	 
-	if (GlobalConfig.map[destination] in GlobalConfig.impasible_biomes) or ((GlobalConfig.map[destination] in GlobalConfig.water_biomes) and (not can_move_water)):
+	if (!GlobalConfig.map.has(destination)) or (GlobalConfig.map[destination] in GlobalConfig.impasible_biomes) or ((GlobalConfig.map[destination] in GlobalConfig.water_biomes) and (not can_move_water)):
 		if !destination in self.get_parent().fow:
+			print("invalid destination")
+			return false
+	elif GlobalConfig.unit_tiles.keys().has(destination):
+		if destination in self.get_parent().visible_tiles:
 			print("invalid destination")
 			return false
 	
@@ -192,6 +194,8 @@ func find_path(destination,debug = false):
 				if i in self.get_parent().fow:
 					nodes.push_front(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + 5,i,current_node))
 				else:
+					if (!GlobalConfig.map.has(i)):
+						continue
 					if (GlobalConfig.map[i] in GlobalConfig.impasible_biomes):
 						#print("mountain")
 						continue
@@ -280,22 +284,25 @@ func _process(delta):
 	if mode == MOVE:# or (mode == MOVE_WAIT and !self.get_parent().is_turn):
 		if self.position == Hex.hex_to_point(self.hex_pos):
 			if !moves.empty() and self.moves_left > 0:
-				while moves.front().hex_pos == self.hex_pos:
+				while moves.front().hex_pos == self.hex_pos and !moves.empty():
 					moves.pop_front()
-					
-				var move = moves.front()
-				if (GlobalConfig.unit_tiles.has(move.hex_pos) and GlobalConfig.unit_tiles[move.hex_pos] != self) or \
-					(GlobalConfig.map[move.hex_pos] in GlobalConfig.impasible_biomes) or (GlobalConfig.map[move.hex_pos] in GlobalConfig.water_biomes and !self.can_move_water):
-					if !(find_path(moves.back().hex_pos)):
-						moves.clear()
-						self.mode = DEFAULT
-				else:
-					self.hex_pos = move.hex_pos
-					self.moves.pop_front()
-					self.moves_left -= move.hex_effort
+				
+				if !moves.empty():
+					var move = moves.front()
+					if (GlobalConfig.unit_tiles.has(move.hex_pos) and GlobalConfig.unit_tiles[move.hex_pos] != self) or \
+						(GlobalConfig.map[move.hex_pos] in GlobalConfig.impasible_biomes) or (GlobalConfig.map[move.hex_pos] in GlobalConfig.water_biomes and !self.can_move_water):
+						if !(find_path(moves.back().hex_pos)):
+							moves.clear()
+							self.mode = DEFAULT
+					else:
+						self.hex_pos = move.hex_pos
+						self.moves.pop_front()
+						self.moves_left -= move.hex_effort
 					
 			elif self.moves_left <= 0:
 				self.mode = MOVE_WAIT
+			else:
+				self.mode = DEFAULT
 				
 		else:
 			var diff = Hex.hex_to_point(self.hex_pos) - self.position

@@ -26,7 +26,7 @@ func _init():
 	
 
 func next_player(player):
-	print ("next turn")
+	#print ("next turn")
 	var player_idx = players.find(player)
 	
 	if player_idx+1 == players.size():
@@ -111,7 +111,7 @@ func init_players(num_players,start_areas):
 		print(i)
 		start_areas.shuffle()
 		var player
-		if i == 0:
+		if i < 1:
 			print("player")
 			player = Human.new(start_areas.pop_back())
 		else:

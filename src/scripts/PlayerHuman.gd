@@ -20,7 +20,7 @@ func _init(start_hex:Vector2).(start_hex,false):
 	SignalManager.connect("mouse_right_tilemap",self,"tilemap_clicked_right")
 	SignalManager.connect("build_btn_click",self,"start_build")
 	SignalManager.connect("unit_moved",self,"unit_moved")
-	SignalManager.connect("move_wait_finished",self,"turn_end")
+	SignalManager.connect("move_wait_finished",self,"unit_turn_finished")
 	self.camera = preload("res://scenes/Camera.tscn").instance()
 	self.add_child(self.camera)
 	camera.position = Hex.hex_to_point(start_hex)
@@ -123,23 +123,30 @@ func turn_start():
 			if i.turn_start():
 				buildings_attention_needed.push_back(i)
 			
-func turn_end(unit = null):
+func turn_end():
 	var all_units_done = true
-	if is_turn and unit == null:
+	if is_turn:
 		is_turn = false
 		selected_object = null
+		units_attention_needed.clear()
 		$Camera2D/CanvasLayer/MainGui.turn_ended()
 	if !is_turn:
+		
 		for i in units:
 			if !i.turn_end():
-				all_units_done = false
-				break
-					
-		if all_units_done:
-			self.fow_canvas.visible = false
-			$Camera2D/CanvasLayer/MainGui.visible = false
+				units_attention_needed.append(i)
+
+		if units_attention_needed.empty():
+			#self.fow_canvas.visible = false
+			#$Camera2D/CanvasLayer/MainGui.visible = false
 			SignalManager.player_turn_ended(self)
-		
+		else: 
+			print("error ending turn")
+			
+func unit_turn_finished(unit):
+	if unit in self.units_attention_needed and !self.is_turn:
+		self.units_attention_needed.erase(unit)
+		self.turn_end()
 		
 func start_build(to_build:String):
 	if is_turn:

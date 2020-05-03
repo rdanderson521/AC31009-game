@@ -31,6 +31,13 @@ func building_selected(building):
 	find_node("HealthBar").value = building.health
 	find_node("BuildingAttack").text = str(building.attack)
 	find_node("BuildingDefence").text = str(building.defence)
+	var btn_list = Dictionary()
+	for i in self.find_node("BuildingBtnLst").get_children():
+		i.visible = false
+		btn_list[i.find_node("Name").text] = i
+	for i in building.build_options.values():
+		if i["name"] in btn_list.keys():
+			btn_list[i["name"]].visible = true
 	self.visible = true
 	
 func building_unselected():

@@ -9,6 +9,7 @@ var area: Array
 var resources_per_turn: Dictionary
 var build_curr: String
 var build_resources_left: Dictionary
+var build_options: Dictionary
 
 const DEFAULT = 0
 const ATTACK = 3
@@ -18,21 +19,23 @@ const BUILD = 5
 func _ready():
 	self.get_parent().area += self.area
 	print(self.get_parent())
-	for i in self.area:
-		var tile_resources =  GlobalConfig.biome_resources[GlobalConfig.map[i]]
-		for j in tile_resources.keys():
-			if self.resources_per_turn.keys().has(j):
-				self.resources_per_turn[j] += tile_resources[j]
-			else:
-				self.resources_per_turn[j] = tile_resources[j]
-				
-	for i in self.improvements.keys():
-			if self.resources_per_turn.keys().has(i):
-				self.resources_per_turn[i] += improvements[i]
-			else:
-				self.resources_per_turn[i] = improvements[i]
-				
-	print("resources: ", self.resources_per_turn)
+	if self.is_city:
+		for i in self.area:
+			var tile_resources =  GlobalConfig.biome_resources[GlobalConfig.map[i]]
+			for j in tile_resources.keys():
+				if self.resources_per_turn.keys().has(j):
+					self.resources_per_turn[j] += tile_resources[j]
+				else:
+					self.resources_per_turn[j] = tile_resources[j]
+					
+		for i in self.improvements.keys():
+				if self.resources_per_turn.keys().has(i):
+					self.resources_per_turn[i] += improvements[i]
+				else:
+					self.resources_per_turn[i] = improvements[i]
+					
+		print("resources: ", self.resources_per_turn)
+		self.update_build_options()
 	
 	
 func set_hex_pos(h):
@@ -91,13 +94,18 @@ func start_build(building_name:String):
 #			else:
 #				self.build_curr = building_name
 #				self.mode = BUILD
-		elif UnitFactory.unit_templates_by_name.has(building_name):
+		elif self.build_options.has(building_name):
 			print("building start unit")
-			self.build_resources_left = UnitFactory.unit_templates_by_name[building_name]["cost"].duplicate()
+			self.build_resources_left = self.build_options[building_name]["cost"].duplicate()
 			self.build_curr = building_name
 			self.mode = BUILD
 	else:
 		return false
+		
+func update_build_options():
+	self.build_options.clear()
+	for i in UnitFactory.unit_templates:
+		self.build_options[i["name"]] = {"name":i["name"],"cost":i["cost"].duplicate(),"type":Unit}
 			
 			
 func _draw():

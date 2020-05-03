@@ -6,6 +6,7 @@
 		"health":250,
 		"damage":5,
 		"damage_range":3,
+		"defence":20,
 		"improvements":{
 			"food":1,
 			"construction":1,
