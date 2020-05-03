@@ -10,6 +10,7 @@ var attack_score: float
 var defence_score: float
 var city_score: float
 var city_defence_score: float
+var explore_score: float
 
 var attack_priority: float
 var defence_priority: float
@@ -30,9 +31,14 @@ func _init(start_hex:Vector2).(start_hex,true):
 	self.defence_score = 0
 	self.city_score = 0
 	
-	self.attack_priority = rand_range(0.5,2)
-	self.defence_priority = rand_range(0.5,2)
-	self.expand_priority = rand_range(0.5,2)
+	self.attack_priority = 0
+	self.defence_priority = 0
+	self.expand_priority = 0
+	self.explore_priority = 0
+	
+	self.attack_bias = rand_range(0.5,2)
+	self.defence_bias = rand_range(0.5,2)
+	self.expand_bias = rand_range(0.5,2)
 	
 	self.state = EXPLORE
 	self.unit_profiles = Dictionary()
@@ -135,6 +141,8 @@ func update_scores():
 	self.defence_score = 0
 	self.city_score = 0
 	self.city_defence_score = 0
+	self.explore_score = 0
+	
 	for i in self.unit_profiles.values():
 		i.update_scores()
 		self.attack_score += i.attack_score
@@ -144,7 +152,10 @@ func update_scores():
 		i.update_scores()
 		self.city_defence_score += i.defence_score + i.unit_defence_score
 		self.city_score += i.value_score
-	print(self.name,": ",self.attack_score,", ",self.defence_score,", ",self.city_score,", ",self.city_defence_score)
+		
+	self.explore_score = (self.not_fow.size()/max(1,self.fow.size())) + (self.visible_tiles.size()/(GlobalConfig.map_size.x*GlobalConfig.map_size.y))
+	
+	print(self.name,": ",self.attack_score,", ",self.defence_score,", ",self.city_score,", ",self.city_defence_score,", ",self.explore_score)
 
 
 

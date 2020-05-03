@@ -36,6 +36,10 @@ func _ready():
 	var start_units = UnitFactory.start_units(self.start_hex,self)
 	for i in start_units:
 		self.new_unit(i)
+	self.fow = GlobalConfig.map.keys().duplicate()
+	var start_area_hex = Hex.hex_in_range(4,self.start_hex)
+	for i in start_area_hex:
+		fow.erase(i)
 
 func reset_visible():
 	visible_tiles = Array()
