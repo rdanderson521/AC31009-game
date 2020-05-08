@@ -2,7 +2,7 @@ extends GameObject
 
 class_name Unit
 
-var speed: int = 300
+var speed: int = 500
 var move_range: int
 var can_build: bool
 var can_build_city: bool
@@ -67,7 +67,6 @@ func turn_start() -> bool:
 			mode = DEFAULT
 	self.moves_left = move_range
 	
-	print(mode)
 	if mode in [MOVE_WAIT,ATTACK_MOVE]:
 		return false
 	if explore:
@@ -80,7 +79,7 @@ func turn_start() -> bool:
 	return true
 	
 func turn_end() -> bool:
-	print(self.type)
+	print(self.type, " end turn")
 	if self.mode == MOVE_WAIT and self.moves_left > 0:
 		self.mode = MOVE
 		return false
@@ -129,7 +128,7 @@ class a_star_node:
 	
 
 func heuristic_distance(destination, from, start = null):
-	var heuristic = Hex.hex_distance(destination,from)*25
+	var heuristic = Hex.hex_distance(destination,from)*12
 	if start != null: #heuristic tie break from http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html#S1
 		var start_point = Hex.hex_to_point(start)/32
 		var destination_point = Hex.hex_to_point(destination)/32
@@ -165,7 +164,7 @@ func find_path(destination,debug = false):
 		print("destination: "  + str(destination))
 		
 	var idx = 0
-	while !path_found and !nodes.empty() and idx < 1500:
+	while !path_found and !nodes.empty() and idx < 700:
 		idx += 1
 		nodes.sort_custom(a_star_node,"sort_nodes")
 		if debug:
@@ -209,6 +208,27 @@ func find_path(destination,debug = false):
 					nodes.push_front(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + (current_node.hex_effort*5),i,current_node))
 	print("failed")
 	return false 
+	
+func explore(fow,dist=10):
+	var start_time = OS.get_ticks_msec()
+	var found = false
+	var area = Hex.hex_in_range(dist,self.hex_pos)
+	area.shuffle()
+	if !fow.empty():
+		for i in area:
+			if i in fow:
+				if self.find_path(i):
+					found = true
+					break
+	if !found:
+		for i in area:
+			if Hex.hex_distance(self.hex_pos,i) > 0.5*dist:
+				if self.find_path(i):
+					found = true
+					break
+				
+	if found:
+		print("time taken explore: ", OS.get_ticks_msec()-start_time)
 	
 func attack(enemy):
 	mode = ATTACK
@@ -275,13 +295,9 @@ func start_build(building_name:String):
 			
 			self.moves_left = 0
 	
-func try_refind_path(dest):
-	moves.clear()
-	
-	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if mode == MOVE:# or (mode == MOVE_WAIT and !self.get_parent().is_turn):
+	if self.mode == MOVE:# or (mode == MOVE_WAIT and !self.get_parent().is_turn):
 		if self.position == Hex.hex_to_point(self.hex_pos):
 			if !moves.empty() and self.moves_left > 0:
 				while moves.front().hex_pos == self.hex_pos and !moves.empty():
@@ -290,10 +306,9 @@ func _process(delta):
 				if !moves.empty():
 					var move = moves.front()
 					if (GlobalConfig.unit_tiles.has(move.hex_pos) and GlobalConfig.unit_tiles[move.hex_pos] != self) or \
-						(GlobalConfig.map[move.hex_pos] in GlobalConfig.impasible_biomes) or (GlobalConfig.map[move.hex_pos] in GlobalConfig.water_biomes and !self.can_move_water):
-						if !(find_path(moves.back().hex_pos)):
-							moves.clear()
-							self.mode = DEFAULT
+					(GlobalConfig.map[move.hex_pos] in GlobalConfig.impasible_biomes) or (GlobalConfig.map[move.hex_pos] in GlobalConfig.water_biomes and !self.can_move_water):
+						moves.clear()
+						self.mode = DEFAULT
 					else:
 						self.hex_pos = move.hex_pos
 						self.moves.pop_front()

@@ -109,7 +109,7 @@ func start_build(building_name:String):
 func update_build_options():
 	self.build_options.clear()
 	for i in UnitFactory.unit_templates:
-		self.build_options[i["name"]] = {"name":i["name"],"cost":i["cost"].duplicate(),"type":Unit}
+		self.build_options[i["name"]] = {"name":i["name"],"cost":i["cost"].duplicate(),"type":"Unit"}
 			
 			
 func _draw():
@@ -128,4 +128,3 @@ func _draw():
 			var polygon = PoolVector2Array(points)
 			draw_polygon(polygon,PoolColorArray([self.get_parent().colour]))
 			
-	

@@ -5,6 +5,7 @@ class_name AI
 var state: int
 var unit_profiles: Dictionary
 var city_profiles: Dictionary
+var player_profiles: Dictionary
 
 var attack_score: float
 var defence_score: float
@@ -42,10 +43,12 @@ func _init(start_hex:Vector2).(start_hex,true):
 	
 	self.state = EXPLORE
 	self.unit_profiles = Dictionary()
+	self.city_profiles = Dictionary()
+	self.player_profiles = Dictionary()
 	SignalManager.connect("move_wait_finished",self,"unit_turn_finished")
 		
 func turn_start():
-	is_turn = true
+	self.is_turn = true
 	self.turn += 1
 	
 	units_attention_needed.clear()
@@ -55,7 +58,7 @@ func turn_start():
 		for i in self.units:
 			unit_profiles[i].update_scores()
 			if i.turn_start():
-				units_attention_needed.push_back(unit_profiles[i])
+				units_attention_needed.push_back(i)
 					
 	if !buildings.empty():
 		for i in self.buildings:
@@ -66,6 +69,7 @@ func turn_start():
 	self.turn_decisions()
 
 func turn_end():
+	print("player end turn")
 	var all_units_done = true
 	if is_turn:
 		is_turn = false
@@ -83,9 +87,12 @@ func turn_end():
 			print("error ending turn")
 			
 func unit_turn_finished(unit):
-	if unit in self.units_attention_needed:
-		self.units_attention_needed.erase(unit)
-		self.turn_end()
+	if unit in self.units:
+		print(units_attention_needed)
+		if unit in self.units_attention_needed:
+			self.units_attention_needed.erase(unit)
+			print(units_attention_needed)
+			self.turn_end()
 		
 		
 func new_unit(unit:Unit):
@@ -94,7 +101,7 @@ func new_unit(unit:Unit):
 	self.unit_profiles[unit] = UnitProfile.new(unit,self)
 	self.reset_visible()
 	if unit.turn_start():
-		self.units_attention_needed.append(self.unit_profiles[unit])
+		self.units_attention_needed.append(unit)
 		
 func new_building(building:Building):
 	self.add_child(building)
@@ -126,8 +133,8 @@ func kill(obj:GameObject):
 func turn_decisions():
 	self.update_scores()
 	for i in self.units_attention_needed:
-		print(i.unit.type)
-		i.select_task()
+		print(self.unit_profiles[i].unit.type)
+		self.unit_profiles[i].select_task()
 	
 	for i in self.buildings_attention_needed:
 		print(i.city.type)
@@ -153,16 +160,31 @@ func update_scores():
 		self.city_defence_score += i.defence_score + i.unit_defence_score
 		self.city_score += i.value_score
 		
+	self.update_player_profiles()
+		
 	self.explore_score = (self.not_fow.size()/max(1,self.fow.size())) + (self.visible_tiles.size()/(GlobalConfig.map_size.x*GlobalConfig.map_size.y))
 	
 	print(self.name,": ",self.attack_score,", ",self.defence_score,", ",self.city_score,", ",self.city_defence_score,", ",self.explore_score)
 
 
-
+func update_player_profiles():
+	for i in visible_tiles:
+		if GlobalConfig.unit_tiles.has(i):
+			var unit = GlobalConfig.unit_tiles[i]
+			if !unit in self.units:
+				var unit_parent = unit.get_parent()
+				if self.player_profiles.has(unit_parent):
+					self.player_profiles[unit_parent].update_unit(unit)
+				else:
+					var new_profile = PlayerProfile.new(unit_parent)
+					self.player_profiles[unit_parent] = new_profile
+					new_profile.update_unit(unit)
+	for i in player_profiles.values():
+		i.update_scores()
 
 
 class UnitProfile:
-	var player: Player
+	var player
 	var is_own: bool
 	var unit: Unit
 	var attack_score: float
@@ -172,7 +194,7 @@ class UnitProfile:
 	var need_to_move: bool
 	
 	
-	func _init(u: Unit, p: Player):
+	func _init(u: Unit, p):
 		self.unit = u
 		self.player = p
 		SignalManager.connect("make_unit_move",self,"move_out_of_way")
@@ -194,6 +216,8 @@ class UnitProfile:
 	func select_task():
 		if self.is_builder:
 			self.builder_select_task()
+		else:
+			self.unit.explore(self.player.fow)
 	
 	
 	func builder_select_task():
@@ -274,7 +298,7 @@ class UnitProfile:
 		
 		
 class CityProfile:
-	var player: Player
+	var player
 	var is_own: bool
 	var city: Building
 	var area: Array
@@ -284,7 +308,7 @@ class CityProfile:
 	var unit_defence: Array
 	var value_score: float
 	
-	func _init(b: Building, p: Player):
+	func _init(b: Building, p):
 		self.city = b
 		self.player = p
 		self.unit_defence = Array()
@@ -331,7 +355,7 @@ class CityProfile:
 				var best_option
 				var dist_per_turn = 0
 				for i in build_options.values():
-					if i["type"] == Unit:
+					if i["type"] == "Unit":
 						var move_range = UnitFactory.unit_templates_by_name[i["name"]]["move_range"]
 						var cost = i["cost"]
 						var turns = -1
@@ -343,4 +367,53 @@ class CityProfile:
 				if city.can_build(best_option):
 					city.start_build(best_option)
 							
-				
+class PlayerProfile:
+	var player
+	var cities: Dictionary #[city] = {city,last_seen,city_cpy,updated}
+	var units: Dictionary #[unit] = {unit,last_seen,unit_cpy,updated}
+	
+	var attack_score: float
+	var defence_score: float
+	var city_defence_score: float
+	
+	func _init(p):
+		self.player = p
+		units = Dictionary()
+		cities = Dictionary()
+		attack_score = 0
+		defence_score = 0
+		city_defence_score = 0
+	
+	func update_unit(unit):
+		if units.has(unit):
+			units[unit]["last_seen"] = 0
+			units[unit]["unit_cpy"] = UnitFactory.copy_unit(unit)
+			units[unit]["updated"] = true
+		else:
+			units[unit] = {"unit": unit, "last_seen": 0, "updated": true, "unit_cpy": UnitFactory.copy_unit(unit)}
+			
+	func update_scores():
+		attack_score = 0
+		defence_score = 0
+		city_defence_score = 0
+		for i in units.values():
+			if !i["updated"]:
+				i["last_seen"] += 1
+			if i["last_seen"] > 10:
+				units.erase(i)
+			else:
+				attack_score += (i["unit_cpy"].attack*i["unit_cpy"].health)/(max(1,i["last_seen"]) * i["unit_cpy"].health_max)
+				defence_score = (i["unit_cpy"].defence*i["unit_cpy"].health)/(max(1,i["last_seen"]) * i["unit_cpy"].health_max)
+		
+		print("player profile atck: ",self.attack_score, " def: ", self.defence_score)
+			
+	func turn_start():
+		for i in units.values():
+			i["updated"] = false
+		for i in cities.values():
+			i["updated"] = false
+			
+		
+	
+	
+	

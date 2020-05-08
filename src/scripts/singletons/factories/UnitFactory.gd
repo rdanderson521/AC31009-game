@@ -132,3 +132,23 @@ func build_unit(unit_to_build,hex,player) -> Unit:
 	unit.player = player
 	player.add_child(unit)
 	return unit
+	
+func copy_unit(unit_to_copy) -> Unit:
+
+	var unit = init_unit()
+	unit.hex_pos = unit_to_copy.hex_pos
+	unit.position = unit_to_copy.position
+	unit.type = unit_to_copy.type
+	unit.health_max = unit_to_copy.health_max
+	unit.health = unit_to_copy.health
+	unit.attack = unit_to_copy.attack
+	unit.attack_range = unit_to_copy.attack_range
+	unit.defence = unit_to_copy.defence
+	unit.move_range = unit_to_copy.move_range
+	unit.can_build_city = unit_to_copy.can_build_city
+	unit.can_build = unit_to_copy.can_build
+	unit.can_trade = unit_to_copy.can_trade
+	unit.texture = unit_to_copy.texture
+	unit.player = null
+	unit.visible = false
+	return unit
