@@ -13,9 +13,7 @@ func _init():
 func _ready():
 	var btn_list = self.find_node("BuildingBtnLst")
 	if btn_list != null:
-		print("building list")
 		for i in BuildingFactory.building_templates:
-			print("test: "+ str(i["name"]))
 			if i["is_city"] or i["is_district"]:
 				var btn = preload("res://scenes/gui/UnitGuiBuildBtn.tscn").instance()
 				btn.script = preload("res://scripts/gui/UnitGuiBuildBtn.gd")

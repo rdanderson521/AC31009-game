@@ -95,6 +95,7 @@ func start_units(hex,player) -> Array:
 			for j in range(i["start"]):
 				if !start_area.empty():
 					var unit = init_unit()
+					player.add_child(unit)
 					unit.hex_pos = start_area.pop_back()
 					unit.position = Hex.hex_to_point(unit.hex_pos)
 					unit.type = i["name"]
@@ -116,6 +117,7 @@ func build_unit(unit_to_build,hex,player) -> Unit:
 
 	var unit_template = unit_templates_by_name[unit_to_build]
 	var unit = init_unit()
+	player.add_child(unit)
 	unit.hex_pos = hex
 	unit.position = Hex.hex_to_point(unit.hex_pos)
 	unit.type = unit_template["name"]
@@ -128,9 +130,7 @@ func build_unit(unit_to_build,hex,player) -> Unit:
 	unit.can_build_city = unit_template["can_build_city"]
 	unit.can_build = unit_template["can_build"]
 	unit.can_trade = unit_template["can_trade"]
-	unit.texture = unit_template["texture"]
 	unit.player = player
-	player.add_child(unit)
 	return unit
 	
 func copy_unit(unit_to_copy) -> Unit:

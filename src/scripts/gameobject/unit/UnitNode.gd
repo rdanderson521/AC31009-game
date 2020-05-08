@@ -42,15 +42,15 @@ func set_moves_left(m):
 	SignalManager.moves_left_change(self,m)
 
 func set_hex_pos(h):
-	if hex_pos != null:
-		GlobalConfig.unit_tiles.erase(hex_pos)
-	GlobalConfig.unit_tiles[h] = self
-	SignalManager.unit_moved(self,hex_pos,h)
+	if self.is_inside_tree():
+		if hex_pos != null:
+			GlobalConfig.unit_tiles.erase(hex_pos)
+		GlobalConfig.unit_tiles[h] = self
+		SignalManager.unit_moved(self,hex_pos,h)
 	hex_pos = h
 	
 func set_mode(m):
 	if mode == MOVE and m in [MOVE_WAIT,DEFAULT]:
-		print("mode set")
 		SignalManager.move_wait_finished(self)
 	mode = m
 	
@@ -79,7 +79,6 @@ func turn_start() -> bool:
 	return true
 	
 func turn_end() -> bool:
-	print(self.type, " end turn")
 	if self.mode == MOVE_WAIT and self.moves_left > 0:
 		self.mode = MOVE
 		return false
@@ -228,7 +227,8 @@ func explore(fow,dist=10):
 					break
 				
 	if found:
-		print("time taken explore: ", OS.get_ticks_msec()-start_time)
+		pass
+		#print("time taken explore: ", OS.get_ticks_msec()-start_time)
 	
 func attack(enemy):
 	mode = ATTACK
@@ -300,7 +300,7 @@ func _process(delta):
 	if self.mode == MOVE:# or (mode == MOVE_WAIT and !self.get_parent().is_turn):
 		if self.position == Hex.hex_to_point(self.hex_pos):
 			if !moves.empty() and self.moves_left > 0:
-				while moves.front().hex_pos == self.hex_pos and !moves.empty():
+				while !moves.empty() and moves.front().hex_pos == self.hex_pos:
 					moves.pop_front()
 				
 				if !moves.empty():

@@ -119,7 +119,7 @@ func new_building(building:Building):
 		self.buildings_attention_needed.append(building)
 	
 func new_unit(unit:Unit):
-	self.add_child(unit)
+	#self.add_child(unit)
 	self.units.append(unit)
 	self.visible_tiles += Hex.hex_in_range(self.unit_vis_range,unit.hex_pos)
 	self.reset_visible()
@@ -129,9 +129,7 @@ func new_unit(unit:Unit):
 func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 	if unit in self.units:
 		var old_visible = Hex.hex_in_range(self.unit_vis_range,from) 
-		old_visible.append(from)
 		var new_visible = Hex.hex_in_range(self.unit_vis_range,to)
-		new_visible.append(to)
 		
 		for i in old_visible:
 			if i in new_visible:

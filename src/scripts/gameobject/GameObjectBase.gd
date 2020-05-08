@@ -14,8 +14,8 @@ var hex_pos: Vector2 setget set_hex_pos
 var mode: int setget set_mode
 
 func set_texture(texture):
-	$Area2D/CollisionPolygon2D/Sprite.texture = load(texture)
-	pass
+	if texture != null:
+		$Area2D/CollisionPolygon2D/Sprite.texture = load(texture)
 	
 func set_health(h):
 	health = h
@@ -23,7 +23,6 @@ func set_health(h):
 	
 func set_hex_pos(h):
 	hex_pos = h
-	pass
 	
 func set_mode(m):
 	mode = m
