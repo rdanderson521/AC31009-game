@@ -93,7 +93,6 @@ func check_templates(templates):
 func build_building(to_build,hex,player):
 	var building = init_building()
 	var template = building_templates_by_name[to_build]
-	print("hex: " + str(hex))
 	building.hex_pos = hex
 	building.position = Hex.hex_to_point(hex)
 	building.type = template["name"]
@@ -112,6 +111,24 @@ func build_building(to_build,hex,player):
 	
 	return building
 	
+func copy_building(to_copy):
+	var building = init_building()
+	building.hex_pos = to_copy.hex_pos
+	building.position = to_copy.hex_pos
+	building.type = to_copy.type
+	building.is_city = to_copy.is_city
+	if building.is_city:
+		building.area = to_copy.area.duplicate()
+	building.is_district = to_copy.is_district
+	building.health_max = to_copy.health_max
+	building.health = to_copy.health
+	building.attack = to_copy.attack
+	building.attack_range = to_copy.attack_range
+	building.defence = to_copy.defence
+	building.improvements = to_copy.improvements.duplicate()
+	building.texture = to_copy.texture
+	
+	return building
 
 
 	
