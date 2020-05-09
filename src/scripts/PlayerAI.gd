@@ -13,10 +13,10 @@ var city_score: float
 var city_defence_score: float
 var explore_score: float
 
-var attack_priority: float
-var defence_priority: float
-var expand_priority: float
-var explore_priority: float
+var attack_priority: Dictionary
+var defence_priority: Dictionary
+var expand_priority: Dictionary
+var explore_priority: Dictionary
 
 var attack_bias: float
 var defence_bias: float
@@ -27,11 +27,14 @@ var explore_target: CityProfile
 var explore_type: int
 
 var attack_target: PlayerProfile
+var attack_type: int
 
 var defence_type: int
 
-enum defence{BUILD,MOVE}
-enum explore{CITY,FOW}
+enum attack{BUILD,UNIT,CITY}
+enum defence{BUILD,MOVE,PRIORITY}
+enum expand{BUILD,CITY,IMPROVEMENT}
+enum explore{BUILD,CITY,FOW}
 
 enum {EXPLORE,EXPAND,ATTACK,DEFEND}
 
@@ -43,10 +46,18 @@ func _init(start_hex:Vector2).(start_hex,true):
 	self.defence_score = 0
 	self.city_score = 0
 	
-	self.attack_priority = 0
-	self.defence_priority = 0
-	self.expand_priority = 0
-	self.explore_priority = 0
+	self.attack_priority = Dictionary()
+	for i in attack:
+		self.attack_priority[attack[i]] = 0
+	self.defence_priority = Dictionary()
+	for i in defence:
+		self.defence_priority[defence[i]] = 0
+	self.expand_priority = Dictionary()
+	for i in expand:
+		self.expand_priority[expand[i]] = 0
+	self.explore_priority = Dictionary()
+	for i in explore:
+		self.explore_priority[explore[i]] = 0
 	
 	self.attack_bias = rand_range(0.5,2)
 	self.defence_bias = rand_range(0.5,2)
@@ -195,41 +206,75 @@ func update_scores():
 	
 	print(self.name," scores: ",self.attack_score,", ",self.defence_score,", ",self.city_score,", ",self.city_defence_score,", ",self.explore_score)
 	
-	self.explore_priority = 0
+	for i in self.explore_priority.keys():
+		self.explore_priority[i] = 0
 	for i in player_profiles.values():
 		for j in i.cities.values():
-			if self.explore_priority < j["last_seen"]/min(self.turn,20):
-				self.explore_priority = j["last_seen"]/min(self.turn,20)
+			if self.explore_priority[explore.CITY] < j["last_seen"]/min(self.turn,20):
+				self.explore_priority[explore.CITY] = j["last_seen"]/min(self.turn,20)
 				self.explore_target = j
 				self.explore_type = explore.CITY
+				
 	print(float(self.fow.size())/float(GlobalConfig.map.size()))
-	if self.explore_priority < float(self.fow.size())/float(GlobalConfig.map.size()):
-		self.explore_priority = float(self.fow.size())/float(GlobalConfig.map.size())
+	if self.explore_priority[explore.FOW] < float(self.fow.size())/float(GlobalConfig.map.size()):
+		self.explore_priority[explore.FOW] = float(self.fow.size())/float(GlobalConfig.map.size())
 		self.explore_target = null
 		self.explore_type = explore.FOW
-	self.explore_priority = (self.explore_priority/max(self.explore_score,1)) * self.explore_bias
-	print("explore type: ",self.explore_type," priority:, ", self.explore_priority)
+		
+	self.explore_priority[explore.BUILD] = (max(self.explore_priority[explore.FOW],self.explore_priority[explore.CITY])/max(self.explore_score,1)) * self.explore_bias
+	print("explore type: ",self.explore_type," priority: ", self.explore_priority)
 	
-	self.attack_priority = 0
-	self.defence_priority = 0
+	
+	for i in self.attack_priority.keys():
+		self.attack_priority[i] = 0
+	for i in self.defence_priority.keys():
+		self.defence_priority[i] = 0
+		
 	self.defence_type = defence.BUILD
 	var total_aggression = 0
 	var max_aggression = 0
 	var max_aggressor = null
+	
 	for i in player_profiles.values():
 		total_aggression += i.aggression
 		if max_aggression < i.aggression:
 			max_aggression = i.aggression
 			max_aggressor = i
-		if max(i.aggression/self.city_defence_score,i.attack_score/self.city_defence_score) > self.defence_priority:
-			#max(1,i.aggression) * max(i.attack_score/self.city_defence_score,0)
-			self.defence_priority = max(i.aggression/self.city_defence_score,i.attack_score/self.city_defence_score)
-	if self.city_defence_score/ self.defence_score < 0.5:
-		self.defence_type = defence.MOVE
-	else:
-		self.defence_type = defence.BUILD
-	self.defence_priority = self.defence_priority * self.defence_bias
-	print("defence type: ",self.defence_type," priority:, ", self.defence_priority)
+			attack_target = i
+		
+		if i.city_defence_score > 0 and (self.attack_score/(2*i.city_defence_score)) > self.attack_priority[attack.CITY]:
+			self.attack_priority[attack.CITY] = (i.city_defence_score/self.attack_score)
+		if (i.city_defence_score/self.attack_score) > self.attack_priority[attack.BUILD]:
+			self.attack_priority[attack.BUILD] = (i.city_defence_score/self.attack_score)
+		
+		
+		if self.city_defence_score > 0 and  max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.city_defence_score) > self.attack_priority[attack.UNIT]:
+			self.attack_priority[attack.UNIT] = max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.city_defence_score)
+			
+		if self.city_defence_score > 0 and  max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.attack_score) > self.attack_priority[attack.BUILD]:
+			self.attack_priority[attack.BUILD] = max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.attack_score)
+			
+		if self.defence_score > 0 and  max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.defence_score) > self.attack_priority[attack.UNIT]:
+			self.attack_priority[attack.UNIT] = max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.defence_score)
+			
+		if self.defence_score > 0 and  max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.attack_score) > self.attack_priority[attack.BUILD]:
+			self.attack_priority[attack.BUILD] = max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.attack_score)
+		
+		if self.city_defence_score > 0:
+			var new_defence_priority = (max(i.aggression/i.attack_score,0.5)*i.attack_score)/(self.city_defence_score)#max(i.aggression/defence,i.attack_score/defence)#max(0.2,i.aggression) * max(i.attack_score/defence,0)
+			if new_defence_priority > self.defence_priority[defence.PRIORITY]:
+				self.defence_priority[defence.PRIORITY] = new_defence_priority
+	
+	self.attack_priority[attack.UNIT] = self.attack_priority[attack.UNIT] * self.attack_bias
+	self.attack_priority[attack.CITY] = self.attack_priority[attack.CITY] * self.attack_bias
+	
+	self.defence_priority[defence.PRIORITY] = self.defence_priority[defence.PRIORITY] * self.defence_bias
+	if self.city_defence_score > 0:
+		self.defence_priority[defence.MOVE] = (self.defence_score / self.city_defence_score)*self.defence_priority[defence.PRIORITY]
+		self.defence_priority[defence.BUILD] = (self.city_defence_score / self.defence_score)*self.defence_priority[defence.PRIORITY]
+
+	print("defence type: ",self.defence_type," priority: ", self.defence_priority)
+	print("attack priority: ", self.attack_priority)
 			
 		
 	

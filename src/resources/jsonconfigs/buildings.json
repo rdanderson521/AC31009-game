@@ -6,7 +6,7 @@
 		"health":250,
 		"damage":5,
 		"damage_range":3,
-		"defence":20,
+		"defence":15,
 		"improvements":{
 			"food":1,
 			"construction":1,
@@ -20,9 +20,7 @@
 		"name":"farm",
 		"is_city":false,
 		"is_district":true,
-		"health":100,
-		"damage":5,
-		"damage_range":3,
+		"health":50,
 		"improvements":{
 			"food":2
 		},
