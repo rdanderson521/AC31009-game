@@ -2,6 +2,7 @@ extends Node
 
 signal tech_tree_btn_click
 signal end_turn_btn_click
+signal start_btn_clicked
 signal unit_move_btn_click(btn_down)
 signal unit_attack_btn_click(btn_down)
 signal unit_build_btn_click(btn_down)
@@ -44,6 +45,9 @@ func tech_tree_btn_click():
 func end_turn_btn_click():
 	emit_signal("end_turn_btn_click")
 	#print("end_turn_btn_click")
+	
+func start_btn_clicked():
+	emit_signal("start_btn_clicked")
 	
 func unit_move_btn_click(btn_down):
 	emit_signal("unit_move_btn_click",btn_down)

@@ -44,8 +44,6 @@ func _ready():
 	fow_canvas.draw_fow(fow)
 	
 	
-
-
 func game_object_clicked_left(obj:GameObject):
 	if is_turn:
 		if obj.get_parent() == self:
@@ -181,11 +179,8 @@ func reset_visible():
 		
 func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 	if unit in self.units:
-		var old_visible = Hex.hex_in_range(2,from) 
-		old_visible.append(from)
-		var new_visible = Hex.hex_in_range(2,to)
-		new_visible.append(to)
-		print ("unit moved")
+		var old_visible = Hex.hex_in_range(self.unit_vis_range,from) 
+		var new_visible = Hex.hex_in_range(self.unit_vis_range,to)
 		
 		for i in old_visible:
 			if i in new_visible:

@@ -24,6 +24,8 @@ extends Camera2D
 
 class_name PlayerCamera
 
+var testing = false
+
 # Camera control settings:
 # key - by keyboard
 # drag - by clicking mouse button, right mouse button by default;
@@ -113,11 +115,11 @@ func _physics_process(delta):
 			area_to_see.end.x = max(area_to_see.end.x,point.x)
 			area_to_see.end.y = max(area_to_see.end.y,point.y)
 		var zoom_out_area = (area_to_see.size/(get_viewport().get_visible_rect().size))*1.5
-		zoom_out_limit = max(zoom_out_area.x,zoom_out_area.y)
+		if !testing:
+			zoom_out_limit = max(zoom_out_area.x,zoom_out_area.y)
 	if area_to_see.size.x > 0 and area_to_see.size.y > 0:
 
 	# Update position of the camera.
-		var testing = false
 		if area_to_see.has_point(self.position + (camera_movement * get_zoom()))  or testing:
 			position += camera_movement * get_zoom()
 	else:

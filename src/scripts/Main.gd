@@ -3,25 +3,28 @@ extends Node2D
 class_name main
 
 var players: Array
-var raiders: Array
 var curr_player: Player
 var curr_camera: Camera2D
 var game_turn: int
+var game_started: bool
 
 func _input(event):
-	if event is InputEventMouseButton and event.is_pressed():
-		var global_click_position =  (curr_camera.get_camera_position() + 
-			(( event.position - curr_camera.get_viewport().get_visible_rect().size/2) * curr_camera.scale * curr_camera.get_zoom()))
-		var hex_coord = Hex.point_to_hex(global_click_position)
-#		print("global click: " + str(global_click_position))
-#		print("hex click: " + str(hex_coord))
-		if event.button_index == BUTTON_LEFT:
-			SignalManager.mouse_left_tilemap(hex_coord)
-		elif event.button_index == BUTTON_RIGHT:
-			SignalManager.mouse_right_tilemap(hex_coord)
+	if self.game_started:
+		if event is InputEventMouseButton and event.is_pressed():
+			var global_click_position =  (curr_camera.get_camera_position() + 
+				(( event.position - curr_camera.get_viewport().get_visible_rect().size/2) * curr_camera.scale * curr_camera.get_zoom()))
+			var hex_coord = Hex.point_to_hex(global_click_position)
+	#		print("global click: " + str(global_click_position))
+	#		print("hex click: " + str(hex_coord))
+			if event.button_index == BUTTON_LEFT:
+				SignalManager.mouse_left_tilemap(hex_coord)
+			elif event.button_index == BUTTON_RIGHT:
+				SignalManager.mouse_right_tilemap(hex_coord)
 			
 func _init():
 	SignalManager.connect("player_turn_ended",self,"next_player")
+	SignalManager.connect("start_btn_clicked",self,"start_game")
+	self.game_started = false
 	self.game_turn = 0
 	
 
@@ -41,9 +44,10 @@ func next_player(player):
 
 func _ready():
 	randomize()
-	start_game()
+	$TileMap.clear()
 	
 func start_game():
+	
 	var map_made = false
 	var player_start_areas
 	var idx = 0
@@ -53,12 +57,14 @@ func start_game():
 		player_start_areas = init_player_start_areas(4)
 		if typeof(player_start_areas) == TYPE_ARRAY:
 			map_made = true
-			
-	init_players(4, player_start_areas)
-	curr_player = players.front()
-	curr_player.turn_start()
-	curr_camera = curr_player.camera
-	self.game_turn = 0
+	if map_made:
+		self.find_node("StartGui").visible = false
+		init_players(4, player_start_areas)
+		curr_player = players.front()
+		curr_player.turn_start()
+		curr_camera = curr_player.camera
+		self.game_turn = 0
+		self.game_started = true
 	
 func init_player_start_areas(num_players):
 	var start_areas = Array()
