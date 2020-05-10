@@ -21,14 +21,15 @@ func _init(start_hex:Vector2).(start_hex,false):
 	SignalManager.connect("build_btn_click",self,"start_build")
 	SignalManager.connect("unit_moved",self,"unit_moved")
 	SignalManager.connect("move_wait_finished",self,"unit_turn_finished")
-	self.camera = preload("res://scenes/Camera.tscn").instance()
-	self.add_child(self.camera)
-	camera.position = Hex.hex_to_point(start_hex)
-	camera.zoom = Vector2(0.3,0.3)
-	$Camera2D/CanvasLayer/MainGui.visible = false
 	
 	self.unit_vis_range = 2
 	self.building_vis_range = 3
+	
+	self.camera = preload("res://scenes/Camera.tscn").instance()
+	camera.position = Hex.hex_to_point(start_hex)
+	camera.zoom = Vector2(0.3,0.3)
+	self.add_child(self.camera)
+	$Camera2D/CanvasLayer/MainGui.visible = false
 	
 	fow_canvas = preload("res://scripts/DrawFogOfWar.gd").new()###############
 	fow_canvas.visible = false
@@ -39,8 +40,11 @@ func _ready():
 	var start_area_hex = Hex.hex_in_range(4,self.start_hex)
 	for i in start_area_hex:
 		fow.erase(i)
-		
+		not_fow.append(i)
 	fow_canvas.draw_fow(fow)
+	
+	
+
 
 func game_object_clicked_left(obj:GameObject):
 	if is_turn:
@@ -160,17 +164,17 @@ func reset_visible():
 	for i in self.units:
 		var hex_area = Hex.hex_in_range(self.unit_vis_range,i.hex_pos)
 		visible_tiles += hex_area
-		visible_tiles.append(i.hex_pos)
 		for j in hex_area:
-			fow.erase(j)
-		fow.erase(i.hex_pos)
+			if fow.has(j):
+				fow.erase(j)
+				not_fow.append(j)
 	for i in self.buildings:
 		var hex_area = Hex.hex_in_range(self.building_vis_range,i.hex_pos)
 		visible_tiles += hex_area
-		visible_tiles.append(i.hex_pos)
 		for j in hex_area:
-			fow.erase(j)
-		fow.erase(i.hex_pos)
+			if fow.has(j):
+				fow.erase(j)
+				not_fow.append(j)
 	self.fow_canvas.fog_of_war = self.fow
 	self.fow_canvas.visible_tiles = self.visible_tiles
 	self.fow_canvas.draw()
@@ -191,8 +195,9 @@ func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 				
 		for i in new_visible:
 			self.visible_tiles.append(i)
-			if i in self.fow:
+			if self.fow.has(i):
 				self.fow.erase(i)
+				self.not_fow.append(i)
 	self.fow_canvas.fog_of_war = self.fow
 	self.fow_canvas.visible_tiles = self.visible_tiles
 	self.fow_canvas.draw()

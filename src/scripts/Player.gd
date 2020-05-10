@@ -40,6 +40,7 @@ func _ready():
 	var start_area_hex = Hex.hex_in_range(4,self.start_hex)
 	for i in start_area_hex:
 		fow.erase(i)
+		not_fow.append(i)
 
 func reset_visible():
 	visible_tiles = Array()
@@ -49,7 +50,8 @@ func reset_visible():
 		visible_tiles += hex_area
 		visible_tiles.append(i.hex_pos)
 		for j in hex_area:
-			if fow.erase(j):
+			if fow.has(j):
+				fow.erase(j)
 				not_fow.append(j)
 				
 	for i in self.buildings:
@@ -58,7 +60,8 @@ func reset_visible():
 		visible_tiles += hex_area
 		visible_tiles.append(i.hex_pos)
 		for j in hex_area:
-			if fow.erase(j):
+			if fow.has(j):
+				fow.erase(j)
 				not_fow.append(j)
 		
 func set_selected_object(obj:GameObject):
@@ -140,6 +143,8 @@ func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 		for i in new_visible:
 			self.visible_tiles.append(i)
 			if i in self.fow:
-				self.fow.erase(i)
+				if self.fow.has(i):
+					self.fow.erase(i)
+					self.not_fow.append(i)
 	
 

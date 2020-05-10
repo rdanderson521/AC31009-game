@@ -26,6 +26,8 @@ signal moves_left_change(unit,m)
 signal unit_moved(unit,from,to)
 signal move_wait_finished(unit)
 signal make_unit_move(unit_to_move,unit_sender)
+signal kill_unit(unit)
+signal kill_building(building)
 
 var mouse_entered: Array
 var mouse_over_gui: bool
@@ -141,3 +143,9 @@ func move_wait_finished(unit):
 	
 func make_unit_move(unit_to_move,unit_sender):
 	emit_signal("make_unit_move",unit_to_move,unit_sender)
+	
+func kill_unit(unit):
+	emit_signal("kill_unit",unit)
+	
+func kill_building(building):
+	emit_signal("kill_building",building)

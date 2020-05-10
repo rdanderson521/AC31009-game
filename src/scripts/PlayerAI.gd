@@ -190,10 +190,6 @@ func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 func turn_decisions():
 	self.update_scores()
 	
-	
-	
-	
-	
 	for i in self.units:
 		if !self.units_assigned.has(i):
 			self.units_assigned[i] = null
@@ -211,20 +207,28 @@ func turn_decisions():
 			
 	for i in self.units_attention_needed:
 		if self.units_assigned[i] == EXPLORE:
-			self.unit_profiles[i].select_task()
-		elif self.units_assigned[i] == ATTACK:
-			print("attack")
-			if self.attack_target != null:
-				var target_cities = self.attack_target.get_cities()
-				if !target_cities.empty():
-					self.unit_profiles[i].attack_city(target_cities.front()["building"])
-				else:
-					print("no cities")
+			if self.explore_priority[explore.FOW] > self.explore_priority[explore.CITY]:
+				self.unit_profiles[i].explore_fow()
 			else:
-				print("target null")
+				self.unit_profiles[i].go_to_object(explore_target.city)
+		elif self.units_assigned[i] == ATTACK:
+			if self.attack_target != null:
+				if self.attack_priority[attack.CITY] > self.attack_priority[attack.UNIT]:
+					var target_cities = self.attack_target.get_cities()
+					if !target_cities.empty():
+						self.unit_profiles[i].attack_city(target_cities.front()["building"])
+				else:
+					var target_units = self.attack_target.units
+					if !target_units.empty():
+						var unit_to_attack
+						var distance = -1
+						for j in target_units:
+							if distance == -1 or distance > Hex.hex_distance(j["unit_cpy"].hex_pos,i.hex_pos) + j["last_seen"]:
+								unit_to_attack = j
+								distance = Hex.hex_distance(j["unit_cpy"].hex_pos,i.hex_pos) + j["last_seen"]
+						self.unit_profiles[i].attack_unit(unit_to_attack["unit"])
 		elif self.units_assigned[i] == DEFEND:
-			print("defend")
-			self.unit_profiles[i].go_to_city(self.city_profiles[self.buildings.front()].city)
+			self.unit_profiles[i].go_to_object(self.city_profiles[self.buildings.front()].city)
 		elif self.units_assigned[i] == EXPAND:
 			self.unit_profiles[i].select_task()
 		
@@ -338,7 +342,7 @@ func update_scores():
 			if max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.attack_score) > self.attack_priority[attack.BUILD]:
 				self.attack_priority[attack.BUILD] = max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.attack_score)
 		
-		if self.city_defence_score > 0:
+		if self.city_defence_score > 0 and i.attack_score > 0:
 			var new_defence_priority = (max(i.aggression/i.attack_score,0.5)*i.attack_score)/(self.city_defence_score)#max(i.aggression/defence,i.attack_score/defence)#max(0.2,i.aggression) * max(i.attack_score/defence,0)
 			if new_defence_priority > self.defence_priority[defence.PRIORITY]:
 				self.defence_priority[defence.PRIORITY] = new_defence_priority
@@ -436,14 +440,14 @@ class UnitProfile:
 		else:
 			self.unit.explore(self.player.fow)
 	
-	func go_to_city(city,dist = 3):
-		var closest_hex = Hex.closest_hex_in_range(city.hex_pos,dist,self.unit.hex_pos)
+	func go_to_object(object,dist = 3):
+		var closest_hex = Hex.closest_hex_in_range(object.hex_pos,dist,self.unit.hex_pos)
 		if !self.unit.find_path(closest_hex):
-			var near_hex = Hex.hex_in_range(dist,city.hex_pos)
+			var near_hex = Hex.hex_in_range(dist,object.hex_pos)
 			near_hex.shuffle()
 			for i in near_hex:
 				if dist > 1:
-					if Hex.hex_distance(i,city.hex_pos) <= 1:
+					if Hex.hex_distance(i,object.hex_pos) <= 1:
 						continue
 				if self.unit.find_path(i):
 					return true
@@ -457,8 +461,50 @@ class UnitProfile:
 			print("attacking")
 			self.unit.attack(city)
 		else:
+			self.go_to_object(city,self.unit.attack_range)
 			
-			self.go_to_city(city,self.unit.attack_range)
+	func attack_unit(enemy):
+		print("atack city")
+		if self.unit.attack_range >= Hex.hex_distance(self.unit.hex_pos,enemy.hex_pos):
+			print("attacking")
+			self.unit.attack(enemy)
+		else:
+			self.go_to_object(enemy,self.unit.attack_range)
+			
+	func explore_fow(dist=10):
+		var start_time = OS.get_ticks_msec()
+		if !self.player.fow.empty():
+			var fow = self.player.fow.duplicate()
+			var player_center = Vector2(0,0)
+			var player_center_input = 0
+			if !self.player.area.empty():
+				for i in self.player.area:
+					player_center += i
+					player_center_input += 1
+			else:
+				for i in self.player.units:
+					if i == self.unit:
+						continue
+					player_center += i.hex_pos
+					player_center_input += 1
+			player_center = player_center/player_center_input
+			
+			var found = false
+			var idx = 0
+			while !found and !fow.empty():
+				idx += 1
+				var search_area = Hex.hex_in_range(dist*idx,player_center)
+				if self.player.not_fow.size() > 0.8*search_area.size():
+					continue
+				fow.shuffle()
+				for i in fow:
+					if i in search_area:
+						if self.unit.find_path(i):
+							found = true
+							break
+						else:
+							fow.erase(i)
+			print("time taken explore: ", OS.get_ticks_msec()-start_time)
 	
 	func builder_select_task():
 		if self.unit.can_build_city and self.unit.can_build: ################### CHANGE: make ai build buildings around city if not building city
@@ -672,6 +718,8 @@ class PlayerProfile:
 		attack_score = 0
 		defence_score = 0
 		city_defence_score = 0
+		SignalManager.connect("kill_unit",self,"unit_killed")
+		SignalManager.connect("kill_building",self,"building_killed")
 		
 	func get_cities():
 		return self.buildings.values()
@@ -729,6 +777,14 @@ class PlayerProfile:
 		for i in buildings.values():
 			i["updated"] = false
 			
+	func unit_killed(unit):
+		if self.units.has(unit):
+			units.erase(unit)
+			
+	func building_killed(building):
+		if self.buildings.has(building):
+			buildings.erase(building)
+		
 			
 		
 	

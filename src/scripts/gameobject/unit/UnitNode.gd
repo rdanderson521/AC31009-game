@@ -225,7 +225,6 @@ func explore(fow = Array(),dist=10):
 				if self.find_path(i):
 					found = true
 					break
-				
 	if found:
 		pass
 		#print("time taken explore: ", OS.get_ticks_msec()-start_time)
@@ -266,6 +265,7 @@ func kill():
 	self.visible = false
 	GlobalConfig.unit_tiles.erase(self.hex_pos)
 	self.get_parent().kill(self)
+	SignalManager.kill_unit(self)
 	self.queue_free()
 	
 func can_build(building) -> bool:

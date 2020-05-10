@@ -115,6 +115,7 @@ func kill():
 	self.visible = false
 	GlobalConfig.building_tiles.erase(self.hex_pos)
 	self.get_parent().kill(self)
+	SignalManager.kill_building(self)
 	self.queue_free()
 			
 			
