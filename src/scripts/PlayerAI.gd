@@ -178,8 +178,20 @@ func turn_decisions():
 	for i in self.units_attention_needed:
 		self.unit_profiles[i].select_task()
 	
+	var total_build_priority = self.attack_priority[attack.BUILD] + self.defence_priority[defence.BUILD] + self.explore_priority[explore.BUILD] + self.expand_priority[expand.BUILD]
+	var build_unit_priorities = {ATTACK:self.attack_priority[attack.BUILD]/total_build_priority,DEFEND:self.defence_priority[defence.BUILD]/total_build_priority,
+		EXPAND:self.expand_priority[expand.BUILD]/total_build_priority,EXPLORE:self.explore_priority[explore.BUILD]/total_build_priority}
+	
+	var buildings_ready = self.buildings_attention_needed.size()
 	for i in self.buildings_attention_needed:
-		i.select_task()
+		var highest_priority_unit = 0
+		for j in build_unit_priorities.keys():
+			if build_unit_priorities[j] > highest_priority_unit:
+				highest_priority_unit = j
+		print("building unit: ",highest_priority_unit)
+		build_unit_priorities[highest_priority_unit] -= 1/buildings_ready
+		
+		i.select_task(highest_priority_unit)
 		
 		
 	self.turn_end()
@@ -239,13 +251,11 @@ func update_scores():
 		if max_aggression < i.aggression:
 			max_aggression = i.aggression
 			max_aggressor = i
-			attack_target = i
 		
-		if i.city_defence_score > 0 and (self.attack_score/(2*i.city_defence_score)) > self.attack_priority[attack.CITY]:
-			self.attack_priority[attack.CITY] = (i.city_defence_score/self.attack_score)
+		if (self.attack_score/(2*max(1,i.city_defence_score))) > self.attack_priority[attack.CITY]:
+			self.attack_priority[attack.CITY] = (self.attack_score/(2*max(1,i.city_defence_score)))
 		if (i.city_defence_score/self.attack_score) > self.attack_priority[attack.BUILD]:
 			self.attack_priority[attack.BUILD] = (i.city_defence_score/self.attack_score)
-		
 		
 		if self.city_defence_score > 0 and  max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.city_defence_score) > self.attack_priority[attack.UNIT]:
 			self.attack_priority[attack.UNIT] = max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.city_defence_score)
@@ -472,23 +482,71 @@ class CityProfile:
 					
 	func select_task(priority = EXPLORE):
 		if self.city.can_build():
-			var resources = self.city.resources_per_turn
-			var build_options = self.city.build_options
 			if priority == EXPLORE:
-				var best_option
-				var dist_per_turn = 0
-				for i in build_options.values():
-					if i["type"] == "Unit":
-						var move_range = UnitFactory.unit_templates_by_name[i["name"]]["move_range"]
-						var cost = i["cost"]
-						var turns = -1
-						for j in cost.keys():
-							turns = max(turns,cost[j]/resources[j])
-						if move_range/turns > dist_per_turn:
-							dist_per_turn = move_range/turns
-							best_option = i["name"]
-				if city.can_build(best_option):
-					city.start_build(best_option)
+				self.build_explore_unit()
+			elif priority == ATTACK:
+				self.build_attack_unit()
+			elif priority == DEFEND:
+				self.build_defence_unit()
+			elif priority == EXPAND:
+				pass
+				
+	func build_explore_unit():
+		var resources = self.city.resources_per_turn
+		var build_options = self.city.build_options
+		var best_option
+		var dist_per_turn = 0
+		for i in build_options.values():
+			if i["type"] == "Unit":
+				var move_range = UnitFactory.unit_templates_by_name[i["name"]]["move_range"]
+				var cost = i["cost"]
+				var turns = -1
+				for j in cost.keys():
+					turns = max(turns,cost[j]/resources[j])
+				if move_range/turns > dist_per_turn:
+					dist_per_turn = move_range/turns
+					best_option = i["name"]
+		print(best_option)
+		if city.can_build(best_option):
+			city.start_build(best_option)
+			
+	func build_attack_unit():
+		var resources = self.city.resources_per_turn
+		var build_options = self.city.build_options
+		var best_option
+		var attack_per_turn = 0
+		for i in build_options.values():
+			if i["type"] == "Unit":
+				var attack = UnitFactory.unit_templates_by_name[i["name"]]["damage"]
+				var cost = i["cost"]
+				var turns = -1
+				for j in cost.keys():
+					turns = max(turns,cost[j]/resources[j])
+				if attack/turns > attack_per_turn:
+					attack_per_turn = attack/turns
+					best_option = i["name"]
+		print(best_option)
+		if city.can_build(best_option):
+			city.start_build(best_option)
+			
+	func build_defence_unit():
+		var resources = self.city.resources_per_turn
+		var build_options = self.city.build_options
+		var best_option
+		var defence_per_turn = 0
+		for i in build_options.values():
+			if i["type"] == "Unit":
+				var defence = UnitFactory.unit_templates_by_name[i["name"]]["defence"]
+				var cost = i["cost"]
+				var turns = -1
+				for j in cost.keys():
+					turns = max(turns,cost[j]/resources[j])
+				if defence/turns > defence_per_turn:
+					defence_per_turn = defence/turns
+					best_option = i["name"]
+		print(best_option)
+		if city.can_build(best_option):
+			city.start_build(best_option)
 							
 class PlayerProfile:
 	var enemy

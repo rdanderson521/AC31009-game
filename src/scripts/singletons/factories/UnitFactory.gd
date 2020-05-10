@@ -130,6 +130,7 @@ func build_unit(unit_to_build,hex,player) -> Unit:
 	unit.can_build_city = unit_template["can_build_city"]
 	unit.can_build = unit_template["can_build"]
 	unit.can_trade = unit_template["can_trade"]
+	unit.texture = unit_template["texture"]
 	unit.player = player
 	return unit
 	
@@ -148,7 +149,6 @@ func copy_unit(unit_to_copy) -> Unit:
 	unit.can_build_city = unit_to_copy.can_build_city
 	unit.can_build = unit_to_copy.can_build
 	unit.can_trade = unit_to_copy.can_trade
-	unit.texture = unit_to_copy.texture
 	unit.player = null
 	unit.visible = false
 	return unit
