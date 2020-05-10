@@ -110,6 +110,12 @@ func update_build_options():
 	self.build_options.clear()
 	for i in UnitFactory.unit_templates:
 		self.build_options[i["name"]] = {"name":i["name"],"cost":i["cost"].duplicate(),"type":"Unit"}
+		
+func kill():
+	self.visible = false
+	GlobalConfig.building_tiles.erase(self.hex_pos)
+	self.get_parent().kill(self)
+	self.queue_free()
 			
 			
 func _draw():

@@ -58,6 +58,18 @@ static func hex_in_range(distance, hex, debug = false):
 		print("hex: " + str(hex))
 		print("in range: " + str(hex_in_range))
 	return hex_in_range
+	
+static func closest_hex_in_range(hex_a, size, hex_b):
+	var dist = hex_distance(hex_a,hex_b)
+	if dist >= 1:
+		var cube_a = axial_to_cube(hex_a)
+		var cube_b = axial_to_cube(hex_b)
+		var cube_diff = cube_a - cube_b
+		
+		var cube_c = Vector3(cube_a.x + round(cube_diff.x/(dist/size)),cube_a.y + round(cube_diff.y/(dist/size)),cube_a.z + round(cube_diff.z/(dist/size)))
+		return cube_to_axial(cube_c)
+	else:
+		return hex_a
 
 static func hex_distance(hex_a, hex_b):
 	var cube_a = axial_to_cube(hex_a)

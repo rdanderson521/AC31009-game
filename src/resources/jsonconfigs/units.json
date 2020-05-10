@@ -33,7 +33,7 @@
 		"health":20,
 		"damage":5,
 		"damage_range":1,
-		"defence":10,
+		"defence":6,
 		"move_range":5,
 		"can_build_city":false,
 		"can_build":false,

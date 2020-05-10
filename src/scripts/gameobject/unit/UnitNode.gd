@@ -208,7 +208,7 @@ func find_path(destination,debug = false):
 	print("failed")
 	return false 
 	
-func explore(fow,dist=10):
+func explore(fow = Array(),dist=10):
 	var start_time = OS.get_ticks_msec()
 	var found = false
 	var area = Hex.hex_in_range(dist,self.hex_pos)
@@ -249,7 +249,7 @@ func attack(enemy):
 				print("damage: " + str(damage))
 				
 				var enemy_damage = rand_range(0.8*enemy.defence,enemy.defence)
-				enemy_damage = enemy_damage * (enemy.moves_left+enemy.move_range)/(2*enemy.move_range)
+				#enemy_damage = enemy_damage * (enemy.moves_left+enemy.move_range)/(2*enemy.move_range)
 				enemy_damage -= rand_range(0.2*self.defence,0.4*self.defence)
 				enemy_damage = max(enemy_damage,0)
 				print("en damage: " + str(enemy_damage))
