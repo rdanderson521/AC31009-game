@@ -222,7 +222,7 @@ func turn_decisions():
 					if !target_units.empty():
 						var unit_to_attack
 						var distance = -1
-						for j in target_units:
+						for j in target_units.values():
 							if distance == -1 or distance > Hex.hex_distance(j["unit_cpy"].hex_pos,i.hex_pos) + j["last_seen"]:
 								unit_to_attack = j
 								distance = Hex.hex_distance(j["unit_cpy"].hex_pos,i.hex_pos) + j["last_seen"]
