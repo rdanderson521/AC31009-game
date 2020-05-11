@@ -30,6 +30,8 @@ func _init(start_hex:Vector2,debug=true):
 	self.selected_object = null
 	self.units_attention_needed = Array()
 	self.buildings_attention_needed = Array()
+	SignalManager.connect("kill_unit",self,"kill")
+	SignalManager.connect("kill_building",self,"kill")
 
 func _ready():
 	print("ready player")
@@ -66,15 +68,15 @@ func reset_visible():
 		
 func set_selected_object(obj:GameObject):
 	if obj is Unit:
-		selected_object = obj
 		SignalManager.building_unselected()
 		SignalManager.unit_selected(obj)
 	elif obj is Building:
-		selected_object = obj
 		SignalManager.unit_unselected()
 		SignalManager.building_selected(obj)
 	else:
 		SignalManager.unit_unselected()
+		SignalManager.building_unselected()
+	selected_object = obj
 		
 
 
@@ -102,21 +104,23 @@ func set_selected_object(obj:GameObject):
 #		self.fow_canvas.visible = false
 
 func kill(obj:GameObject):
-	if obj is Unit:
-		units.erase(obj)
-		if obj in units_attention_needed:
-			units_attention_needed.erase(obj)
-		if obj == selected_object:
-			self.selected_object = null
-			
-	elif obj is Building:
-		buildings.erase(obj)
-		if obj == selected_object:
-			self.selected_object = null
+	if obj.get_parent() == self:
+		if obj is Unit:
+			units.erase(obj)
+			if obj in units_attention_needed:
+				units_attention_needed.erase(obj)
+			if obj == selected_object:
+				self.selected_object = null
+		elif obj is Building:
+			buildings.erase(obj)
+			if obj == selected_object:
+				self.selected_object = null
 		
 func new_building(building:Building):
-	self.add_child(building)
 	self.buildings.append(building)
+	GlobalConfig.building_tiles[building.hex_pos] = building
+	if building.is_city:
+		GlobalConfig.city_tiles[building.hex_pos] = building
 	self.reset_visible()
 	if building.turn_start():
 		self.buildings_attention_needed.append(building)

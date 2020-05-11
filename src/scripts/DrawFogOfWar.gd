@@ -4,7 +4,8 @@ var fog_of_war: Array
 var visible_tiles: Array
 
 func _ready():
-	self.z_index += 4
+	#self.z_index += 4
+	pass
 
 func draw_fow(fow:Array):
 	self.fog_of_war = fow

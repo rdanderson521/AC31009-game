@@ -64,22 +64,24 @@ func unit_build_btn_click(btn_down):
 func mouse_entered_gui():
 	self.mouse_over_gui = true
 	emit_signal("mouse_entered_gui")
-	#print("mouse_entered_gui")
+	print("mouse_entered_gui")
 	
 func mouse_exited_gui():
 	self.mouse_over_gui = false
 	emit_signal("mouse_exited_gui")
-	#print("mouse_exited_gui")
+	print("mouse_exited_gui")
 	
 func mouse_entered_game_obj(obj):
 	mouse_entered.append(obj)
+	print("mouse_entered_game_obj")
 	emit_signal("mouse_entered_game_obj",obj)
-	#print("mouse_entered_game_obj")
+	
 	
 func mouse_exited_game_obj(obj):
 	mouse_entered.erase(obj)
+	print("mouse_exited_game_obj")
 	emit_signal("mouse_exited_game_obj",obj)
-	#print("mouse_exited_game_obj")
+	
 
 func mouse_left_game_obj(obj,double = false):
 	if !self.mouse_over_gui:
@@ -149,7 +151,11 @@ func make_unit_move(unit_to_move,unit_sender):
 	emit_signal("make_unit_move",unit_to_move,unit_sender)
 	
 func kill_unit(unit):
+	if unit in self.mouse_entered:
+		self.mouse_entered.erase(unit)
 	emit_signal("kill_unit",unit)
 	
 func kill_building(building):
+	if building in self.mouse_entered:
+		self.mouse_entered.erase(building)
 	emit_signal("kill_building",building)

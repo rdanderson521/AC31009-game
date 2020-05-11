@@ -48,6 +48,7 @@ text = "Health:"
 margin_left = 50.0
 margin_right = 286.0
 margin_bottom = 33.0
+mouse_filter = 1
 size_flags_horizontal = 3
 size_flags_vertical = 1
 rounded = true

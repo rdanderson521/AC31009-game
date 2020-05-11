@@ -22,11 +22,15 @@ var map_size: Vector2
 
 var unit_tiles: Dictionary
 var building_tiles: Dictionary
+var city_tiles: Dictionary
 
 func _init():
 	map = Dictionary()
 	unit_tiles = Dictionary()
 	building_tiles = Dictionary()
+	city_tiles = Dictionary()
+	SignalManager.connect("kill_unit",self,"kill_unit")
+	SignalManager.connect("kill_building",self,"kill_building")
 	
 func units_on(hex):
 	var units = Array()
@@ -38,4 +42,12 @@ func units_on(hex):
 		if self.unit_tiles.has(hex):
 				units.append(unit_tiles[hex])
 	return units
+	
+func kill_unit(unit):
+	self.unit_tiles.erase(unit.hex_pos)
+	
+func kill_building(building):
+	self.building_tiles.erase(building.hex_pos)
+	if building.is_city:
+		self.city_tiles.erase(building.hex_pos)
 

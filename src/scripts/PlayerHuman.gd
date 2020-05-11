@@ -43,7 +43,6 @@ func _ready():
 		not_fow.append(i)
 	fow_canvas.draw_fow(fow)
 	
-	
 func game_object_clicked_left(obj:GameObject):
 	if is_turn:
 		if obj.get_parent() == self:
@@ -92,12 +91,10 @@ func game_object_clicked_right(obj:GameObject):
 func tilemap_clicked_left(hex:Vector2):
 	if is_turn:
 		if selected_object != null:
-			if mode == MOVE and selected_object is Unit:
-				selected_object.find_path(hex)
+			if mode == MOVE and self.selected_object is Unit:
+				self.selected_object.find_path(hex)
 			else:
 				self.selected_object = null
-				SignalManager.unit_unselected()
-				SignalManager.building_unselected()
 				
 func tilemap_clicked_right(hex:Vector2):
 	if is_turn:

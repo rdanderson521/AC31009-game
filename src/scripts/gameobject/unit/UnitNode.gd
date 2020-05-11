@@ -263,8 +263,6 @@ func attack(enemy):
 			
 func kill():
 	self.visible = false
-	GlobalConfig.unit_tiles.erase(self.hex_pos)
-	self.get_parent().kill(self)
 	SignalManager.kill_unit(self)
 	self.queue_free()
 	
@@ -272,14 +270,15 @@ func can_build(building) -> bool:
 	if self.hex_pos in GlobalConfig.building_tiles.keys():
 		return false
 	if BuildingFactory.building_templates_by_name[building]["is_city"] and self.can_build_city:
+		
 		return true
 	elif BuildingFactory.building_templates_by_name[building]["is_district"] and self.can_build:
 		return true
 	return false
 	
 func start_build(building_name:String):
-	print("start build")
-	if moves_left > 0:
+	if moves_left > 0 and !self.mode in [BUILD]:
+		print("start build")
 		if BuildingFactory.building_templates_by_name.has(building_name):
 			self.build_turns_left = BuildingFactory.building_templates_by_name[building_name]["build_turns"]
 			if build_turns_left == 0:

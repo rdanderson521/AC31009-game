@@ -5,7 +5,7 @@
 		"damage":20,
 		"damage_range":1,
 		"defence":15,
-		"move_range":3,
+		"move_range":2,
 		"can_build_city":false,
 		"can_build":false,
 		"cost":{
@@ -20,7 +20,7 @@
 		"damage":30,
 		"damage_range":1,
 		"defence":30,
-		"move_range":3,
+		"move_range":2,
 		"can_build_city":false,
 		"can_build":false,
 		"cost":{
@@ -34,7 +34,7 @@
 		"damage":5,
 		"damage_range":1,
 		"defence":6,
-		"move_range":5,
+		"move_range":4,
 		"can_build_city":false,
 		"can_build":false,
 		"cost":{
@@ -48,7 +48,7 @@
 		"damage":0,
 		"damage_range":1,
 		"defence":3,
-		"move_range":3,
+		"move_range":2,
 		"can_build_city":true,
 		"can_build":false,
 		"cost":{
@@ -63,7 +63,7 @@
 		"damage":0,
 		"damage_range":1,
 		"defence":3,
-		"move_range":3,
+		"move_range":2,
 		"can_build_city":false,
 		"can_build":true,
 		"cost":{
