@@ -10,6 +10,8 @@ func _init():
 	SignalManager.connect("building_file_read",self,"add_building_buttons")
 	self.visible = false
 	
+
+	
 func _ready():
 	var btn_list = self.find_node("BuildingBtnLst")
 	if btn_list != null:

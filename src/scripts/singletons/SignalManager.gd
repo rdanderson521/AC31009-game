@@ -6,8 +6,9 @@ signal start_btn_clicked
 signal unit_move_btn_click(btn_down)
 signal unit_attack_btn_click(btn_down)
 signal unit_build_btn_click(btn_down)
-signal mouse_entered_gui
-signal mouse_exited_gui
+signal mouse_entered_gui(gui)
+signal mouse_exited_gui(gui)
+signal gui_closed(gui)
 signal mouse_entered_game_obj(obj)
 signal mouse_exited_game_obj(obj)
 signal mouse_left_game_obj(obj)
@@ -32,11 +33,13 @@ signal kill_building(building)
 
 var mouse_entered: Array
 var mouse_over_gui: bool
+var mouse_over_gui_list: Array
 var last_clicked: GameObject
 
 func _init():
 	self.mouse_entered = Array()
 	self.mouse_over_gui = false
+	self.mouse_over_gui_list = Array()
 
 func tech_tree_btn_click():
 	emit_signal("tech_tree_btn_click")
@@ -61,15 +64,29 @@ func unit_build_btn_click(btn_down):
 	emit_signal("unit_build_btn_click",btn_down)
 	#print("unit_build_btn_click")
 	
-func mouse_entered_gui():
+func mouse_entered_gui(gui):
+	print("gui: ",gui.name)
+	self.mouse_over_gui_list.append(gui)
 	self.mouse_over_gui = true
 	emit_signal("mouse_entered_gui")
-	print("mouse_entered_gui")
+	#print("mouse_entered_gui")
 	
-func mouse_exited_gui():
-	self.mouse_over_gui = false
+func mouse_exited_gui(gui):
+	self.mouse_over_gui_list.erase(gui)
+	if self.mouse_over_gui_list.empty():
+		self.mouse_over_gui = false
+		print("gui false")
+	else:
+		print("mouse over gui still:",mouse_over_gui_list)
 	emit_signal("mouse_exited_gui")
-	print("mouse_exited_gui")
+	#print("mouse_exited_gui")
+	
+func gui_closed(gui):
+	if gui in self.mouse_over_gui_list:
+		self.mouse_over_gui_list.erase(gui)
+		if self.mouse_over_gui_list.empty():
+			self.mouse_over_gui = false
+	emit_signal("gui_closed",gui)
 	
 func mouse_entered_game_obj(obj):
 	mouse_entered.append(obj)
