@@ -9,7 +9,7 @@
 		"can_build_city":false,
 		"can_build":false,
 		"cost":{
-			"food":30
+			"food":60
 		},
 		"texture":"res://resources/images/warrior.png",
 		"start":1
@@ -24,7 +24,7 @@
 		"can_build_city":false,
 		"can_build":false,
 		"cost":{
-			"food":50
+			"food":85
 		},
 		"texture":"res://resources/images/warrior.png",
 	},
@@ -38,7 +38,7 @@
 		"can_build_city":false,
 		"can_build":false,
 		"cost":{
-			"food":20
+			"food":40
 		},
 		"texture":"res://icon.png"
 	},
@@ -52,7 +52,7 @@
 		"can_build_city":true,
 		"can_build":false,
 		"cost":{
-			"food":40
+			"food":90
 		},
 		"texture":"res://icon.png",
 		"start":1
@@ -67,7 +67,7 @@
 		"can_build_city":false,
 		"can_build":true,
 		"cost":{
-			"food":25
+			"food":50
 		},
 		"texture":"res://icon.png"
 	}

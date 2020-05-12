@@ -2,6 +2,7 @@ extends Node
 
 var game_object = preload("res://scenes/GameObject.tscn")
 var building_script = preload("res://scripts/gameobject/building/BuildingNode.gd")
+var city_script = preload("res://scripts/gameobject/building/CityNode.gd")
 
 var building_templates: Array
 var building_templates_by_name: Dictionary
@@ -25,6 +26,11 @@ func init_building() -> Building:
 	var building = game_object.instance()
 	building.set_script(building_script)
 	return building
+	
+func init_city() -> City:
+	var city = game_object.instance()
+	city.set_script(city_script)
+	return city
 
 func check_templates(templates):
 	for i in templates:
@@ -91,14 +97,16 @@ func check_templates(templates):
 	return templates
 
 func build_building(to_build,hex,player):
-	var building = init_building()
+	var building
 	var template = building_templates_by_name[to_build]
+	if template["is_city"]:
+		building = init_city()
+		building.area = Hex.hex_in_range(1,hex)
+	else:
+		building = init_building()
 	building.hex_pos = hex
 	building.position = Hex.hex_to_point(hex)
 	building.type = template["name"]
-	building.is_city = template["is_city"]
-	if building.is_city:
-		building.area = Hex.hex_in_range(1,hex)
 	building.is_district = template["is_district"]
 	building.health_max = template["health"]
 	building.health = template["health"]
@@ -111,7 +119,7 @@ func build_building(to_build,hex,player):
 	
 	return building
 	
-func copy_building(to_copy):
+func copy_building(to_copy: Building):
 	var building = init_building()
 	building.hex_pos = to_copy.hex_pos
 	building.position = to_copy.hex_pos
@@ -129,6 +137,22 @@ func copy_building(to_copy):
 	building.texture = to_copy.texture
 	
 	return building
+	
+func copy_city(to_copy: City):
+	var city = init_city()
+	city.hex_pos = to_copy.hex_pos
+	city.position = to_copy.hex_pos
+	city.type = to_copy.type
+	city.area = to_copy.area.duplicate()
+	city.health_max = to_copy.health_max
+	city.health = to_copy.health
+	city.attack = to_copy.attack
+	city.attack_range = to_copy.attack_range
+	city.defence = to_copy.defence
+	city.improvements = to_copy.improvements.duplicate()
+	city.texture = to_copy.texture
+	
+	return city
 
 
 	

@@ -33,4 +33,4 @@ grid_y = 40
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 2 )
-autoplay = true
+volume_db = -10.0

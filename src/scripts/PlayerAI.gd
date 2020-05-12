@@ -39,10 +39,10 @@ var attack_type: int
 
 var defence_type: int
 
-enum attack{BUILD=0,MOVE=12,UNIT=1,CITY=2}
-enum defence{BUILD=3,MOVE=4,PRIORITY=5}
-enum expand{BUILD=6,CITY=7,IMPROVEMENT=8}
-enum explore{BUILD=9,MOVE=13,CITY=10,FOW=11}
+enum attack{BUILD,MOVE,CITY,UNIT}
+enum defence{BUILD,MOVE,PRIORITY}
+enum expand{BUILD,CITY,IMPROVEMENT}
+enum explore{BUILD,MOVE,CITY,FOW}
 
 enum {EXPLORE,EXPAND,ATTACK,DEFEND}
 
