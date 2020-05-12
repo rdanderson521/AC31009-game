@@ -24,7 +24,7 @@ extends Camera2D
 
 class_name PlayerCamera
 
-var testing = true
+var testing = false
 
 # Camera control settings:
 # key - by keyboard

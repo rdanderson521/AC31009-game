@@ -65,7 +65,6 @@ func unit_build_btn_click(btn_down):
 	#print("unit_build_btn_click")
 	
 func mouse_entered_gui(gui):
-	print("gui: ",gui.name)
 	self.mouse_over_gui_list.append(gui)
 	self.mouse_over_gui = true
 	emit_signal("mouse_entered_gui")
@@ -75,9 +74,6 @@ func mouse_exited_gui(gui):
 	self.mouse_over_gui_list.erase(gui)
 	if self.mouse_over_gui_list.empty():
 		self.mouse_over_gui = false
-		print("gui false")
-	else:
-		print("mouse over gui still:",mouse_over_gui_list)
 	emit_signal("mouse_exited_gui")
 	#print("mouse_exited_gui")
 	
@@ -90,13 +86,13 @@ func gui_closed(gui):
 	
 func mouse_entered_game_obj(obj):
 	mouse_entered.append(obj)
-	print("mouse_entered_game_obj")
+	#print("mouse_entered_game_obj")
 	emit_signal("mouse_entered_game_obj",obj)
 	
 	
 func mouse_exited_game_obj(obj):
 	mouse_entered.erase(obj)
-	print("mouse_exited_game_obj")
+	#print("mouse_exited_game_obj")
 	emit_signal("mouse_exited_game_obj",obj)
 	
 
