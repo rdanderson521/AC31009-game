@@ -2,3 +2,6 @@
 experimental/.mono/
 src/.mono/
 build/
+**/*.sample
+**/*.wav
+audacity/
