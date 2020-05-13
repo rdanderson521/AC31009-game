@@ -4,13 +4,14 @@ class_name Player
 var units: Array
 var buildings: Array
 var cities: Array
+var city_area: Dictionary
+var area: Array
 var units_attention_needed: Array
 var buildings_attention_needed: Array
 var is_turn: bool
 var selected_object: GameObject setget set_selected_object
 var start_hex: Vector2
 var turn: int
-var area: Array
 var colour: Color
 var unit_vis_range: int
 var building_vis_range: int
@@ -24,6 +25,7 @@ func _init(start_hex:Vector2):
 	self.units = Array()
 	self.buildings = Array()
 	self.cities = Array()
+	self.city_area = Dictionary()
 	self.fow = Array()
 	self.not_fow = Array()
 	self.turn = 0
@@ -123,9 +125,25 @@ func new_building(building:Building):
 	if building is City:
 		GlobalConfig.city_tiles[building.hex_pos] = building
 		self.cities.append(building)
+		for i in building.area:
+			self.area.append(i)
+			self.city_area[i] = building
+	else:
+		if self.city_area.has(building.hex_pos):
+			self.city_area[building.hex_pos].add_building(building)
+			
 	self.visible_tiles += Hex.hex_in_range(self.building_vis_range,building.hex_pos)
 	if building.turn_start():
 		self.buildings_attention_needed.append(building)
+		
+func can_build(building:String,hex:Vector2)->bool:
+	if BuildingFactory.building_templates_by_name.has(building):
+		if BuildingFactory.building_templates_by_name[building]["is_city"]:
+			return true
+		else:
+			if hex in self.area:
+				return true
+	return false
 	
 func new_unit(unit:Unit):
 	self.units.append(unit)

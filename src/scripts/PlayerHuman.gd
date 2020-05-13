@@ -136,7 +136,7 @@ func unit_turn_finished(unit:Unit):
 func start_build(to_build:String):
 	if self.is_turn:
 		if self.selected_object is Unit:
-			if self.selected_object.can_build(to_build):
+			if self.selected_object.can_build(to_build) and self.can_build(to_build,self.selected_object.hex_pos):
 				self.selected_object.start_build(to_build)
 		elif self.selected_object is Building:
 			if self.selected_object.can_build(to_build):

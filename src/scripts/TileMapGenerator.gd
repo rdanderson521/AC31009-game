@@ -1,7 +1,7 @@
 tool extends TileMap
 
-export(bool) var lakes: bool = false
-export(bool) var mountains: bool = false
+export(bool) var lakes: bool = true
+export(bool) var mountains: bool = true
 export(int) var blob_num: int = 70
 export(int) var blob_size: int = 100
 export(float) var blob_effect: float = 1
@@ -11,7 +11,6 @@ export(int) var grid_y: int = 60
 export(bool) var debug: bool = false
 export(bool) var inGame: bool = true
 export(bool) var generate: bool = false setget generate
-export(bool) var clear: bool = false setget onClear
 
 var map: Array
 var tiles = GlobalConfig.biomes 
@@ -187,12 +186,9 @@ func generate(generate):
 				GlobalConfig.map[Vector2(y.pos.x,y.pos.y)] = y.biome
 				GlobalConfig.map_size = Vector2(grid_x,grid_y)
 			
-func onClear(clear):
-	if clear:
-		clear = false
-		
-		var to_clear = get_used_cells()
-		
-		for i in to_clear:
-			set_cell(i.x,i.y,-1)
-		
+func clear():
+	var to_clear = get_used_cells()
+	
+	for i in to_clear:
+		set_cell(i.x,i.y,-1)
+	

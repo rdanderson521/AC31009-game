@@ -8,7 +8,6 @@ var buildings: Array
 
 func _ready():
 	self.build_options_outdated = true
-	self.get_parent().area += self.area
 	for i in self.area:
 		var tile_resources =  GlobalConfig.biome_resources[GlobalConfig.map[i]]
 		for j in tile_resources.keys():
@@ -45,6 +44,14 @@ func turn_start() -> bool:
 			return false
 
 	return true
+	
+func add_building(building:Building):
+	self.buildings.append(building)
+	for i in building.improvements.keys():
+		if self.resources_per_turn.has(i):
+			self.resources_per_turn[i] += building.improvements[i]
+		else:
+			self.resources_per_turn[i] = building.improvements[i]
 	
 func can_build(building = null) -> bool:
 	if self.mode == BUILD:

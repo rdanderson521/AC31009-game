@@ -144,11 +144,20 @@ func new_unit(unit:Unit):
 		self.units_attention_needed.append(unit)
 		
 func new_building(building:Building):
-	#self.add_child(building)
 	self.buildings.append(building)
+	GlobalConfig.building_tiles[building.hex_pos] = building
 	if building is City:
+		GlobalConfig.city_tiles[building.hex_pos] = building
+		self.cities.append(building)
+		for i in building.area:
+			self.area.append(i)
+			self.city_area[i] = building
 		self.city_profiles[building] = CityProfile.new(building,self)
-	self.reset_visible()
+	else:
+		if self.city_area.has(building.hex_pos):
+			self.city_area[building.hex_pos].add_building(building)
+			
+	self.visible_tiles += Hex.hex_in_range(self.building_vis_range,building.hex_pos)
 	if building.turn_start():
 		if building is City:
 			self.buildings_attention_needed.append(self.city_profiles[building])
@@ -189,7 +198,6 @@ func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 
 func turn_decisions():
 	self.update_scores()
-	
 	for i in self.units:
 		if !self.units_assigned.has(i):
 			self.units_assigned[i] = null
@@ -197,14 +205,12 @@ func turn_decisions():
 			self.units_assigned[i] = EXPAND
 		if self.units_assigned[i] == null:
 			self.units_assigned[i] = self.unit_profiles[i].unit_type()
-	
 	for i in self.units:
 		if self.units_assigned[i] == ATTACK:
 			if self.units_assigned.values().count(ATTACK) > 1 and max(self.attack_priority[attack.CITY],self.attack_priority[attack.UNIT]) < self.defence_priority[defence.MOVE]:
 				self.units_assigned[i] = DEFEND
 				self.update_scores()
 				
-			
 	for i in self.units_attention_needed:
 		if self.units_assigned[i] == EXPLORE:
 			if self.explore_priority[explore.FOW] > self.explore_priority[explore.CITY]:
@@ -233,12 +239,10 @@ func turn_decisions():
 			self.unit_profiles[i].select_task()
 		
 		
-		
 	
 	var total_build_priority = self.attack_priority[attack.BUILD] + self.defence_priority[defence.BUILD] + self.explore_priority[explore.BUILD] + self.expand_priority[expand.BUILD]
 	var build_unit_priorities = {ATTACK:self.attack_priority[attack.BUILD]/total_build_priority,DEFEND:self.defence_priority[defence.BUILD]/total_build_priority,
 		EXPAND:self.expand_priority[expand.BUILD]/total_build_priority,EXPLORE:self.explore_priority[explore.BUILD]/total_build_priority}
-	
 	var buildings_ready = self.buildings_attention_needed.size()
 	for i in self.buildings_attention_needed:
 		var highest_priority_unit = 0
@@ -249,7 +253,6 @@ func turn_decisions():
 		build_unit_priorities[highest_priority_unit] -= 1/buildings_ready
 		
 		i.select_task(highest_priority_unit)
-		
 		
 	self.turn_end()
 	
@@ -456,39 +459,38 @@ class UnitProfile:
 		return false
 		
 	func attack_city(city):
-		print("atack city")
 		if self.unit.attack_range >= Hex.hex_distance(self.unit.hex_pos,city.hex_pos):
-			print("attacking")
 			self.unit.attack(city)
 		else:
 			self.go_to_object(city,self.unit.attack_range)
 			
 	func attack_unit(enemy):
-		print("atack city")
 		if self.unit.attack_range >= Hex.hex_distance(self.unit.hex_pos,enemy.hex_pos):
-			print("attacking")
 			self.unit.attack(enemy)
 		else:
 			self.go_to_object(enemy,self.unit.attack_range)
 			
 	func explore_fow(dist=10):
+		print("explore")
 		var start_time = OS.get_ticks_msec()
 		if !self.player.fow.empty():
 			var fow = self.player.fow.duplicate()
 			var player_center = Vector2(0,0)
 			var player_center_input = 0
 			if !self.player.area.empty():
+				print("player area")
 				for i in self.player.area:
 					player_center += i
 					player_center_input += 1
 			else:
+				print("units")
 				for i in self.player.units:
 					if i == self.unit:
 						continue
 					player_center += i.hex_pos
 					player_center_input += 1
 			player_center = player_center/player_center_input
-			
+			player_center = Vector2(round(player_center.x),round(player_center.y))
 			var found = false
 			var idx = 0
 			while !found and !fow.empty():
@@ -497,8 +499,9 @@ class UnitProfile:
 				if self.player.not_fow.size() > 0.8*search_area.size():
 					continue
 				fow.shuffle()
-				for i in fow:
-					if i in search_area:
+				for i in search_area:
+					print(i)
+					if i in fow:
 						if self.unit.find_path(i):
 							found = true
 							break
@@ -673,8 +676,8 @@ class CityProfile:
 				var turns = -1
 				for j in cost.keys():
 					turns = max(turns,cost[j]/resources[j])
-				if self.attack/turns > self.attack_per_turn:
-					attack_per_turn = self.attack/turns
+				if attack/turns > attack_per_turn:
+					attack_per_turn = attack/turns
 					best_option = i["name"]
 		print(best_option)
 		if city.can_build(best_option):

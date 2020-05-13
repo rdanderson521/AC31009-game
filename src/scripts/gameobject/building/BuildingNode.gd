@@ -16,7 +16,6 @@ const DEFAULT = 0
 const ATTACK = 3
 const BUILD = 5
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	pass
 #	self.build_options_outdated = true
@@ -39,12 +38,11 @@ func _ready():
 #		print("resources: ", self.resources_per_turn)
 #		self.update_build_options()
 	
-	
 func set_hex_pos(h):
 	hex_pos = h
 	GlobalConfig.building_tiles[h] = self
 	
-#func turn_start() -> bool:
+func turn_start() -> bool:
 #	if self.mode == BUILD:
 #		var build_finished = true
 #		for i in self.build_resources_left.keys():
@@ -61,7 +59,7 @@ func set_hex_pos(h):
 #			mode = DEFAULT
 #		else:
 #			return false
-	return true
+	return false
 	
 func turn_end():
 	pass
@@ -113,23 +111,4 @@ func kill():
 	self.visible = false
 	SignalManager.kill_building(self)
 	self.queue_free()
-			
-			
-func _draw():
-#	print("draw")
-#	if is_city:
-#		print("draw city")
-#		for i in self.area:
-#			var points = Array()
-#			var pos = Hex.hex_to_point(i)
-#			points.append(pos + Vector2(-Hex.width/4,-Hex.height/2)-self.position)
-#			points.append(pos + Vector2(Hex.width/4,-Hex.height/2)-self.position)
-#			points.append(pos + Vector2(Hex.width/2,0)-self.position)
-#			points.append(pos + Vector2(Hex.width/4,Hex.height/2)-self.position)
-#			points.append(pos + Vector2(-Hex.width/4,Hex.height/2)-self.position)
-#			points.append(pos + Vector2(-Hex.width/2,0)-self.position)
-#			var polygon = PoolVector2Array(points)
-#			draw_polygon(polygon,PoolColorArray([self.get_parent().colour]))
-	pass
-
 			
