@@ -17,6 +17,8 @@ const biome_resources = {0:{"food":2,"construction":1}, 1:{"food":1,"constructio
 const impasible_biomes = [5,17]
 const water_biomes = [12,13]
 
+var testing = true
+
 var map: Dictionary
 var map_size: Vector2
 

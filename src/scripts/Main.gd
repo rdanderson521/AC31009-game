@@ -54,6 +54,7 @@ func start_game():
 	while !map_made and idx < 3:
 		idx += 1
 		$TileMap.generate(true)
+		$TileMap/TileMap.generate()
 		player_start_areas = init_player_start_areas(4)
 		if typeof(player_start_areas) == TYPE_ARRAY:
 			map_made = true

@@ -1,4 +1,4 @@
-tool extends TileMap
+tool extends TileMapBase
 
 export(bool) var lakes: bool = true
 export(bool) var mountains: bool = true
@@ -16,15 +16,8 @@ var map: Array
 var tiles = GlobalConfig.biomes 
 	
 # Called when the node enters the scene tree for the first time.
-func _init():
-	self.cell_custom_transform.x.x = (3*Hex.width)/4
-	self.cell_custom_transform.x.y = Hex.height/2
-	self.cell_custom_transform.y.y = Hex.height
-	
-	self.cell_size.y = 32
-	self.cell_size.y = 48
-	
-	self.position = Vector2(-16,-32)
+func _init().():
+		self.position = Vector2(-16,-32)
 	
 
 class HexNode:

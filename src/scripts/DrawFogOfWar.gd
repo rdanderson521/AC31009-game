@@ -4,23 +4,26 @@ var fog_of_war: Array
 var visible_tiles: Array
 
 func _ready():
-	#self.z_index += 4
+	if !GlobalConfig.testing:
+		self.z_index += 4
 	pass
-
-func draw_fow(fow:Array):
-	self.fog_of_war = fow
-	update()
 	
-func draw_visible(v:Array):
-	self.visible_tiles = v
-	update()
-	
-func draw():
+func draw(fow = null,vis_tiles = null):
+	if fow != null:
+		self.fog_of_war = fow
+	if vis_tiles != null:
+		self.visible_tiles = vis_tiles
 	self.visible = true
+	if !GlobalConfig.testing:
+		for i in GlobalConfig.unit_tiles.keys():
+			if i in self.visible_tiles:
+				GlobalConfig.unit_tiles[i].visible = true
+			else:
+				GlobalConfig.unit_tiles[i].visible = false
+	
 	self.update()
 
 func _draw():
-
 	for i in GlobalConfig.map.keys():
 		if i in self.fog_of_war:
 			var points = Array()

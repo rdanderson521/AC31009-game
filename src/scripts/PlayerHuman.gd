@@ -33,7 +33,7 @@ func _init(start_hex:Vector2).(start_hex):
 	self.add_child(fow_canvas)
 
 func _ready():
-	self.fow_canvas.draw_fow(fow)
+	self.fow_canvas.draw(self.fow,self.visible_tiles)
 	
 func game_object_clicked_left(obj:GameObject):
 	if self.is_turn:
@@ -158,9 +158,7 @@ func reset_visible():
 			if self.fow.has(j):
 				self.fow.erase(j)
 				self.not_fow.append(j)
-	self.fow_canvas.fog_of_war = self.fow
-	self.fow_canvas.visible_tiles = self.visible_tiles
-	self.fow_canvas.draw()
+	self.fow_canvas.draw(self.fow,self.visible_tiles)
 		
 func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 	if unit in self.units:
@@ -178,6 +176,4 @@ func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 			if self.fow.has(i):
 				self.fow.erase(i)
 				self.not_fow.append(i)
-	self.fow_canvas.fog_of_war = self.fow
-	self.fow_canvas.visible_tiles = self.visible_tiles
-	self.fow_canvas.draw()
+	self.fow_canvas.draw(self.fow,self.visible_tiles)

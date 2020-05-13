@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://scenes/gui/StartGui.tscn" type="PackedScene" id=1]
 [ext_resource path="res://resources/music/177_Tavern_Music.ogg" type="AudioStream" id=2]
+[ext_resource path="res://scripts/TileMapSpecialResources.gd" type="Script" id=3]
 [ext_resource path="res://resources/tilesets/Tileset.tres" type="TileSet" id=4]
 [ext_resource path="res://scripts/TileMapGenerator.gd" type="Script" id=5]
 [ext_resource path="res://scripts/Main.gd" type="Script" id=8]
@@ -26,6 +27,15 @@ blob_effect = 0.9
 blob_detirioration = 20
 grid_x = 56
 grid_y = 40
+
+[node name="TileMap" type="TileMap" parent="TileMap"]
+position = Vector2( 0, 2 )
+mode = 2
+cell_size = Vector2( 32, 48 )
+cell_custom_transform = Transform2D( 24, 14, 0, 28, 0, 0 )
+cell_y_sort = true
+format = 1
+script = ExtResource( 3 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
