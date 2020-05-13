@@ -285,7 +285,7 @@ func start_build(building_name:String):
 				build_turns_left = -1
 				var new_building = BuildingFactory.build_building(building_name,hex_pos,self.get_parent())
 				self.get_parent().new_building(new_building)
-				if new_building.is_city:
+				if new_building is City:
 					self.kill()
 				mode = DEFAULT
 			else:

@@ -3,6 +3,7 @@ class_name Player
 
 var units: Array
 var buildings: Array
+var cities: Array
 var units_attention_needed: Array
 var buildings_attention_needed: Array
 var is_turn: bool
@@ -17,12 +18,12 @@ var visible_tiles: Array
 var fow: Array
 var not_fow: Array
 
+const START_AREA_SIZE = 4
 
-func _init(start_hex:Vector2,debug=true):
-	if debug:
-		print("player init")
+func _init(start_hex:Vector2):
 	self.units = Array()
 	self.buildings = Array()
+	self.cities = Array()
 	self.fow = Array()
 	self.not_fow = Array()
 	self.turn = 0
@@ -34,37 +35,34 @@ func _init(start_hex:Vector2,debug=true):
 	SignalManager.connect("kill_building",self,"kill")
 
 func _ready():
-	print("ready player")
 	var start_units = UnitFactory.start_units(self.start_hex,self)
 	for i in start_units:
 		self.new_unit(i)
 	self.fow = GlobalConfig.map.keys().duplicate()
-	var start_area_hex = Hex.hex_in_range(4,self.start_hex)
+	var start_area_hex = Hex.hex_in_range(START_AREA_SIZE,self.start_hex)
 	for i in start_area_hex:
 		fow.erase(i)
 		not_fow.append(i)
 
 func reset_visible():
-	visible_tiles = Array()
+	self.visible_tiles = Array()
 	for i in self.units:
 		var hex_area = Hex.hex_in_range(self.unit_vis_range,i.hex_pos)
-		hex_area.append(i.hex_pos)
-		visible_tiles += hex_area
-		visible_tiles.append(i.hex_pos)
+		self.visible_tiles += hex_area
+		self.visible_tiles.append(i.hex_pos)
 		for j in hex_area:
-			if fow.has(j):
-				fow.erase(j)
-				not_fow.append(j)
+			if self.fow.has(j):
+				self.fow.erase(j)
+				self.not_fow.append(j)
 				
 	for i in self.buildings:
 		var hex_area = Hex.hex_in_range(self.building_vis_range,i.hex_pos)
-		hex_area.append(i.hex_pos)
-		visible_tiles += hex_area
-		visible_tiles.append(i.hex_pos)
+		self.visible_tiles += hex_area
+		self.visible_tiles.append(i.hex_pos)
 		for j in hex_area:
-			if fow.has(j):
-				fow.erase(j)
-				not_fow.append(j)
+			if self.fow.has(j):
+				self.fow.erase(j)
+				self.not_fow.append(j)
 		
 func set_selected_object(obj:GameObject):
 	if obj is Unit:
@@ -106,30 +104,32 @@ func set_selected_object(obj:GameObject):
 func kill(obj:GameObject):
 	if obj.get_parent() == self:
 		if obj is Unit:
-			units.erase(obj)
-			if obj in units_attention_needed:
-				units_attention_needed.erase(obj)
-			if obj == selected_object:
+			self.units.erase(obj)
+			if obj in self.units_attention_needed:
+				self.units_attention_needed.erase(obj)
+			if obj == self.selected_object:
 				self.selected_object = null
 		elif obj is Building:
-			buildings.erase(obj)
-			if obj == selected_object:
+			self.buildings.erase(obj)
+			if obj == self.selected_object:
 				self.selected_object = null
+			if obj is City:
+				self.cities.erase(obj)
+		self.reset_visible()
 		
 func new_building(building:Building):
 	self.buildings.append(building)
 	GlobalConfig.building_tiles[building.hex_pos] = building
-	if building.is_city:
+	if building is City:
 		GlobalConfig.city_tiles[building.hex_pos] = building
-	self.reset_visible()
+		self.cities.append(building)
+	self.visible_tiles += Hex.hex_in_range(self.building_vis_range,building.hex_pos)
 	if building.turn_start():
 		self.buildings_attention_needed.append(building)
 	
 func new_unit(unit:Unit):
-	#self.add_child(unit)
 	self.units.append(unit)
 	self.visible_tiles += Hex.hex_in_range(self.unit_vis_range,unit.hex_pos)
-	self.reset_visible()
 	if unit.turn_start():
 		self.units_attention_needed.append(unit)
 
@@ -146,9 +146,8 @@ func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 				
 		for i in new_visible:
 			self.visible_tiles.append(i)
-			if i in self.fow:
-				if self.fow.has(i):
-					self.fow.erase(i)
-					self.not_fow.append(i)
+			if self.fow.has(i):
+				self.fow.erase(i)
+				self.not_fow.append(i)
 	
 

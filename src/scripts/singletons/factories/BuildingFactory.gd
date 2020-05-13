@@ -107,7 +107,6 @@ func build_building(to_build,hex,player):
 	building.hex_pos = hex
 	building.position = Hex.hex_to_point(hex)
 	building.type = template["name"]
-	building.is_district = template["is_district"]
 	building.health_max = template["health"]
 	building.health = template["health"]
 	building.attack = template["damage"]
@@ -127,7 +126,6 @@ func copy_building(to_copy: Building):
 	building.is_city = to_copy.is_city
 	if building.is_city:
 		building.area = to_copy.area.duplicate()
-	building.is_district = to_copy.is_district
 	building.health_max = to_copy.health_max
 	building.health = to_copy.health
 	building.attack = to_copy.attack

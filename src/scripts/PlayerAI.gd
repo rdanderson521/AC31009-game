@@ -42,11 +42,11 @@ var defence_type: int
 enum attack{BUILD,MOVE,CITY,UNIT}
 enum defence{BUILD,MOVE,PRIORITY}
 enum expand{BUILD,CITY,IMPROVEMENT}
-enum explore{BUILD,MOVE,CITY,FOW}
+enum explore {BUILD,MOVE,CITY,FOW}
 
 enum {EXPLORE,EXPAND,ATTACK,DEFEND}
 
-func _init(start_hex:Vector2).(start_hex,true):
+func _init(start_hex:Vector2).(start_hex):
 	self.unit_vis_range = 4
 	self.building_vis_range = 5
 	
@@ -55,16 +55,16 @@ func _init(start_hex:Vector2).(start_hex,true):
 	self.city_score = 0
 	
 	self.attack_priority = Dictionary()
-	for i in attack:
+	for i in self.attack:
 		self.attack_priority[attack[i]] = 0
 	self.defence_priority = Dictionary()
-	for i in defence:
+	for i in self.defence:
 		self.defence_priority[defence[i]] = 0
 	self.expand_priority = Dictionary()
-	for i in expand:
+	for i in self.expand:
 		self.expand_priority[expand[i]] = 0
 	self.explore_priority = Dictionary()
-	for i in explore:
+	for i in self.explore :
 		self.explore_priority[explore[i]] = 0
 		
 	self.priorities = Dictionary()
@@ -146,11 +146,11 @@ func new_unit(unit:Unit):
 func new_building(building:Building):
 	#self.add_child(building)
 	self.buildings.append(building)
-	if building.is_city:
+	if building is City:
 		self.city_profiles[building] = CityProfile.new(building,self)
 	self.reset_visible()
 	if building.turn_start():
-		if building.is_city:
+		if building is City:
 			self.buildings_attention_needed.append(self.city_profiles[building])
 		
 func kill(obj:GameObject):
@@ -296,13 +296,13 @@ func update_scores():
 			if self.explore_priority[explore.CITY] < j["last_seen"]/min(self.turn,20):
 				self.explore_priority[explore.CITY] = j["last_seen"]/min(self.turn,20)
 				self.explore_target = j
-				self.explore_type = explore.CITY
+				self.explore_type = self.explore .CITY
 				
 	print(float(self.fow.size())/float(GlobalConfig.map.size()))
 	if self.explore_priority[explore.FOW] < float(self.fow.size())/float(GlobalConfig.map.size()):
 		self.explore_priority[explore.FOW] = float(self.fow.size())/float(GlobalConfig.map.size())
 		self.explore_target = null
-		self.explore_type = explore.FOW
+		self.explore_type = self.explore .FOW
 		
 	self.explore_priority[explore.BUILD] = (max(self.explore_priority[explore.FOW],self.explore_priority[explore.CITY])/max(self.assigned_explore_score,1)) * self.explore_bias
 	print("explore type: ",self.explore_type," priority: ", self.explore_priority)
@@ -312,7 +312,7 @@ func update_scores():
 	for i in self.defence_priority.keys():
 		self.defence_priority[i] = 0
 		
-	self.defence_type = defence.BUILD
+	self.defence_type = self.defence.BUILD
 	var total_aggression = 0
 	var max_aggression = 0
 	var max_aggressor = null
@@ -504,7 +504,7 @@ class UnitProfile:
 							break
 						else:
 							fow.erase(i)
-			print("time taken explore: ", OS.get_ticks_msec()-start_time)
+			print("time taken self.explore : ", OS.get_ticks_msec()-start_time)
 	
 	func builder_select_task():
 		if self.unit.can_build_city and self.unit.can_build: ################### CHANGE: make ai build buildings around city if not building city
@@ -673,8 +673,8 @@ class CityProfile:
 				var turns = -1
 				for j in cost.keys():
 					turns = max(turns,cost[j]/resources[j])
-				if attack/turns > attack_per_turn:
-					attack_per_turn = attack/turns
+				if self.attack/turns > self.attack_per_turn:
+					attack_per_turn = self.attack/turns
 					best_option = i["name"]
 		print(best_option)
 		if city.can_build(best_option):
@@ -692,8 +692,8 @@ class CityProfile:
 				var turns = -1
 				for j in cost.keys():
 					turns = max(turns,cost[j]/resources[j])
-				if defence/turns > defence_per_turn:
-					defence_per_turn = defence/turns
+				if self.defence/turns > self.defence_per_turn:
+					defence_per_turn = self.defence/turns
 					best_option = i["name"]
 		print(best_option)
 		if city.can_build(best_option):
@@ -761,7 +761,7 @@ class PlayerProfile:
 				defence_score += (i["unit_cpy"].defence*i["unit_cpy"].health)/(max(1,i["last_seen"]) * i["unit_cpy"].health_max)
 		for i in buildings.values():
 			self.city_defence_score += i["building_cpy"].defence
-			if i["building_cpy"].is_city:
+			if i["building_cpy"] is City:
 				for j in units.values():
 					var dist = Hex.hex_distance(j["unit_cpy"].hex_pos,i["building_cpy"].hex_pos)
 					if dist < 5:
