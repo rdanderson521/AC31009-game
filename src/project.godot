@@ -39,6 +39,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://scripts/PlayerHuman.gd"
 }, {
+"base": "Node2D",
+"class": "Main",
+"language": "GDScript",
+"path": "res://scripts/Main.gd"
+}, {
 "base": "Node",
 "class": "Player",
 "language": "GDScript",
@@ -63,11 +68,6 @@ _global_script_classes=[ {
 "class": "Unit",
 "language": "GDScript",
 "path": "res://scripts/gameobject/unit/UnitNode.gd"
-}, {
-"base": "Node2D",
-"class": "main",
-"language": "GDScript",
-"path": "res://scripts/Main.gd"
 } ]
 _global_script_class_icons={
 "AI": "",
@@ -76,12 +76,12 @@ _global_script_class_icons={
 "GameObject": "",
 "Hex_ops": "",
 "Human": "",
+"Main": "",
 "Player": "",
 "PlayerCamera": "",
 "Raider": "",
 "TileMapBase": "",
-"Unit": "",
-"main": ""
+"Unit": ""
 }
 
 [application]

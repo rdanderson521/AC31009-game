@@ -22,15 +22,19 @@ var testing = true
 var map: Dictionary
 var map_size: Vector2
 
+var special_resources: Dictionary
+var special_resource_tiles: Dictionary
+
 var unit_tiles: Dictionary
 var building_tiles: Dictionary
 var city_tiles: Dictionary
 
 func _init():
-	map = Dictionary()
-	unit_tiles = Dictionary()
-	building_tiles = Dictionary()
-	city_tiles = Dictionary()
+	self.map = Dictionary()
+	self.special_resource_tiles = Dictionary()
+	self.unit_tiles = Dictionary()
+	self.building_tiles = Dictionary()
+	self.city_tiles = Dictionary()
 	SignalManager.connect("kill_unit",self,"kill_unit")
 	SignalManager.connect("kill_building",self,"kill_building")
 	
@@ -50,6 +54,6 @@ func kill_unit(unit):
 	
 func kill_building(building):
 	self.building_tiles.erase(building.hex_pos)
-	if building.is_city:
+	if building is City:
 		self.city_tiles.erase(building.hex_pos)
 

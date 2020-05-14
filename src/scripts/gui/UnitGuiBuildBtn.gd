@@ -1,25 +1,21 @@
 extends Button
 
-var building: String
-var is_city: bool
-var is_district: bool
+var building: Dictionary
 
 func _ready():
 	SignalManager.connect("unit_selected",self,"unit_selected")
 
 func init(building):
-	self.building = building["name"]
-	self.is_city = building["is_city"]
-	self.is_district = building["is_district"]
+	self.building = building
 	self.find_node("Name").text = building["name"]
 	self.find_node("Turns").text = str(building["build_turns"]) + " turns"
 	self.connect("pressed",self,"pressed")
 
 func pressed():
-	SignalManager.build_btn_click(self.building)
+	SignalManager.build_btn_click(self.building["name"])
 	
 func unit_selected(unit):
-	if (unit.can_build_city and self.is_city) or (unit.can_build and self.is_district):
+	if unit.can_build(self.building["name"]):
 		self.visible = true
 	else:
 		self.visible = false

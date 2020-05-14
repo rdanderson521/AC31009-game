@@ -2,7 +2,6 @@
 	{
 		"name":"city",
 		"is_city":true,
-		"is_district":false,
 		"health":150,
 		"damage":5,
 		"damage_range":3,
@@ -18,12 +17,56 @@
 	},
 	{
 		"name":"farm",
-		"is_city":false,
 		"is_district":true,
 		"health":50,
 		"improvements":{
-			"food":2
+			"food":2,
+			"construction":-1
 		},
+		"build_turns":4,
+		"texture":"res://building.png"
+	},
+	{
+		"name":"mine",
+		"is_district":true,
+		"health":50,
+		"improvements":{
+			"food":-1,
+			"construction":2
+		},
+		"build_turns":4,
+		"texture":"res://building.png",
+		"tiles":[3,4,10,11,15]
+	},
+	{
+		"name":"stable",
+		"is_district":true,
+		"requires_resource":true,
+		"health":50,
+		"build_turns":4,
+		"texture":"res://building.png"
+	},
+	{
+		"name":"plantation",
+		"is_district":true,
+		"requires_resource":true,
+		"health":50,
+		"build_turns":4,
+		"texture":"res://building.png"
+	},
+		{
+		"name":"slaughterhouse",
+		"is_district":true,
+		"requires_resource":true,
+		"health":50,
+		"build_turns":4,
+		"texture":"res://building.png"
+	},
+		{
+		"name":"fishing hut",
+		"is_district":true,
+		"requires_resource":true,
+		"health":50,
 		"build_turns":4,
 		"texture":"res://building.png"
 	}

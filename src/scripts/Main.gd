@@ -1,6 +1,6 @@
 extends Node2D
 
-class_name main
+class_name Main
 
 var players: Array
 var curr_player: Player
@@ -14,8 +14,6 @@ func _input(event):
 			var global_click_position =  (curr_camera.get_camera_position() + 
 				(( event.position - curr_camera.get_viewport().get_visible_rect().size/2) * curr_camera.scale * curr_camera.get_zoom()))
 			var hex_coord = Hex.point_to_hex(global_click_position)
-	#		print("global click: " + str(global_click_position))
-	#		print("hex click: " + str(hex_coord))
 			if event.button_index == BUTTON_LEFT:
 				SignalManager.mouse_left_tilemap(hex_coord)
 			elif event.button_index == BUTTON_RIGHT:
@@ -31,14 +29,11 @@ func _init():
 func next_player(player):
 	#print ("next turn")
 	var player_idx = players.find(player)
-	
 	if player_idx+1 == players.size():
 		curr_player = players[0]
 	else:
 		curr_player = players[player_idx+1]
-		
 	curr_player.turn_start()
-	
 	if curr_player is Human:
 		curr_camera = curr_player.camera
 
@@ -105,7 +100,6 @@ func init_player_start_areas(num_players):
 					intersection_check_array += no_enemy_area
 					found = true
 					start_areas_found += 1
-	print("start areas: " + str(start_areas_found))
 	if start_areas_found < num_players:
 		return false
 	else:
@@ -115,18 +109,14 @@ func init_player_start_areas(num_players):
 func init_players(num_players,start_areas):
 	self.players = Array()
 	for i in range(num_players):
-		print(i)
 		start_areas.shuffle()
 		var player
 		if i < 1:
-			print("player")
 			player = Human.new(start_areas.pop_back())
 		else:
-			print("ai")
 			player = AI.new(start_areas.pop_back())
 		player.colour = Color(1,0,0,0.3)
 		player.set_name("Player"+str(i))
-		players.push_back(player)
-		self.add_child(player)
+		self.players.push_back(player)
+		add_child(player)
 		
-	print("num players: " + str(players.size()))

@@ -11,17 +11,24 @@ func _ready():
 	for i in self.area:
 		var tile_resources =  GlobalConfig.biome_resources[GlobalConfig.map[i]]
 		for j in tile_resources.keys():
-			if self.resources_per_turn.keys().has(j):
+			if self.resources_per_turn.has(j):
 				self.resources_per_turn[j] += tile_resources[j]
 			else:
 				self.resources_per_turn[j] = tile_resources[j]
-				
+					
 	for i in self.improvements.keys():
 		if self.resources_per_turn.keys().has(i):
 			self.resources_per_turn[i] += improvements[i]
 		else:
 			self.resources_per_turn[i] = improvements[i]
 			
+	if self.hex_pos in GlobalConfig.special_resource_tiles.keys():
+		var special_resources = GlobalConfig.special_resource_tiles[self.hex_pos]["improvements"]
+		for i in special_resources.keys():
+			if self.resources_per_turn.keys().has(i):
+				self.resources_per_turn[i] += special_resources[i]
+			else:
+				self.resources_per_turn[i] = special_resources[i]
 	print("resources: ", self.resources_per_turn)
 	self.update_build_options()
 	
@@ -37,12 +44,11 @@ func turn_start() -> bool:
 		
 		if build_finished:
 			self.build_resources_left = Dictionary()
-			var new_unit = UnitFactory.build_unit(build_curr,hex_pos,self.get_parent())
+			var new_unit = UnitFactory.build_unit(self.build_curr,self.hex_pos,self.get_parent())
 			self.get_parent().new_unit(new_unit)
-			mode = DEFAULT
+			self.mode = DEFAULT
 		else:
 			return false
-
 	return true
 	
 func add_building(building:Building):
@@ -52,6 +58,14 @@ func add_building(building:Building):
 			self.resources_per_turn[i] += building.improvements[i]
 		else:
 			self.resources_per_turn[i] = building.improvements[i]
+	if GlobalConfig.special_resource_tiles.has(building.hex_pos) and GlobalConfig.special_resource_tiles[building.hex_pos]["building"].has(building.type):
+		var special_resources = GlobalConfig.special_resource_tiles[self.hex_pos]["improvements"]
+		print("special building made")
+		for i in special_resources.keys():
+			if self.resources_per_turn.keys().has(i):
+				self.resources_per_turn[i] += special_resources[i]
+			else:
+				self.resources_per_turn[i] = special_resources[i]
 	
 func can_build(building = null) -> bool:
 	if self.mode == BUILD:
@@ -72,18 +86,7 @@ func can_build(building = null) -> bool:
 	
 func start_build(building_name:String):
 	if self.can_build(building_name):
-		if BuildingFactory.building_templates_by_name.has(building_name):
-			pass
-#			self.build_turns_left = BuildingFactory.building_templates_by_name[building_name]["build_turns"]
-#			if build_turns_left == 0:
-#				build_turns_left = -1
-#				var new_building = BuildingFactory.build_building(building_name,hex_pos,self.get_parent())
-#				self.get_parent().new_building(new_building)
-#				mode = DEFAULT
-#			else:
-#				self.build_curr = building_name
-#				self.mode = BUILD
-		elif self.build_options.has(building_name):
+		if self.build_options.has(building_name):
 			print("building start unit")
 			self.build_resources_left = self.build_options[building_name]["cost"].duplicate()
 			self.build_curr = building_name
@@ -110,7 +113,3 @@ func _draw():
 		var polygon = PoolVector2Array(points)
 		draw_polygon(polygon,PoolColorArray([self.get_parent().colour]))
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass

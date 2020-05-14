@@ -12,12 +12,13 @@ var debug = false
 func _init():
 	var templates = JsonParser.parse_json_file("res://resources/jsonconfigs/buildings.json")
 	if typeof(templates) == TYPE_ARRAY:
-		print("buildings imported")
+		print(templates)
 		templates = check_templates(templates)
+		print(templates)
 		self.building_templates = templates
 		self.building_templates_by_name = Dictionary()
 		for i in building_templates:
-			building_templates_by_name[i.name] = i
+			building_templates_by_name[i["name"]] = i
 		SignalManager.building_file_read()
 	else:
 		print("err reading buildings config")
@@ -33,65 +34,63 @@ func init_city() -> City:
 	return city
 
 func check_templates(templates):
-	for i in templates:
-		
+	for i in templates.duplicate():
 		if !i.has("name"):
 			if debug:
-				print("err: check building json")
+				print("err: check building json name")
 			templates.erase(i)
 			continue
-			
+		
 		if !i.has("is_city"):
 			if debug:
-				print("err: check building json")
-			templates.erase(i)
+				print("err: check building json city")
+			i["is_city"] = false
 			continue
 			
 		if !i.has("is_district"):
 			if debug:
-				print("err: check building json")
-			templates.erase(i)
-			continue
+				print("err: check building json district")
+			i["is_district"] = false
 		
 		if !i.has("health"):
 			if debug:
-				print("err: check building json")
+				print("err: check building json health")
 			templates.erase(i)
 			continue
 			
 		if !i.has("damage"):
 			if debug:
-				print("err: check building json")
+				print("err: check building json damage")
 			i["damage"] = 0
 			
 		if !i.has("damage_range"):
 			if debug:
-				print("err: check building json")
+				print("err: check building json range")
 			i["damage_range"] = 0
 			
 		if !i.has("defence"):
 			if debug:
-				print("err: check building json")
+				print("err: check building json defence")
 			i["defence"] = 0
 			
 		if !i.has("improvements"):
 			if debug:
-				print("err: check building json")
+				print("err: check building json improvements")
 			i["improvements"] = null
 		
 		if !i.has("cost"):
 			if debug:
-				print("err: check building json")
+				print("err: check building json cost")
 			i["cost"] = null
 			
 		if !i.has("build_turns"):
 			if debug:
-				print("err: check building json")
+				print("err: check building json turns")
 			i["build_turns"] = 0
 			
 		if !i.has("texture"):
 			if debug:
-				print("err: check building json")
+				print("err: check building json texture")
 			templates.erase(i)
 			continue
 	return templates
@@ -123,8 +122,7 @@ func copy_building(to_copy: Building):
 	building.hex_pos = to_copy.hex_pos
 	building.position = to_copy.hex_pos
 	building.type = to_copy.type
-	building.is_city = to_copy.is_city
-	if building.is_city:
+	if building is City:
 		building.area = to_copy.area.duplicate()
 	building.health_max = to_copy.health_max
 	building.health = to_copy.health
