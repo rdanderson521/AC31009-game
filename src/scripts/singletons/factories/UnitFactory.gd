@@ -94,21 +94,22 @@ func start_units(hex,player) -> Array:
 		if i.has("start"):
 			for j in range(i["start"]):
 				if !start_area.empty():
-					var unit = init_unit()
-					player.add_child(unit)
-					unit.hex_pos = start_area.pop_back()
-					unit.position = Hex.hex_to_point(unit.hex_pos)
-					unit.type = i["name"]
-					unit.health_max = i["health"]
-					unit.health = i["health"]
-					unit.attack = i["damage"]
-					unit.attack_range = i["damage_range"]
-					unit.defence = i["defence"]
-					unit.move_range = i["move_range"]
-					unit.can_build_city = i["can_build_city"]
-					unit.can_build = i["can_build"]
-					unit.can_trade = i["can_trade"]
-					unit.texture = i["texture"]
+					var unit = self.build_unit(i["name"],start_area.pop_back(),player)
+#					var unit = init_unit()
+#					player.add_child(unit)
+#					unit.hex_pos = start_area.pop_back()
+#					unit.position = Hex.hex_to_point(unit.hex_pos)
+#					unit.type = i["name"]
+#					unit.health_max = i["health"]
+#					unit.health = i["health"]
+#					unit.attack = i["damage"]
+#					unit.attack_range = i["damage_range"]
+#					unit.defence = i["defence"]
+#					unit.move_range = i["move_range"]
+#					unit.can_build_city = i["can_build_city"]
+#					unit.can_build = i["can_build"]
+#					unit.can_trade = i["can_trade"]
+#					unit.texture = i["texture"]
 					start_units.push_back(unit)
 					
 	return start_units
@@ -117,7 +118,7 @@ func build_unit(unit_to_build,hex,player) -> Unit:
 
 	var unit_template = unit_templates_by_name[unit_to_build]
 	var unit = init_unit()
-	player.add_child(unit)
+#	player.find_node("YSort").add_child(unit)
 	unit.hex_pos = hex
 	unit.position = Hex.hex_to_point(unit.hex_pos)
 	unit.type = unit_template["name"]

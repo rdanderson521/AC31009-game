@@ -146,6 +146,7 @@ func can_build(building:String,hex:Vector2)->bool:
 	return false
 	
 func new_unit(unit:Unit):
+	self.add_child(unit)
 	self.units.append(unit)
 	self.visible_tiles += Hex.hex_in_range(self.unit_vis_range,unit.hex_pos)
 	if unit.turn_start():

@@ -26,7 +26,7 @@ func _init(start_hex:Vector2).(start_hex):
 	self.camera.position = Hex.hex_to_point(start_hex)
 	self.camera.zoom = Vector2(0.3,0.3)
 	self.add_child(self.camera)
-	$Camera2D/CanvasLayer/MainGui.visible = false
+	
 	
 	self.fow_canvas = preload("res://scripts/DrawFogOfWar.gd").new()###############
 	self.fow_canvas.visible = false
@@ -98,9 +98,7 @@ func turn_start():
 	self.is_turn = true
 	self.turn += 1
 	self.fow_canvas.draw()
-	
 	self.camera.make_current()
-	$Camera2D/CanvasLayer/MainGui.turn_started(self.turn)
 	if !self.units.empty():
 		for i in self.units:
 			if i.turn_start():
@@ -109,6 +107,7 @@ func turn_start():
 		for i in self.buildings:
 			if i.turn_start():
 				self.buildings_attention_needed.push_back(i)
+	SignalManager.player_turn_started(self)
 			
 func turn_end():
 	var all_units_done = true
@@ -116,7 +115,7 @@ func turn_end():
 		self.is_turn = false
 		self.selected_object = null
 		self.units_attention_needed.clear()
-		$Camera2D/CanvasLayer/MainGui.turn_ended()
+		self.find_node("MainGui",true,false).turn_ended()
 	if !self.is_turn:
 		
 		for i in self.units:

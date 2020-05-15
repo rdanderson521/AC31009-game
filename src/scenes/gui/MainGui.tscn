@@ -4,9 +4,9 @@
 [ext_resource path="res://scripts/buttons/EndTurnBtn.gd" type="Script" id=2]
 [ext_resource path="res://scripts/gui/MainGui.gd" type="Script" id=3]
 
-[node name="PanelContainer" type="PanelContainer"]
-anchor_right = 1.0
-margin_bottom = 14.0
+[node name="MainGui" type="PanelContainer"]
+margin_right = 1280.0
+margin_bottom = 46.0
 script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false

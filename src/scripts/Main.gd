@@ -28,14 +28,14 @@ func _init():
 
 func next_player(player):
 	#print ("next turn")
-	var player_idx = players.find(player)
-	if player_idx+1 == players.size():
-		curr_player = players[0]
+	var player_idx = self.players.find(player)
+	if player_idx+1 == self.players.size():
+		self.curr_player = self.players[0]
 	else:
-		curr_player = players[player_idx+1]
-	curr_player.turn_start()
-	if curr_player is Human:
-		curr_camera = curr_player.camera
+		self.curr_player = self.players[player_idx+1]
+	self.curr_player.turn_start()
+	if self.curr_player is Human:
+		self.curr_camera = self.curr_player.camera
 
 func _ready():
 	randomize()
@@ -56,9 +56,9 @@ func start_game():
 	if map_made:
 		self.find_node("StartGui").visible = false
 		init_players(4, player_start_areas)
-		curr_player = players.front()
-		curr_player.turn_start()
-		curr_camera = curr_player.camera
+		self.curr_player = players.front()
+		self.curr_player.turn_start()
+		self.curr_camera = curr_player.camera
 		self.game_turn = 0
 		self.game_started = true
 	

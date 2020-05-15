@@ -106,6 +106,8 @@ func turn_start():
 				
 	for i in player_profiles.values():
 		i.turn_start()
+	
+	SignalManager.player_turn_started(self)
 			
 	self.turn_decisions()
 
@@ -136,6 +138,7 @@ func unit_turn_finished(unit):
 		
 		
 func new_unit(unit:Unit):
+	self.add_child(unit)
 	#self.add_child(unit)
 	self.units.append(unit)
 	self.unit_profiles[unit] = UnitProfile.new(unit,self)

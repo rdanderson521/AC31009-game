@@ -16,6 +16,7 @@ signal mouse_double_left_game_obj(obj)
 signal mouse_right_game_obj(obj)
 signal mouse_left_tilemap(hex)
 signal mouse_right_tilemap(hex)
+signal player_turn_started(player)
 signal player_turn_ended(player)
 signal unit_selected(unit)
 signal unit_unselected
@@ -120,6 +121,10 @@ func mouse_right_tilemap(hex):
 	if self.mouse_entered.empty() and !self.mouse_over_gui:
 		emit_signal("mouse_right_tilemap",hex)
 		#print("mouse_right_tilemap")
+		
+func player_turn_started(player):
+	emit_signal("player_turn_started",player)
+	#print("player_turn_started")
 		
 func player_turn_ended(player):
 	emit_signal("player_turn_ended",player)
