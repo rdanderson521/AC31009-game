@@ -10,7 +10,7 @@ func _init():
 	self.queue = Array()
 	self.instructions["turn_start"] = {"show_again":true,"keep":true,"text":"To select your units or buildings left click on them. When selected you can make them perform tasks such as building and moving.\n\nTo move the camera use the arrow keys and the scroll wheel to zoom.\n\nIt is a good idea to use a unit to explore areas of the map you have not yet seen (hidden behind the grey fog)."}
 	self.instructions["unit_selected"] = {"show_again":true,"keep":false,"text":"To make your selected unit move, right click on the map somewhere. The unit will move as far as it can in this turn, it may need multiple turns to go longer distances.\n\nTo attack an enemy unit/building you should right click on the unit/building you want to attack."}
-	self.instructions["building_selected"] = {"show_again":true,"keep":false,"text":"test text building"}
+	self.instructions["building_selected"] = {"show_again":false,"keep":false,"text":"test text building"}
 	self.instructions["builder_selected"] = {"show_again":true,"keep":false,"text":"To make your selected unit move, right click on the map somewhere. The unit will move as far as it can in this turn, it may need multiple turns to go longer distances.\n\nThis unit can build, to see what the unit can build see the buttons on the right of the unit panel at the bottom left.\n\nWhen building a city the unit will be consumed doing so.\n\nWhen building improvements for cities you must be in city borders and certain improvements can only be done on certain tiles"}
 	SignalManager.connect("player_turn_started",self,"turn_start")
 	SignalManager.connect("unit_selected",self,"unit_selected")

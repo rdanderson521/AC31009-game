@@ -112,7 +112,6 @@ func turn_start():
 	self.turn_decisions()
 
 func turn_end():
-	print("player end turn")
 	var all_units_done = true
 	if is_turn:
 		is_turn = false
@@ -169,15 +168,19 @@ func kill(obj:GameObject):
 	if obj is Unit:
 		self.units.erase(obj)
 		self.unit_profiles.erase(obj)
-		if obj in units_attention_needed:
-			units_attention_needed.erase(obj)
-		if obj == selected_object:
+		if obj in self.units_attention_needed:
+			self.units_attention_needed.erase(obj)
+		if obj in self.units_assigned:
+			self.units_assigned.erase(obj)
+		if obj == self.selected_object:
 			self.selected_object = null
 			
 	elif obj is Building:
 		self.buildings.erase(obj)
+		if obj in self.buildings_attention_needed:
+			self.buildings_attention_needed.erase(obj)
 		self.city_profiles.erase(obj)
-		if obj == selected_object:
+		if obj == self.selected_object:
 			self.selected_object = null
 			
 func unit_moved(unit:Unit,from:Vector2,to:Vector2):
@@ -304,7 +307,6 @@ func update_scores():
 				self.explore_target = j
 				self.explore_type = self.explore .CITY
 				
-	print(float(self.fow.size())/float(GlobalConfig.map.size()))
 	if self.explore_priority[explore.FOW] < float(self.fow.size())/float(GlobalConfig.map.size()):
 		self.explore_priority[explore.FOW] = float(self.fow.size())/float(GlobalConfig.map.size())
 		self.explore_target = null
@@ -473,44 +475,46 @@ class UnitProfile:
 		else:
 			self.go_to_object(enemy,self.unit.attack_range)
 			
-	func explore_fow(dist=10):
-		print("explore")
+	func explore_fow(dist=5):
 		var start_time = OS.get_ticks_msec()
 		if !self.player.fow.empty():
 			var fow = self.player.fow.duplicate()
 			var player_center = Vector2(0,0)
 			var player_center_input = 0
 			if !self.player.area.empty():
-				print("player area")
 				for i in self.player.area:
 					player_center += i
 					player_center_input += 1
 			else:
-				print("units")
 				for i in self.player.units:
 					if i == self.unit:
 						continue
 					player_center += i.hex_pos
 					player_center_input += 1
-			player_center = player_center/player_center_input
-			player_center = Vector2(round(player_center.x),round(player_center.y))
+			#player_center = player_center/player_center_input
+			player_center = Vector2(round(player_center.x/player_center_input),round(player_center.y/player_center_input))
 			var found = false
 			var idx = 0
-			while !found and !fow.empty():
+			while !found and !fow.empty() and OS.get_ticks_msec()-start_time < 750:
 				idx += 1
 				var search_area = Hex.hex_in_range(dist*idx,player_center)
 				if self.player.not_fow.size() > 0.8*search_area.size():
 					continue
-				fow.shuffle()
+				search_area.shuffle()
 				for i in search_area:
-					print(i)
 					if i in fow:
 						if self.unit.find_path(i):
 							found = true
 							break
 						else:
 							fow.erase(i)
+			if !found:
+				self.explore_bailout()
+				print("explore failed")
 			print("time taken self.explore : ", OS.get_ticks_msec()-start_time)
+			
+	func explore_bailout():
+		var area = Hex.hex_in_range(4,self.unit.hex_pos)
 	
 	func builder_select_task():
 		if self.unit.can_build_city and self.unit.can_build: ################### CHANGE: make ai build buildings around city if not building city
@@ -663,7 +667,6 @@ class CityProfile:
 				if move_range/turns > dist_per_turn:
 					dist_per_turn = move_range/turns
 					best_option = i["name"]
-		print(best_option)
 		if city.can_build(best_option):
 			city.start_build(best_option)
 			

@@ -2,7 +2,7 @@ extends GameObject
 
 class_name Unit
 
-var speed: int = 500
+var speed: int = 300
 var move_range: int
 var can_build: bool
 var can_build_city: bool
@@ -281,7 +281,6 @@ func can_build(building) -> bool:
 	return false
 	
 func update_build_options():
-	print("")
 	self.build_options.clear()
 	for i in BuildingFactory.building_templates:
 		var enabled = true
