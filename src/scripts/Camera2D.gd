@@ -38,7 +38,7 @@ var zoom_out_limit = 2
 var zoom_in_limit = 0.1
 
 # Camera speed in px/s.
-export (int) var camera_speed = 300
+export (int) var camera_speed = 500
 
 # Initial zoom value taken from Editor.
 var camera_zoom = get_zoom()
