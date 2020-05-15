@@ -14,9 +14,9 @@ func init(building):
 func pressed():
 	SignalManager.build_btn_click(self.building["name"])
 	
-func unit_selected(unit):
-	if unit.can_build(self.building["name"]):
-		self.visible = true
-	else:
-		self.visible = false
+#func unit_selected(unit):
+#	if unit.can_build(self.building["name"]):
+#		self.visible = true
+#	else:
+#		self.visible = false
 	

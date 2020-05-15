@@ -12,18 +12,14 @@ var player
 
 var moves: Array
 var build_turns_left: int
+var build_options: Dictionary
 var build_curr: String
 var moves_left: int setget set_moves_left
 var explore: bool
 var recover: bool
 
 #### modes ####
-const DEFAULT = 0
-const MOVE = 1
-const MOVE_WAIT = 2
-const ATTACK = 3
-const ATTACK_MOVE = 4
-const BUILD = 5
+enum {DEFAULT,MOVE,MOVE_WAIT,ATTACK,ATTACK_MOVE,BUILD}
 
 func _init():
 	can_move_water = false
@@ -31,23 +27,31 @@ func _init():
 	explore = false
 	recover = false
 	moves = Array()
+	build_options = Dictionary()
 	build_turns_left = 0
 	build_curr = ""
 	mode = DEFAULT
 	self.z_index += 1
 	pass
 	
+func _ready():
+	self.update_build_options()
+	
 func set_moves_left(m):
 	moves_left = m
 	SignalManager.moves_left_change(self,m)
+	if moves_left <= 0:
+		self.update_build_options()
 
 func set_hex_pos(h):
-	if self.is_inside_tree():
-		if hex_pos != null:
-			GlobalConfig.unit_tiles.erase(hex_pos)
-		GlobalConfig.unit_tiles[h] = self
-		SignalManager.unit_moved(self,hex_pos,h)
+	var old_pos = hex_pos
 	hex_pos = h
+	if self.is_inside_tree():
+		self.update_build_options()
+		if hex_pos != null:
+			GlobalConfig.unit_tiles.erase(old_pos)
+		GlobalConfig.unit_tiles[h] = self
+		SignalManager.unit_moved(self,old_pos,hex_pos)
 	
 func set_mode(m):
 	if mode == MOVE and m in [MOVE_WAIT,DEFAULT]:
@@ -66,6 +70,9 @@ func turn_start() -> bool:
 			self.get_parent().new_building(new_building)
 			mode = DEFAULT
 	self.moves_left = move_range
+	
+	if self.can_build or self.can_build_city:
+		self.update_build_options()
 	
 	if mode in [MOVE_WAIT,ATTACK_MOVE]:
 		return false
@@ -269,18 +276,40 @@ func kill():
 func can_build(building) -> bool:
 	if self.hex_pos in GlobalConfig.building_tiles.keys():
 		return false
-	if BuildingFactory.building_templates_by_name[building]["is_city"] and self.can_build_city:
-		
-		return true
-	elif BuildingFactory.building_templates_by_name[building]["is_district"] and self.can_build:
+	if self.build_options.has(building):
 		return true
 	return false
 	
+func update_build_options():
+	print("")
+	self.build_options.clear()
+	for i in BuildingFactory.building_templates:
+		var enabled = true
+		if (i["is_city"] and self.can_build_city) or (i["is_district"] and self.can_build):
+			if GlobalConfig.building_tiles.has(self.hex_pos):
+				enabled = false
+			if i["is_district"] and !self.hex_pos in self.get_parent().area:
+				enabled = false
+			if self.moves_left <= 0:
+				enabled = false
+			if i.has("resources"):
+				if !GlobalConfig.special_resource_tiles.has(self.hex_pos):
+					enabled = false
+				elif !GlobalConfig.special_resource_tiles[self.hex_pos]["name"] in i["resources"]:
+					print(GlobalConfig.special_resource_tiles[self.hex_pos])
+					enabled = false
+			if i.has("tiles"):
+				if !GlobalConfig.map[self.hex_pos] in i["tiles"]:
+					enabled = false
+			if self.mode == BUILD:
+				enabled = false
+			self.build_options[i["name"]] = {"name":i["name"],"build_turns":i["build_turns"],"type":"Building","enabled":enabled}
+	SignalManager.build_options_updated(self)
+	
 func start_build(building_name:String):
 	if moves_left > 0 and !self.mode in [BUILD]:
-		print("start build")
-		if BuildingFactory.building_templates_by_name.has(building_name):
-			self.build_turns_left = BuildingFactory.building_templates_by_name[building_name]["build_turns"]
+		if self.build_options.has(building_name) and self.build_options[building_name]["enabled"]:
+			self.build_turns_left = self.build_options[building_name]["build_turns"]
 			if build_turns_left == 0:
 				build_turns_left = -1
 				var new_building = BuildingFactory.build_building(building_name,hex_pos,self.get_parent())
@@ -291,7 +320,6 @@ func start_build(building_name:String):
 			else:
 				self.build_curr = building_name
 				self.mode = BUILD
-			
 			self.moves_left = 0
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -342,3 +370,6 @@ func _process(delta):
 				
 			var new_pos = self.position+move_vector
 			self.position = new_pos
+			
+func _draw():
+	draw_circle(Vector2(0,0),Hex.width*0.4,self.get_parent().colour)

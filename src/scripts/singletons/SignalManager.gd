@@ -30,6 +30,7 @@ signal move_wait_finished(unit)
 signal make_unit_move(unit_to_move,unit_sender)
 signal kill_unit(unit)
 signal kill_building(building)
+signal build_options_updated(obj)
 
 var mouse_entered: Array
 var mouse_over_gui: bool
@@ -172,3 +173,6 @@ func kill_building(building):
 	if building in self.mouse_entered:
 		self.mouse_entered.erase(building)
 	emit_signal("kill_building",building)
+	
+func build_options_updated(obj):
+	emit_signal("build_options_updated",obj)

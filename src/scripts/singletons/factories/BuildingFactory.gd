@@ -12,9 +12,7 @@ var debug = false
 func _init():
 	var templates = JsonParser.parse_json_file("res://resources/jsonconfigs/buildings.json")
 	if typeof(templates) == TYPE_ARRAY:
-		print(templates)
 		templates = check_templates(templates)
-		print(templates)
 		self.building_templates = templates
 		self.building_templates_by_name = Dictionary()
 		for i in building_templates:
@@ -45,7 +43,6 @@ func check_templates(templates):
 			if debug:
 				print("err: check building json city")
 			i["is_city"] = false
-			continue
 			
 		if !i.has("is_district"):
 			if debug:

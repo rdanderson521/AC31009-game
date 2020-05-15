@@ -7,7 +7,8 @@
 		},
 		"building":[
 			"city",
-			"stable"
+			"stable",
+			"slaughterhouse"
 		],
 		"happiness":1,
 		"texture":"res://resources/images/camels.png",
@@ -48,7 +49,8 @@
 		},
 		"building":[
 			"city",
-			"stable"
+			"stable",
+			"slaughterhouse"
 		],
 		"happiness":1,
 		"texture":"res://resources/images/deer.png",
@@ -136,14 +138,15 @@
 		"tiles":[14,16,18]
 	},
 	{
-		"name":"penguins",
+		"name":"penguin",
 		"improvements":{
 			"food":1,
 			"gold":1
 		},
 		"building":[
 			"city",
-			"stable"
+			"stable",
+			"slaughterhouse"
 		],
 		"happiness":1,
 		"texture":"res://resources/images/penguins.png",
