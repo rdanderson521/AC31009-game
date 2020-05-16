@@ -2,25 +2,37 @@ extends "res://scripts/gui/GuiPanel.gd"
 
 
 var curr_building: Building
+var btn_list: Dictionary
+var btn_list_container: Node
 
 func _init():
 	SignalManager.connect("building_selected",self,"building_selected")
 	SignalManager.connect("building_unselected",self,"building_unselected")
 	SignalManager.connect("health_change",self,"health_change")
 	self.visible = false
+	self.btn_list = Dictionary()
 	
 func _ready():
-	var btn_list = self.find_node("BuildingBtnLst")
-	if btn_list != null:
-		for i in UnitFactory.unit_templates:
-			var btn = preload("res://scenes/gui/BuildingGuiBuildBtn.tscn").instance()
-			btn.script = preload("res://scripts/gui/BuildingGuiBuildBtn.gd")
-			btn.find_node("Name").text = str(i["name"])
-			btn.find_node("Turns").text = str(i["cost"])
-			btn.find_node("Icon").texture = load(str(i["texture"]))
-			btn.thing_to_make = str(i["name"])
-			btn.init(i)
-			btn_list.add_child(btn)
+	self.btn_list_container = self.find_node("BuildingBtnLst",true,false)
+#	if btn_list != null:
+#		for i in self.curr_building.build_options.keys():
+#			var btn = preload("res://scenes/gui/BuildingGuiBuildBtn.tscn").instance()
+#			btn.script = preload("res://scripts/gui/BuildingGuiBuildBtn.gd")
+#			btn.find_node("Name").text = str(i["name"])
+#			var min_done = -1
+#			for i in building.build_options[building.build_curr]["cost"].keys():
+#				print(i)
+#				var temp_min_done = 1-(building.build_resources_left[i]/building.build_options[building.build_curr]["cost"][i])
+#				if min_done == -1:
+#					min_done = 1-(building.build_resources_left[i]/building.build_options[building.build_curr]["cost"][i])
+#				else:
+#					min_done = min(temp_min_done,min_done)
+#			if min_done >=0:
+#				btn.find_node("Turns").text = str(i["cost"])
+#			btn.find_node("Icon").texture = load(str(i["texture"]))
+#			btn.thing_to_make = str(i["name"])
+#			btn.init(i)
+#			btn_list.add_child(btn)
 			
 
 func building_selected(building):
@@ -31,6 +43,43 @@ func building_selected(building):
 	find_node("HealthBar").value = building.health
 	find_node("BuildingAttack").text = str(building.attack)
 	find_node("BuildingDefence").text = str(building.defence)
+	for i in self.curr_building.build_options.keys():
+		if !self.btn_list.has(i):
+			var btn = preload("res://scenes/gui/BuildingGuiBuildBtn.tscn").instance()
+			btn.script = preload("res://scripts/gui/BuildingGuiBuildBtn.gd")
+			btn.find_node("Name").text = str(building.build_options[i]["name"])
+			
+#			var longest_turns = -1
+#			for j in building.build_options[i]["cost"].keys():
+#				print(i)
+#				var temp_min_done = (building.build_options[i]["cost"][j]/building.resources_per_turn[j])
+#				if longest_turns == -1:
+#					longest_turns = temp_min_done
+#				else:
+#					longest_turns = max(temp_min_done,longest_turns)
+#
+#			if longest_turns >=0:
+#				btn.find_node("Turns").text = str(ceil(longest_turns))+" Turns"
+			btn.find_node("Icon").texture = load(str(building.build_options[i]["texture"]))
+			btn.thing_to_make = str(building.build_options[i]["name"])
+			btn.init(i)
+			self.btn_list[i] = btn
+			self.btn_list_container.add_child(btn)
+			
+	for i in self.btn_list.keys():
+		if self.curr_building.build_options.has(i):
+			var longest_turns = -1
+			for j in building.build_options[i]["cost"].keys():
+				print(i)
+				var temp_min_done = (building.build_options[i]["cost"][j]/building.resources_per_turn[j])
+				if longest_turns == -1:
+					longest_turns = temp_min_done
+				else:
+					longest_turns = max(temp_min_done,longest_turns)
+					
+			if longest_turns >=0:
+				btn_list[i].find_node("Turns").text = str(ceil(longest_turns))+" Turns"
+			
 	if building is City and building.mode == Building.BUILD:
 		var min_done = -1
 		for i in building.build_options[building.build_curr]["cost"].keys():
