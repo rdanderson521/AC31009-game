@@ -1,7 +1,7 @@
 .mono/
 experimental/.mono/
 src/.mono/
-build/
 **/*.sample
 **/*.wav
+experimental/
 audacity/
