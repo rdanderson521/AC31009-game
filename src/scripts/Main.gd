@@ -39,6 +39,13 @@ func next_player(player):
 
 func _ready():
 	randomize()
+	if GlobalConfig.testing:
+		find_node("AudioStreamPlayer").autoplay = false
+		find_node("AudioStreamPlayer").playing = false
+		
+	else:
+		find_node("AudioStreamPlayer").autoplay = true
+		find_node("AudioStreamPlayer").playing = true
 	$TileMap.clear()
 	
 func start_game():
