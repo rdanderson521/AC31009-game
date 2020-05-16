@@ -49,7 +49,6 @@ func reset_buttons():
 	for i in self.find_node("BuildingBtnLst").get_children():
 		i.visible = false
 		btn_list[i.find_node("Name").text] = i
-	print("test build options:",self.curr_unit.build_options)
 	for i in self.curr_unit.build_options.values():
 		if btn_list.has(i["name"]):
 			btn_list[i["name"]].visible = true

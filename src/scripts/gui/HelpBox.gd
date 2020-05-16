@@ -25,15 +25,23 @@ func add_help(help):
 	if self.instructions[help]["show_again"]:
 		self.set_text(self.instructions[help]["text"])
 		if !self.visible:
+			print("not vis")
 			self.find_node("CheckBox",true,false).pressed = false
 			self.current = help
 			self.visible = true
 		else:
-			if !self.queue.has(self.current) and self.current != help:
+			if self.current != help:
 				self.find_node("CheckBox",true,false).pressed = false
-				if self.instructions[self.current]["keep"]:
-					self.queue.push_front(current)
-			self.current = help
+				print("queue",self.queue)
+				print("current",self.current)
+				if !self.queue.has(self.current):
+					print("queue")
+					if self.instructions[self.current]["keep"]:
+						self.queue.push_front(self.current)
+				if self.queue.has(help):
+					print("deete")
+					self.queue.erase(help)
+				self.current = help
 
 func set_text(text):
 	var text_box = self.find_node("RichTextLabel",true,false)
@@ -42,6 +50,7 @@ func set_text(text):
 	self.set_size(Vector2(text_box.get_size().x, text_box.get_v_scroll().get_max()+80))
 
 func turn_start(player):
+	print(player.name," turn start help")
 	add_help("turn_start")
 	
 func unit_selected(unit):
@@ -56,6 +65,7 @@ func building_selected(building):
 	
 func close():
 	if self.find_node("CheckBox",true,false).pressed:
+		self.find_node("CheckBox",true,false).pressed = false
 		self.instructions[self.current]["show_again"] = false
 	if self.queue.empty():
 		self.visible = false

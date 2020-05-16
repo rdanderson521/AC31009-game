@@ -91,6 +91,7 @@ func start_build(building_name:String):
 			self.build_resources_left = self.build_options[building_name]["cost"].duplicate()
 			self.build_curr = building_name
 			self.mode = BUILD
+			self.update_build_options()
 	else:
 		return false
 		
@@ -99,6 +100,11 @@ func update_build_options():
 	for i in UnitFactory.unit_templates:
 		self.build_options[i["name"]] = i.duplicate(true)
 		self.build_options[i["name"]]["type"]  = "Unit"
+		if self.mode == BUILD:
+			self.build_options[i["name"]]["enabled"] = false
+		else:
+			self.build_options[i["name"]]["enabled"] = true
+	SignalManager.build_options_updated(self)
 
 func _draw():
 	print("draw city")

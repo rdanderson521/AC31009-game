@@ -104,8 +104,7 @@ func can_build(building = null) -> bool:
 		
 func update_build_options():
 	self.build_options.clear()
-	for i in UnitFactory.unit_templates:
-		self.build_options[i["name"]] = {"name":i["name"],"cost":i["cost"].duplicate(),"type":"Unit"}
+	
 		
 func kill():
 	self.visible = false
