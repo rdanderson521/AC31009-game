@@ -31,6 +31,28 @@ func building_selected(building):
 	find_node("HealthBar").value = building.health
 	find_node("BuildingAttack").text = str(building.attack)
 	find_node("BuildingDefence").text = str(building.defence)
+	if building is City and building.mode == Building.BUILD:
+		var min_done = -1
+		for i in building.build_options[building.build_curr]["cost"].keys():
+			print(i)
+			var temp_min_done = 1-(building.build_resources_left[i]/building.build_options[building.build_curr]["cost"][i])
+			if min_done == -1:
+				min_done = 1-(building.build_resources_left[i]/building.build_options[building.build_curr]["cost"][i])
+			else:
+				min_done = min(temp_min_done,min_done)
+		if min_done >=0:
+			find_node("CurrentBuildContainer").visible = true
+			find_node("CurrentBuild").text = building.build_curr
+			find_node("BuildProgressContainer").visible = true
+			find_node("BuildProgress").max_value = 1
+			find_node("BuildProgress").value = min_done
+			print(min_done)
+		else:
+			find_node("CurrentBuildContainer").visible = false
+			find_node("BuildProgressContainer").visible = false
+	else:
+		find_node("CurrentBuildContainer").visible = false
+		find_node("BuildProgressContainer").visible = false
 	var btn_list = Dictionary()
 	for i in self.find_node("BuildingBtnLst").get_children():
 		i.visible = false

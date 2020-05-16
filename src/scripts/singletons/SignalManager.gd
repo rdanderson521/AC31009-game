@@ -140,7 +140,7 @@ func unit_unselected():
 	
 func building_selected(building):
 	emit_signal("building_selected",building)
-	#print("building_selected")
+	print("building_selected")
 	
 func building_unselected():
 	emit_signal("building_unselected")
