@@ -45,7 +45,7 @@
 	{
 		"name":"Scout",
 		"health":20,
-		"damage":5,
+		"damage":3,
 		"damage_range":1,
 		"defence":6,
 		"move_range":4,

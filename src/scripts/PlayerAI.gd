@@ -40,10 +40,10 @@ var attack_type: int
 
 var defence_type: int
 
-enum attack{BUILD,MOVE,CITY,UNIT}
-enum defence{BUILD,MOVE,PRIORITY}
+enum attack{BUILD,CITY,UNIT}
+enum defence{BUILD,CITY}
 enum expand{BUILD,CITY,IMPROVEMENT}
-enum explore {BUILD,MOVE,CITY,FOW}
+enum explore {BUILD,CITY,FOW}
 
 enum {EXPLORE,EXPAND,ATTACK,DEFEND}
 
@@ -205,6 +205,8 @@ func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 
 func turn_decisions():
 	self.update_scores()
+	self.update_priorities()
+	
 	for i in self.units:
 		if !self.units_assigned.has(i):
 			self.units_assigned[i] = null
@@ -267,9 +269,7 @@ func turn_decisions():
 			self.unit_profiles[i].go_to_object(self.city_profiles[self.buildings.front()].city)
 		elif self.units_assigned[i] == EXPAND:
 			self.unit_profiles[i].select_task()
-		
-		
-	
+
 	var total_build_priority = self.attack_priority[attack.BUILD] + self.defence_priority[defence.BUILD] + self.explore_priority[explore.BUILD] + self.expand_priority[expand.BUILD]
 	var build_unit_priorities = {ATTACK:self.attack_priority[attack.BUILD]/total_build_priority,DEFEND:self.defence_priority[defence.BUILD]/total_build_priority,
 		EXPAND:self.expand_priority[expand.BUILD]/total_build_priority,EXPLORE:self.explore_priority[explore.BUILD]/total_build_priority}
@@ -285,6 +285,7 @@ func turn_decisions():
 		i.select_task(highest_priority_unit)
 		
 	self.turn_end()
+	
 	
 func update_scores():
 	self.attack_score = 0
@@ -323,6 +324,7 @@ func update_scores():
 	
 	print(self.name," scores: a:",self.attack_score,", d:",self.defence_score,", c:",self.city_score,", cd:",self.city_defence_score,", e:",self.explore_score)
 	
+func update_priorities():
 	for i in self.explore_priority.keys():
 		if i == explore.CITY:
 			self.explore_priority[i] = Dictionary()
@@ -334,65 +336,76 @@ func update_scores():
 		for j in i.get_cities():
 			self.explore_priority[explore.CITY][j] = j["last_seen"]/min(self.turn,20)
 			max_explore_priority = max(max_explore_priority,self.explore_priority[explore.CITY][j])
-#			if self.explore_priority[explore.CITY] < j["last_seen"]/min(self.turn,20):
-#				self.explore_priority[explore.CITY] = j["last_seen"]/min(self.turn,20)
-#				self.explore_target = j
-#				self.explore_type = self.explore .CITY
 				
 	self.explore_priority[explore.FOW] = float(self.fow.size())/float(GlobalConfig.map.size())
 	max_explore_priority = max(max_explore_priority,self.explore_priority[explore.FOW])
 		
 	self.explore_priority[explore.BUILD] = (max_explore_priority/max(self.assigned_explore_score,1)) * self.explore_bias
-	print("explore type: ",self.explore_type," priority: ", self.explore_priority)
+	print("explore priority: ", self.explore_priority)
+	
+	for i in self.expand_priority.keys():
+			self.expand_priority[i] = 0
+			
+			
+			
+	print("expand priority: ", self.expand_priority)
+	
 	
 	for i in self.attack_priority.keys():
 		if i in [attack.CITY,attack.UNIT]:
-			self.attack_priority[i] = 0
+			self.attack_priority[i] = Dictionary()
 		else:
 			self.attack_priority[i] = 0
 	for i in self.defence_priority.keys():
-		self.defence_priority[i] = 0
+		if i in [defence.CITY]:
+			self.defence_priority[i] = Dictionary()
+		else:
+			self.defence_priority[i] = 0
 		
 	self.defence_type = self.defence.BUILD
 	
+	var area_centre = Vector2(0,0)
+	var area_centre_count = 0
+	for i in self.area:
+		area_centre += i * 3
+		area_centre_count += 3
+	for i in self.units:
+		area_centre += i.hex_pos
+		area_centre_count += 1
+	area_centre = area_centre/area_centre_count
+	area_centre.x = round(area_centre.x)
+	area_centre.y = round(area_centre.y)
+		
+	
 	for i in self.player_profiles.values():
-#		if i.city_defence_score > 0:
-#			if (self.attack_score/(2*max(1,i.city_defence_score))) > self.attack_priority[attack.CITY]:
-#				self.attack_priority[attack.CITY] = (self.attack_score/(2*max(1,i.city_defence_score)))
-#				self.attack_target = i
-#			if (i.city_defence_score/self.attack_score) > self.attack_priority[attack.BUILD]:
-#				self.attack_priority[attack.BUILD] = (i.city_defence_score/self.attack_score)
-		for j in i.get_cities():
-			pass
-		
-		if self.city_defence_score > 0 and i.attack_score > 0:
-			if  max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.city_defence_score) > self.attack_priority[attack.UNIT]:
-				self.attack_priority[attack.UNIT] = max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.city_defence_score)
-			if  max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.attack_score) > self.attack_priority[attack.BUILD]:
-				self.attack_priority[attack.BUILD] = max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.attack_score)
-			
-		if self.defence_score > 0 and i.attack_score > 0:
-			if max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.defence_score) > self.attack_priority[attack.UNIT]:
-				self.attack_priority[attack.UNIT] = max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.defence_score)
-			
-			if max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.attack_score) > self.attack_priority[attack.BUILD]:
-				self.attack_priority[attack.BUILD] = max(i.aggression/i.attack_score,0.5)*(i.attack_score/self.attack_score)
-		
-		if self.city_defence_score > 0 and i.attack_score > 0:
-			var new_defence_priority = (max(i.aggression/i.attack_score,0.5)*i.attack_score)/(self.city_defence_score)#max(i.aggression/defence,i.attack_score/defence)#max(0.2,i.aggression) * max(i.attack_score/defence,0)
-			if new_defence_priority > self.defence_priority[defence.PRIORITY]:
-				self.defence_priority[defence.PRIORITY] = new_defence_priority
-	
-	self.attack_priority[attack.UNIT] = self.attack_priority[attack.UNIT] * self.attack_bias
-	self.attack_priority[attack.CITY] = self.attack_priority[attack.CITY] * self.attack_bias
-	
-	self.defence_priority[defence.PRIORITY] = self.defence_priority[defence.PRIORITY] * self.defence_bias
-	
-	self.defence_priority[defence.MOVE] = (self.defence_score / max(1,self.assigned_defence_score))*self.defence_priority[defence.PRIORITY]
-	if self.defence_score > 0:
-		self.defence_priority[defence.BUILD] = (self.assigned_defence_score / self.defence_score)*self.defence_priority[defence.PRIORITY]
 
-	print("defence type: ",self.defence_type," priority: ", self.defence_priority)
+		for j in i.get_cities():
+			self.attack_priority[attack.CITY][j["building"]] = (self.attack_score/(2*max(1,i.get_city_defence_score(j))))
+		
+		for j in i.get_units():
+			self.attack_priority[attack.UNIT][j["unit"]] = max(j["attack_score"]/max(1,i.aggression),0.5)*(j["attack_score"]/max(1,Hex.hex_distance(area_centre,j["unit_cpy"].hex_pos)))
+			
+			for k in self.city_profiles.values():
+				var unit_influence = j["attack_score"]/(2*max(1,Hex.hex_distance(k.city.hex_pos,j["unit_cpy"].hex_pos)))
+				if self.defence_priority[defence.CITY].has(k.city):
+					self.defence_priority[defence.CITY][k.city] += unit_influence
+				else:
+					self.defence_priority[defence.CITY][k.city] = unit_influence
+					
+		for j in self.city_profiles.values():
+			if self.defence_priority[defence.CITY].has(j.city):
+				self.defence_priority[defence.CITY][j.city] = (self.defence_priority[defence.CITY][j.city]*j.value_score)/j.defence_score
+	
+	for i in self.attack_priority[attack.UNIT].keys():
+		 self.attack_priority[attack.UNIT][i] = self.attack_priority[attack.UNIT][i] * self.attack_bias
+	for i in self.attack_priority[attack.CITY].keys():
+		 self.attack_priority[attack.CITY][i] = self.attack_priority[attack.CITY][i] * self.attack_bias
+	
+	for i in self.defence_priority[defence.CITY].keys():
+		 self.defence_priority[defence.CITY][i] = self.defence_priority[defence.CITY][i] * self.defence_bias
+	
+
+	print("defence priority: ", self.defence_priority)
 	print("attack priority: ", self.attack_priority)
 			
 func update_player_profiles():
@@ -622,16 +635,20 @@ class UnitProfile:
 class CityProfile:
 	var player
 	var is_own: bool
-	var city: Building
+	var city: City
 	var area: Array
 	var buildings: Array
+	var building_tiles: Dictionary
 	var defence_score: float
 	var unit_defence_score: float
 	var unit_defence: Array
 	var value_score: float
+	var potential_value_score: float
 	
-	func _init(b: Building, p):
+	func _init(b: City, p):
 		self.city = b
+		self.buildings = Array()
+		self.buildings.append(b)
 		self.player = p
 		self.unit_defence = Array()
 		self.area = b.area
@@ -652,13 +669,62 @@ class CityProfile:
 					max_resources_required[j] = i["cost"][j]
 		for i in self.city.resources_per_turn.keys():
 			if i in max_resources_required.keys():
-				self.value_score += self.city.resources_per_turn[i] + (max_resources_required[i]/self.city.resources_per_turn[i])
+				self.value_score += self.city.resources_per_turn[i] + (self.city.resources_per_turn[i]/max_resources_required[i])
 			else:
 				self.value_score += self.city.resources_per_turn[i]/2
 				
+		var potential_resources_per_turn = self.city.resources_per_turn.duplicate()
+		self.potential_value_score = self.value_score
+		for i in self.city.area:
+			if !self.building_tiles.has(i):
+				var max_improvement = 0
+				var max_resources = Dictionary()
+				for j in BuildingFactory.building_templates:
+					var temp_resources = Dictionary()
+					var total_improvment = 0
+					var valid = true
+					if !j["is_district"] and valid:
+						valid = false
+					if j.has("tiles") and !(GlobalConfig.map[i] in j["tiles"]) and valid:
+						valid = false
+					if j.has("resources") and GlobalConfig.special_resource_tiles.has(i) and valid:
+						if !(GlobalConfig.special_resource_tiles[i]["name"] in j["resources"]):
+							valid = false
+						elif GlobalConfig.special_resource_tiles[i]["name"] in j["resources"]:
+							for k in GlobalConfig.special_resource_tiles[i]["improvements"].keys():
+								temp_resources[k] = GlobalConfig.special_resource_tiles[i]["improvements"][k]
+								total_improvment += GlobalConfig.special_resource_tiles[i]["improvements"][k]
+					if valid:
+						for k in j["improvements"].keys():
+							if temp_resources.has(k):
+								temp_resources[k] += j["improvements"][k]
+								total_improvment += j["improvements"][k]
+							else:
+								temp_resources[k] = j["improvements"][k]
+								total_improvment += j["improvements"][k]
+						if total_improvment > max_improvement:
+							max_improvement = total_improvment
+							max_resources = temp_resources
+				for j in max_resources.keys():
+					if potential_resources_per_turn.has(j):
+						potential_resources_per_turn[j] += max_resources[j]
+					else:
+						potential_resources_per_turn[j] = max_resources[j]
+							
+		for i in potential_resources_per_turn.keys():
+			if i in max_resources_required.keys():
+				self.potential_value_score += potential_resources_per_turn[i] + (potential_resources_per_turn[i]/max_resources_required[i])
+			else:
+				self.potential_value_score += potential_resources_per_turn[i]/2
+		
 		update_unit_defence(self.player.unit_profiles.values())
 		
-		print("city def: ",self.defence_score+self.unit_defence_score," val: ", self.value_score)
+		print("city def: ",self.defence_score+self.unit_defence_score," val: ", self.value_score," pot.val: ",self.potential_value_score)
+		
+	func add_building(b):
+		if b.hex_pos in self.area and !self.building_tiles.has(b.hex_pos):
+			self.buildings.append(b)
+			self.building_tiles[b.hex_pos] = b
 		
 	func update_unit_defence(unit_profiles):
 		self.unit_defence_score = 0
@@ -762,6 +828,9 @@ class PlayerProfile:
 		
 	func get_cities():
 		return self.cities.values()
+		
+	func get_units():
+		return self.units.values()
 	
 	func update_unit(unit):
 		if units.has(unit):
@@ -800,18 +869,29 @@ class PlayerProfile:
 			if i["last_seen"] > 10:
 				units.erase(i)
 			else:
-				attack_score += (i["unit_cpy"].attack*i["unit_cpy"].health)/(max(1,i["last_seen"]) * i["unit_cpy"].health_max)
-				defence_score += (i["unit_cpy"].defence*i["unit_cpy"].health)/(max(1,i["last_seen"]) * i["unit_cpy"].health_max)
+				i["attack_score"] = (i["unit_cpy"].attack*i["unit_cpy"].health)/(max(1,i["last_seen"]) * i["unit_cpy"].health_max)
+				attack_score += i["attack_score"]
+				i["defence_score"] = (i["unit_cpy"].defence*i["unit_cpy"].health)/(max(1,i["last_seen"]) * i["unit_cpy"].health_max)
+				defence_score += i["defence_score"]
 		for i in buildings.values():
-			self.city_defence_score += i["building_cpy"].defence
-			if self.cities.has(i["building"]):
-				for j in units.values():
-					var dist = Hex.hex_distance(j["unit_cpy"].hex_pos,i["building_cpy"].hex_pos)
-					if dist < 5:
-						self.city_defence_score += j["unit_cpy"].defence/(max(1,0.5*dist)*max(1,0.5*j["last_seen"]))
+			self.city_defence_score += self.get_city_defence_score(i)
+#			self.city_defence_score += i["building_cpy"].defence
+#			if self.cities.has(i["building"]):
+#				for j in units.values():
+#					var dist = Hex.hex_distance(j["unit_cpy"].hex_pos,i["building_cpy"].hex_pos)
+#					if dist < 5:
+#						self.city_defence_score += j["unit_cpy"].defence/(max(1,0.5*dist)*max(1,0.5*j["last_seen"]))
 		print(self.enemy.get_name()," profile atck: ",self.attack_score, " def: ", self.defence_score, " city_def: ", self.city_defence_score, " agr: ", self.aggression)
 			
-			
+	func get_city_defence_score(city):
+		var city_defence = city["building_cpy"].defence
+		if self.cities.has(city["building"]):
+			for i in units.values():
+				var dist = Hex.hex_distance(i["unit_cpy"].hex_pos,city["building_cpy"].hex_pos)
+				if dist < 5:
+					self.city_defence_score += i["unit_cpy"].defence/(max(1,0.5*dist)*max(1,0.5*i["last_seen"]))
+		return city_defence
+	
 	func turn_start():
 		if aggression > 0:
 			aggression = min(aggression*0.9,aggression-1)
