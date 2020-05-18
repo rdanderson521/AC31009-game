@@ -47,7 +47,8 @@ func set_text(text):
 	var text_box = self.find_node("RichTextLabel",true,false)
 	text_box.text = text
 	yield(get_tree(), "idle_frame")
-	self.set_size(Vector2(text_box.get_size().x, text_box.get_v_scroll().get_max()+80))
+#	self.set_size(Vector2(text_box.get_size().x, ))
+	self.margin_bottom = (text_box.get_v_scroll().get_max()+80)
 
 func turn_start(player):
 	print(player.name," turn start help")

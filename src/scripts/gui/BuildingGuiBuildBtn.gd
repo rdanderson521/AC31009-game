@@ -21,3 +21,4 @@ func init(obj):
 func pressed():
 	print("build pressed")
 	SignalManager.build_btn_click(self.thing_to_make)
+

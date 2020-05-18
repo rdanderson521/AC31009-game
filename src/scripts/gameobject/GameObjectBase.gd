@@ -13,9 +13,10 @@ var selected: bool
 var hex_pos: Vector2 setget set_hex_pos
 var mode: int setget set_mode
 
-func set_texture(texture):
-	if texture != null:
-		$Area2D/CollisionPolygon2D/Sprite.texture = load(texture)
+func set_texture(tex):
+	if tex != null:
+		$Area2D/CollisionPolygon2D/Sprite.texture = load(tex)
+	texture = tex
 	
 func set_health(h):
 	health = h

@@ -133,7 +133,7 @@ func new_building(building:Building):
 			self.city_area[building.hex_pos].add_building(building)
 			
 	self.visible_tiles += Hex.hex_in_range(self.building_vis_range,building.hex_pos)
-	if building.turn_start():
+	if building.turn_start() and building is City:
 		self.buildings_attention_needed.append(building)
 		
 func can_build(building:String,hex:Vector2)->bool:

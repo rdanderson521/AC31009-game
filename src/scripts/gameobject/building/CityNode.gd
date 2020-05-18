@@ -92,6 +92,7 @@ func start_build(building_name:String):
 			self.build_curr = building_name
 			self.mode = BUILD
 			self.update_build_options()
+			SignalManager.building_build_start(self)
 	else:
 		return false
 		

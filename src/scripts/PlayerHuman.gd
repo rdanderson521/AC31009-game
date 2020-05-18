@@ -18,6 +18,7 @@ func _init(start_hex:Vector2).(start_hex):
 	SignalManager.connect("build_btn_click",self,"start_build")
 	SignalManager.connect("unit_moved",self,"unit_moved")
 	SignalManager.connect("move_wait_finished",self,"unit_turn_finished")
+	SignalManager.connect("select_object_btn",self,"select_object_btn")
 	
 	self.unit_vis_range = 2
 	self.building_vis_range = 3
@@ -93,12 +94,20 @@ func tilemap_clicked_right(hex:Vector2):
 			if self.selected_object is Unit:
 				self.selected_object.find_path(hex)
 				
+func select_object_btn(obj:GameObject):
+	if self.is_turn:
+		if self.units.has(obj) or self.buildings.has(obj) or self.cities.has(obj):
+			self.selected_object = obj
+			self.camera.position = obj.position
+				
 				
 func turn_start():
 	self.is_turn = true
 	self.turn += 1
 	self.fow_canvas.draw()
 	self.camera.make_current()
+	self.units_attention_needed.clear()
+	self.buildings_attention_needed.clear()
 	if !self.units.empty():
 		for i in self.units:
 			if i.turn_start():
@@ -108,6 +117,7 @@ func turn_start():
 			if i.turn_start():
 				self.buildings_attention_needed.push_back(i)
 	SignalManager.player_turn_started(self)
+	SignalManager.turn_start_obj_attention_needed(self.units_attention_needed,self.buildings_attention_needed)
 			
 func turn_end():
 	var all_units_done = true

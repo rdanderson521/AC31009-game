@@ -32,6 +32,9 @@ signal make_unit_move(unit_to_move,unit_sender)
 signal kill_unit(unit)
 signal kill_building(building)
 signal build_options_updated(obj)
+signal select_object_btn(obj)
+signal turn_start_obj_attention_needed(units,buildings)
+signal building_build_start(building)
 
 var mouse_entered: Array
 var mouse_over_gui: bool
@@ -181,3 +184,12 @@ func kill_building(building):
 	
 func build_options_updated(obj):
 	emit_signal("build_options_updated",obj)
+	
+func select_object_btn(obj):
+	emit_signal("select_object_btn",obj)
+	
+func turn_start_obj_attention_needed(units,buildings):
+	emit_signal("turn_start_obj_attention_needed",units,buildings)
+	
+func building_build_start(building):
+	emit_signal("building_build_start",building)
