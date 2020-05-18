@@ -110,7 +110,9 @@ func build_building(to_build,hex,player):
 	building.defence = template["defence"]
 	building.improvements = template["improvements"]
 	building.texture = template["texture"]
+	building.player = player
 	player.add_child(building)
+	SignalManager.new_building(building,player)
 	
 	return building
 	

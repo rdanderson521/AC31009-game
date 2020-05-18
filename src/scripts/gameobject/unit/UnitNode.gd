@@ -8,7 +8,6 @@ var can_build: bool
 var can_build_city: bool
 var can_trade: bool 
 var can_move_water: bool
-var player
 
 var moves: Array
 var build_turns_left: int
@@ -250,13 +249,10 @@ func attack(enemy):
 			else:
 				var damage = rand_range(0.8*self.attack,self.attack)
 				damage = damage * (self.moves_left+move_range)/(2*move_range)
-				damage -= rand_range(0.1*enemy.defence,0.25*enemy.defence)
 				damage = max(damage,0)
 				print("damage: " + str(damage))
 				
 				var enemy_damage = rand_range(0.8*enemy.defence,enemy.defence)
-				#enemy_damage = enemy_damage * (enemy.moves_left+enemy.move_range)/(2*enemy.move_range)
-				enemy_damage -= rand_range(0.2*self.defence,0.4*self.defence)
 				enemy_damage = max(enemy_damage,0)
 				print("en damage: " + str(enemy_damage))
 				enemy.health = enemy.health - damage
@@ -266,7 +262,8 @@ func attack(enemy):
 				self.kill()
 			if enemy.health < 0:
 				enemy.kill()
-			mode = DEFAULT
+			self.mode = DEFAULT
+			self.moves_left = 0
 			
 func kill():
 	self.visible = false
