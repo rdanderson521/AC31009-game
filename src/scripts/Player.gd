@@ -136,6 +136,7 @@ func new_building(building:Building):
 	if building.turn_start() and building is City:
 		self.buildings_attention_needed.append(building)
 		
+		
 func can_build(building:String,hex:Vector2)->bool:
 	if BuildingFactory.building_templates_by_name.has(building):
 		if BuildingFactory.building_templates_by_name[building]["is_city"]:

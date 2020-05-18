@@ -35,6 +35,8 @@ signal build_options_updated(obj)
 signal select_object_btn(obj)
 signal turn_start_obj_attention_needed(units,buildings)
 signal building_build_start(building)
+signal new_unit(unit,player)
+signal new_building(building,player)
 
 var mouse_entered: Array
 var mouse_over_gui: bool
@@ -193,3 +195,12 @@ func turn_start_obj_attention_needed(units,buildings):
 	
 func building_build_start(building):
 	emit_signal("building_build_start",building)
+	
+func new_unit(unit,player):
+	emit_signal("new_unit",unit,player)
+	
+func new_building(building,player):
+	emit_signal("new_building",building,player)
+	
+	
+	

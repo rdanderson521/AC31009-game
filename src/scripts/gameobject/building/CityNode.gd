@@ -49,6 +49,7 @@ func turn_start() -> bool:
 			self.mode = DEFAULT
 		else:
 			return false
+	self.update_build_options()
 	return true
 	
 func add_building(building:Building):

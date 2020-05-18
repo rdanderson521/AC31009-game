@@ -12,6 +12,7 @@ var health: float setget set_health
 var selected: bool
 var hex_pos: Vector2 setget set_hex_pos
 var mode: int setget set_mode
+var player
 
 func set_texture(tex):
 	if tex != null:
