@@ -164,6 +164,7 @@ func new_building(building:Building):
 	else:
 		if self.city_area.has(building.hex_pos):
 			self.city_area[building.hex_pos].add_building(building)
+			self.city_profiles[self.city_area[building.hex_pos]].add_building(building)
 			
 	self.visible_tiles += Hex.hex_in_range(self.building_vis_range,building.hex_pos)
 	if building.turn_start():
@@ -270,7 +271,7 @@ func turn_decisions():
 					improvement_city = j
 				else:
 					if self.expand_priority[expand.IMPROVEMENT][j] > self.expand_priority[expand.IMPROVEMENT][improvement_city]:
-						improvement_city
+						improvement_city = j
 			self.unit_targets[i] = improvement_city
 			self.expand_priority[expand.IMPROVEMENT][improvement_city] -= total_priority/num_units
 			total_expand_priority -= total_priority/num_units
@@ -515,7 +516,7 @@ func update_priorities():
 		self.expand_priority[expand.IMPROVEMENT][i.city] = (1 - (i.value_score/i.potential_value_score) ) * self.expand_bias
 		max_expand = max(max_expand,self.expand_priority[expand.IMPROVEMENT][i.city])
 		
-	self.expand_priority[expand.CITY] = (1*self.expand_bias) - max_expand
+	self.expand_priority[expand.CITY] = (1 - max_expand)*self.expand_bias
 			
 	for i in self.attack_priority.keys():
 		if i in [attack.CITY,attack.UNIT]:
@@ -608,7 +609,7 @@ func update_build_priorites():
 				max_expand_priority = max(max_expand_priority,self.expand_priority[i][j])
 	#max_expand_priority = max(max_expand_priority,self.expand_priority[expand.CITY])
 	if self.cities.size() > 0:
-		self.expand_priority[expand.BUILD_IMPROVE] = max_expand_priority - (self.units_assigned.values().count(EXPAND)/self.cities.size())*max_expand_priority
+		self.expand_priority[expand.BUILD_IMPROVE] = max_expand_priority - ((self.units_assigned.values().count(EXPAND)*max_expand_priority)/self.cities.size())
 	else:
 		self.expand_priority[expand.BUILD_IMPROVE] = 0
 	self.expand_priority[expand.BUILD_CITY] = (self.expand_priority[expand.CITY]/max(pow(self.units_assigned.values().count(EXPAND),2),1))
@@ -813,8 +814,6 @@ class UnitProfile:
 				for i in locations:
 					if self.unit.find_path(i):
 						break
-			
-	
 	
 	static func sort_city_locations(a,b):
 		if a["total"] < b["total"]:
