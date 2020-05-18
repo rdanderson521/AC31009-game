@@ -110,4 +110,3 @@ func kill():
 	self.visible = false
 	SignalManager.kill_building(self)
 	self.queue_free()
-			

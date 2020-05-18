@@ -5,31 +5,15 @@ class_name City
 var area: Array
 var resources_per_turn: Dictionary
 var buildings: Array
+var building_tiles: Dictionary
+
+func _init():
+	self.building_tiles = Dictionary()
+	SignalManager.connect("kill_building",self,"kill_building")
 
 func _ready():
 	self.build_options_outdated = true
-	for i in self.area:
-		var tile_resources =  GlobalConfig.biome_resources[GlobalConfig.map[i]]
-		for j in tile_resources.keys():
-			if self.resources_per_turn.has(j):
-				self.resources_per_turn[j] += tile_resources[j]
-			else:
-				self.resources_per_turn[j] = tile_resources[j]
-					
-	for i in self.improvements.keys():
-		if self.resources_per_turn.keys().has(i):
-			self.resources_per_turn[i] += improvements[i]
-		else:
-			self.resources_per_turn[i] = improvements[i]
-			
-	if self.hex_pos in GlobalConfig.special_resource_tiles.keys():
-		var special_resources = GlobalConfig.special_resource_tiles[self.hex_pos]["improvements"]
-		for i in special_resources.keys():
-			if self.resources_per_turn.keys().has(i):
-				self.resources_per_turn[i] += special_resources[i]
-			else:
-				self.resources_per_turn[i] = special_resources[i]
-	print("resources: ", self.resources_per_turn)
+	self.update_resources()
 	self.update_build_options()
 	
 func turn_start() -> bool:
@@ -53,6 +37,7 @@ func turn_start() -> bool:
 	
 func add_building(building:Building):
 	self.buildings.append(building)
+	self.building_tiles[building.hex_pos] = building
 	for i in building.improvements.keys():
 		if self.resources_per_turn.has(i):
 			self.resources_per_turn[i] += building.improvements[i]
@@ -61,6 +46,29 @@ func add_building(building:Building):
 	if GlobalConfig.special_resource_tiles.has(building.hex_pos) and GlobalConfig.special_resource_tiles[building.hex_pos]["building"].has(building.type):
 		var special_resources = GlobalConfig.special_resource_tiles[self.hex_pos]["improvements"]
 		print("special building made")
+		for i in special_resources.keys():
+			if self.resources_per_turn.keys().has(i):
+				self.resources_per_turn[i] += special_resources[i]
+			else:
+				self.resources_per_turn[i] = special_resources[i]
+				
+func update_resources():
+	for i in self.area:
+		var tile_resources =  GlobalConfig.biome_resources[GlobalConfig.map[i]]
+		for j in tile_resources.keys():
+			if self.resources_per_turn.has(j):
+				self.resources_per_turn[j] += tile_resources[j]
+			else:
+				self.resources_per_turn[j] = tile_resources[j]
+					
+	for i in self.improvements.keys():
+		if self.resources_per_turn.keys().has(i):
+			self.resources_per_turn[i] += improvements[i]
+		else:
+			self.resources_per_turn[i] = improvements[i]
+			
+	if self.hex_pos in GlobalConfig.special_resource_tiles.keys():
+		var special_resources = GlobalConfig.special_resource_tiles[self.hex_pos]["improvements"]
 		for i in special_resources.keys():
 			if self.resources_per_turn.keys().has(i):
 				self.resources_per_turn[i] += special_resources[i]
@@ -105,6 +113,12 @@ func update_build_options():
 		else:
 			self.build_options[i["name"]]["enabled"] = true
 	SignalManager.build_options_updated(self)
+	
+func kill_building(building):
+	if self.buildings.has(building):
+		self.building_tiles.erase(building.hex_pos)
+		self.buildings.erase(building)
+		self.update_resources()
 
 func _draw():
 	print("draw city")
