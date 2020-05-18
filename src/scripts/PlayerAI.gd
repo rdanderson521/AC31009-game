@@ -277,6 +277,7 @@ func turn_decisions():
 					max_priority_value = self.explore_priority[i] 
 					max_priority = EXPLORE
 					max_priority_type = i
+					max_priority_target = null
 			elif i == explore.CITY:
 				for j in self.explore_priority[i]:
 					if  self.explore_priority[i][j] > max_priority_value:
@@ -343,6 +344,7 @@ func turn_decisions():
 					best_unit = i
 			self.units_assigned[best_unit] = EXPLORE
 			print("assigned explore:",self.units_assigned[best_unit])
+			self.unit_targets[best_unit] = null
 			unassigned_units.erase(best_unit)
 			self.priorities[max_priority][max_priority_type] -= total_priority/num_units
 			
@@ -360,59 +362,49 @@ func turn_decisions():
 			self.priorities[max_priority][max_priority_type][max_priority_target] -= total_priority/num_units
 	print("assigned units: ",self.units_assigned)
 				
-	var assigned_unit_tasks = self.units_assigned.values()
+	self.update_assigned_scores()
 	
+				
+				
+	var assigned_unit_tasks = self.units_assigned.values()
 	var explore_units = assigned_unit_tasks.count(EXPLORE)
 
-	
 	for i in self.units_attention_needed:
 		if self.units_assigned[i] == EXPLORE:
-#			if self.explore_priority[explore.FOW] > self.explore_priority[explore.CITY]:
-#				self.unit_profiles[i].explore_fow()
-#			else:
-#				self.unit_profiles[i].go_to_object(explore_target.city)
-			var max_explore_priority = self.explore_priority[explore.FOW]
-			var explore_target = null
-			for j in self.explore_priority[explore.CITY].keys():
-				if self.explore_priority[explore.CITY][j] > max_explore_priority:
-					max_explore_priority = self.explore_priority[explore.CITY][j]
-					explore_target = j
-			if explore_target == null:
+			if !self.unit_targets.has(i) or self.unit_targets[i] == null:
 				self.unit_profiles[i].explore_fow()
 				self.explore_priority[explore.FOW] = self.explore_priority[explore.FOW]-(1/explore_units)
 			else:
-				self.unit_profiles[i].go_to_object(explore_target)
-				self.explore_priority[explore.CITY][explore_target] = self.explore_priority[explore.CITY][explore_target]-(1/explore_units)
+				self.unit_profiles[i].go_to_object(self.unit_targets[i])
+				self.explore_priority[explore.CITY][self.unit_targets[i]] = self.explore_priority[explore.CITY][self.unit_targets[i]]-(1/explore_units)
 				
 		elif self.units_assigned[i] == ATTACK:
-			if self.attack_target != null:
-				if self.attack_priority[attack.CITY] > self.attack_priority[attack.UNIT]:
-					var target_cities = self.attack_target.get_cities()
-					if !target_cities.empty():
-						self.unit_profiles[i].attack_city(target_cities.front()["building"])
-				else:
-					var target_units = self.attack_target.units
-					if !target_units.empty():
-						var unit_to_attack
-						var distance = -1
-						for j in target_units.values():
-							if distance == -1 or distance > Hex.hex_distance(j["unit_cpy"].hex_pos,i.hex_pos) + j["last_seen"]:
-								unit_to_attack = j
-								distance = Hex.hex_distance(j["unit_cpy"].hex_pos,i.hex_pos) + j["last_seen"]
-						self.unit_profiles[i].attack_unit(unit_to_attack["unit"])
+			if self.unit_targets[i] != null:
+					if self.unit_targets[i] is City:
+						print("attack city")
+						self.unit_profiles[i].attack_city(self.unit_targets[i])
+					elif self.unit_targets[i] is Unit:
+						print("attack unit")
+						self.unit_profiles[i].attack_unit(self.unit_targets[i])
+						
 		elif self.units_assigned[i] == DEFEND:
-			self.unit_profiles[i].go_to_object(self.city_profiles[self.buildings.front()].city)
+			self.unit_profiles[i].go_to_object(self.unit_targets[i])
+			
 		elif self.units_assigned[i] == EXPAND:
 			self.unit_profiles[i].select_task()
+
+	self.update_priorities()
+	self.update_build_priorites()
 
 	var total_build_priority = self.attack_priority[attack.BUILD] + self.defence_priority[defence.BUILD] + self.explore_priority[explore.BUILD] + self.expand_priority[expand.BUILD]
 	var build_unit_priorities = {ATTACK:self.attack_priority[attack.BUILD]/total_build_priority,DEFEND:self.defence_priority[defence.BUILD]/total_build_priority,
 		EXPAND:self.expand_priority[expand.BUILD]/total_build_priority,EXPLORE:self.explore_priority[explore.BUILD]/total_build_priority}
+	print("build unit priorities: ",build_unit_priorities)
 	var buildings_ready = self.buildings_attention_needed.size()
 	for i in self.buildings_attention_needed:
 		var highest_priority_unit = 0
 		for j in build_unit_priorities.keys():
-			if build_unit_priorities[j] > highest_priority_unit:
+			if build_unit_priorities[j] > build_unit_priorities[highest_priority_unit]:
 				highest_priority_unit = j
 		print("building unit: ",highest_priority_unit)
 		build_unit_priorities[highest_priority_unit] -= 1/buildings_ready
@@ -496,10 +488,7 @@ func update_priorities():
 	self.explore_priority[explore.FOW] = float(self.fow.size())/float(GlobalConfig.map.size())* self.explore_bias
 	
 	max_explore_priority = max(max_explore_priority,self.explore_priority[explore.FOW])
-	
-	self.explore_priority[explore.BUILD] = (max_explore_priority/max(self.assigned_explore_score,1)) 
-	
-	
+
 	var max_expand = 0
 	for i in self.expand_priority.keys():
 		if i == expand.IMPROVEMENT:
@@ -513,9 +502,6 @@ func update_priorities():
 		
 	self.expand_priority[expand.CITY] = (1*self.expand_bias) - max_expand
 			
-	
-	
-	
 	for i in self.attack_priority.keys():
 		if i in [attack.CITY,attack.UNIT]:
 			self.attack_priority[i] = Dictionary()
@@ -580,7 +566,43 @@ func update_priorities():
 	self.priorities[EXPAND] = self.expand_priority
 	
 func update_build_priorites():
-	pass
+	print("explore priority: ", self.explore_priority)
+	print("expand priority: ", self.expand_priority)
+	print("defence priority: ", self.defence_priority)
+	print("attack priority: ", self.attack_priority)
+	
+	var max_explore_priority = 0
+	for i in self.explore_priority[explore.CITY]:
+			max_explore_priority = max(max_explore_priority,self.explore_priority[explore.CITY][i])
+	max_explore_priority = max(max_explore_priority,self.explore_priority[explore.FOW])
+	self.explore_priority[explore.BUILD] = (max_explore_priority/max(self.assigned_explore_score,1)) 
+	
+	var max_attack_priority = 0
+	for i in self.attack_priority:
+		if i in [attack.CITY,attack.UNIT]:
+			for j in self.attack_priority[i]:
+				max_attack_priority = max(max_attack_priority,self.attack_priority[i][j])
+	self.attack_priority[attack.BUILD] = (max_attack_priority/max(self.assigned_attack_score,1))
+	
+	var max_defence_priority = 0
+	for i in self.defence_priority:
+		if i in [defence.CITY]:
+			for j in self.defence_priority[i]:
+				max_defence_priority = max(max_defence_priority,self.defence_priority[i][j])
+	self.defence_priority[defence.BUILD] = (max_defence_priority/max(self.assigned_defence_score,1))
+	
+	var max_expand_priority = 0
+	for i in self.expand_priority:
+		if i in [expand.IMPROVEMENT]:
+			for j in self.expand_priority[i]:
+				max_expand_priority = max(max_expand_priority,self.expand_priority[i][j])
+	max_expand_priority = max(max_expand_priority,self.expand_priority[expand.CITY])
+	self.expand_priority[expand.BUILD] = (max_expand_priority/max(pow(self.units_assigned.values().count(EXPAND),2),1))
+	
+	print("explore build priority: ", self.explore_priority[expand.BUILD])
+	print("expand build priority: ", self.expand_priority[expand.BUILD])
+	print("defence build priority: ", self.defence_priority[expand.BUILD])
+	print("attack build priority: ", self.attack_priority[expand.BUILD])
 			
 func update_player_profiles():
 	self.check_tiles_for_enemy(self.visible_tiles)
@@ -918,7 +940,7 @@ class CityProfile:
 			elif priority == DEFEND:
 				self.build_defence_unit()
 			elif priority == EXPAND:
-				pass
+				city.start_build("Builder")
 				
 	func build_explore_unit():
 		var resources = self.city.resources_per_turn
@@ -969,8 +991,8 @@ class CityProfile:
 				var turns = -1
 				for j in cost.keys():
 					turns = max(turns,cost[j]/resources[j])
-				if self.defence/turns > self.defence_per_turn:
-					defence_per_turn = self.defence/turns
+				if defence/turns > defence_per_turn:
+					defence_per_turn = defence/turns
 					best_option = i["name"]
 		print(best_option)
 		if city.can_build(best_option):
