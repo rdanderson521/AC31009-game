@@ -377,7 +377,7 @@ func turn_decisions():
 			unassigned_units.erase(best_unit)
 			self.priorities[max_priority][max_priority_type][max_priority_target] -= total_priority/num_units
 				
-	self.update_assigned_scores()
+	#self.update_assigned_scores()
 				
 	var assigned_unit_tasks = self.units_assigned.values()
 	var explore_units = assigned_unit_tasks.count(EXPLORE)
@@ -413,6 +413,7 @@ func turn_decisions():
 				self.unit_profiles[i].build_new_city()
 
 	if self.buildings_attention_needed.size() > 0:
+		self.update_assigned_scores()
 		self.update_priorities()
 		self.update_build_priorites()
 	

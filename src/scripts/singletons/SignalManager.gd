@@ -37,6 +37,7 @@ signal turn_start_obj_attention_needed(units,buildings)
 signal building_build_start(building)
 signal new_unit(unit,player)
 signal new_building(building,player)
+signal enable_end_turn_btn(player)
 
 var mouse_entered: Array
 var mouse_over_gui: bool
@@ -202,5 +203,8 @@ func new_unit(unit,player):
 func new_building(building,player):
 	emit_signal("new_building",building,player)
 	
+func enable_end_turn_btn(player):
+	emit_signal("enable_end_turn_btn",player)
+
 	
 	

@@ -23,7 +23,7 @@ const player_colours = [Color(1,0,0),Color(1,0,0.5),Color(0,0,1),Color(1,1,0),Co
 
 const max_cities = 5
 
-var testing = true
+var testing = false
 
 var map: Dictionary
 var map_size: Vector2

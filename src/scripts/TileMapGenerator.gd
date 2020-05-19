@@ -96,7 +96,7 @@ func generate():
 				var arr_x = curr_blob.pos.x
 				var arr_y = curr_blob.pos.y+(int(arr_x/2))
 				
-				var new_cells = Hex_ops.hex_in_range(1,curr_blob.pos)
+				var new_cells = Hex.hex_in_range(1,curr_blob.pos)
 				for j in new_cells:
 					var pos_diff = j - curr_blob.pos
 					

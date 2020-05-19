@@ -9,7 +9,6 @@ export(int) var blob_detirioration: int = 5
 export(int) var grid_x: int = 50
 export(int) var grid_y: int = 35
 export(bool) var debug: bool = false
-export(bool) var inGame: bool = true
 export(bool) var generate: bool = false setget generate
 export(bool) var clear: bool = false setget clear
 
@@ -19,6 +18,7 @@ var tiles = GlobalConfig.biomes
 # Called when the node enters the scene tree for the first time.
 func _init().():
 		self.position = Vector2(-16,-32)
+		self.visible = false
 	
 
 class HexNode:
@@ -175,11 +175,7 @@ func generate(generate):
 						else:
 							set_cell(y.pos.x,y.pos.y,tiles["grass"])
 			
-			y.biome = get_cell(y.pos.x,y.pos.y)
-			if inGame:
-				GlobalConfig.map[Vector2(y.pos.x,y.pos.y)] = y.biome
-				GlobalConfig.map_size = Vector2(grid_x,grid_y)
-			
+
 func clear(c=null):
 	var to_clear = get_used_cells()
 	

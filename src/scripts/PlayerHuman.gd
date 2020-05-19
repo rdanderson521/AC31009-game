@@ -19,6 +19,7 @@ func _init(start_hex:Vector2).(start_hex):
 	SignalManager.connect("unit_moved",self,"unit_moved")
 	SignalManager.connect("move_wait_finished",self,"unit_turn_finished")
 	SignalManager.connect("select_object_btn",self,"select_object_btn")
+	SignalManager.connect("moves_left_change",self,"unit_moves_left_changed")
 	
 	self.unit_vis_range = 2
 	self.building_vis_range = 3
@@ -117,15 +118,22 @@ func turn_start():
 			if i.turn_start():
 				self.buildings_attention_needed.push_back(i)
 	SignalManager.player_turn_started(self)
-	SignalManager.turn_start_obj_attention_needed(self.units_attention_needed,self.buildings_attention_needed)
+	if self.units_attention_needed.empty() and self.buildings_attention_needed.empty():
+		SignalManager.enable_end_turn_btn(self)
+	else:
+		SignalManager.turn_start_obj_attention_needed(self.units_attention_needed,self.buildings_attention_needed)
 			
 func turn_end():
 	var all_units_done = true
-	if self.is_turn:
+	if self.is_turn and self.units_attention_needed.empty() and self.buildings_attention_needed.empty():
 		self.is_turn = false
 		self.selected_object = null
 		self.units_attention_needed.clear()
 		self.find_node("MainGui",true,false).turn_ended()
+	else:
+		print(self.units_attention_needed)
+		print(self.buildings_attention_needed)
+		
 	if !self.is_turn:
 		
 		for i in self.units:
@@ -147,9 +155,13 @@ func start_build(to_build:String):
 		if self.selected_object is Unit:
 			if self.selected_object.can_build(to_build) and self.can_build(to_build,self.selected_object.hex_pos):
 				self.selected_object.start_build(to_build)
+				self.units_attention_needed.erase(selected_object)
 		elif self.selected_object is Building:
 			if self.selected_object.can_build(to_build):
 				self.selected_object.start_build(to_build)
+				self.buildings_attention_needed.erase(selected_object)
+		if self.units_attention_needed.empty() and self.buildings_attention_needed.empty():
+			SignalManager.enable_end_turn_btn(self)
 				
 func reset_visible():
 	self.visible_tiles = Array()
@@ -186,3 +198,10 @@ func unit_moved(unit:Unit,from:Vector2,to:Vector2):
 				self.fow.erase(i)
 				self.not_fow.append(i)
 	self.fow_canvas.draw(self.fow,self.visible_tiles)
+	
+func unit_moves_left_changed(unit,m):
+	if unit in self.units and m <= 0:
+		if unit in self.units_attention_needed:
+			self.units_attention_needed.erase(unit)
+		if self.units_attention_needed.empty() and self.buildings_attention_needed.empty():
+			SignalManager.enable_end_turn_btn(self)
