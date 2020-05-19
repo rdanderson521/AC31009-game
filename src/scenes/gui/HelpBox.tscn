@@ -46,10 +46,14 @@ custom_constants/separation = 10
 [node name="CheckBox" type="CheckBox" parent="VBoxContainer/HBoxContainer"]
 margin_right = 138.0
 margin_bottom = 24.0
+focus_mode = 0
+enabled_focus_mode = 0
 text = "Don't Show Again"
 
 [node name="CloseBtn" type="Button" parent="VBoxContainer/HBoxContainer"]
 margin_left = 148.0
 margin_right = 194.0
 margin_bottom = 24.0
+focus_mode = 0
+enabled_focus_mode = 0
 text = "close"
