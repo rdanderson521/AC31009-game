@@ -37,6 +37,14 @@ func generate():
 
 	map = Array()
 	
+	for y in range(-GlobalConfig.map_border,grid_y+GlobalConfig.map_border):
+		for x in range(-GlobalConfig.map_border,grid_x+GlobalConfig.map_border):
+			if x < 0 or x > grid_x-1 or y < 0 or y > grid_y-1:
+				if x >= 0:
+					set_cell(x,y-int(x/2),tiles["mountain"])
+				else:
+					set_cell(x,y-int((x-1)/2),tiles["mountain"])
+	
 	for y in range(grid_y):
 		for x in range(grid_x):
 			var offset = int(x/2)

@@ -108,4 +108,5 @@ window/stretch/aspect="keep"
 [rendering]
 
 threads/thread_model=2
+environment/default_clear_color=Color( 0.34, 0.34, 0.34, 1 )
 environment/default_environment="res://default_env.tres"

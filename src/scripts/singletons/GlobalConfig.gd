@@ -17,6 +17,8 @@ const biome_resources = {0:{"food":2,"construction":1}, 1:{"food":1,"constructio
 const impasible_biomes = [5,17]
 const water_biomes = [12,13]
 
+const map_border = 1
+
 const player_colours = [Color(1,0,0),Color(1,0,0.5),Color(0,0,1),Color(1,1,0),Color(0,1,1)]
 
 var testing = true
