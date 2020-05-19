@@ -781,7 +781,7 @@ class UnitProfile:
 						self.unit.start_build("city")
 					else:
 						if !self.unit.find_path(new_city_location):
-							if GlobalConfig.unit_tiles[new_city_location].get_parent() == self.player:
+							if GlobalConfig.unit_tiles.has(new_city_location) and GlobalConfig.unit_tiles[new_city_location].get_parent() == self.player:
 								SignalManager.make_unit_move(GlobalConfig.unit_tiles[new_city_location],self.unit)
 								
 	func improve_city(city:City):
@@ -822,7 +822,16 @@ class UnitProfile:
 			
 	func find_new_city_location():
 		var city_locations = Array()
-		for i in player.visible_tiles:
+		var search_area = Array()
+		if self.player.cities.size() > 0:
+			for i in self.player.cities:
+				search_area += Hex.hex_in_range(10,i.hex_pos)
+				for j in Hex.hex_in_range(4,i.hex_pos):
+					search_area.erase(j)
+		else: 
+			search_area = player.visible_tiles
+			
+		for i in search_area:
 			if !GlobalConfig.map.has(i):
 				continue
 			if GlobalConfig.map[i] in GlobalConfig.water_biomes or GlobalConfig.map[i] in GlobalConfig.impasible_biomes:

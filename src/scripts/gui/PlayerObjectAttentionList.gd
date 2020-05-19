@@ -23,6 +23,7 @@ func _ready():
 
 func turn_start(units,buildings):
 	self.clear_buttons()
+	self.visible = true
 	for i in units:
 		var new_btn = btn.instance()
 		new_btn.set_script(btn_sript)
@@ -37,7 +38,6 @@ func turn_start(units,buildings):
 		self.btn_list.append(new_btn)
 		self.btn_container.add_child(new_btn)
 		new_btn.visible = true
-	self.visible = true
 		
 func add_object(obj,player):
 	if player == self.player:

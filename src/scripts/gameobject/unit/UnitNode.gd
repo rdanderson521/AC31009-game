@@ -273,6 +273,10 @@ func kill():
 func can_build(building) -> bool:
 	if self.hex_pos in GlobalConfig.building_tiles.keys():
 		return false
+	if BuildingFactory.building_templates_by_name[building]["is_city"]:
+		for i in GlobalConfig.city_tiles.keys():
+			if Hex.hex_distance(self.hex_pos,i) < 5:
+				return false
 	if self.build_options.has(building):
 		return true
 	return false
@@ -286,6 +290,10 @@ func update_build_options():
 				enabled = false
 			if i["is_district"] and !self.hex_pos in self.get_parent().area:
 				enabled = false
+			if i["is_city"]:
+				for i in GlobalConfig.city_tiles.keys():
+					if Hex.hex_distance(self.hex_pos,i) < 5:
+						enabled = false
 			if self.moves_left <= 0:
 				enabled = false
 			if i.has("resources"):
@@ -368,4 +376,6 @@ func _process(delta):
 			self.position = new_pos
 			
 func _draw():
-	draw_circle(Vector2(0,0),Hex.width*0.4,self.get_parent().colour)
+	var colour = self.get_parent().colour
+	colour.a = 0.6
+	draw_circle(Vector2(0,0),Hex.width*0.4,colour)

@@ -6,10 +6,14 @@ var area: Array
 var resources_per_turn: Dictionary
 var buildings: Array
 var building_tiles: Dictionary
+var grow_cost: int
+var grow_cost_left: float
 
 func _init():
 	self.building_tiles = Dictionary()
 	SignalManager.connect("kill_building",self,"kill_building")
+	self.grow_cost = 100
+	self.grow_cost_left = self.grow_cost
 
 func _ready():
 	self.build_options_outdated = true
@@ -17,6 +21,23 @@ func _ready():
 	self.update_build_options()
 	
 func turn_start() -> bool:
+	if self.grow_cost > 0:
+		self.grow_cost_left -= self.resources_per_turn["construction"]
+		if self.grow_cost_left <=0:
+			var new_area = Hex.hex_in_range(2,self.hex_pos)
+			new_area.shuffle()
+			var found = false
+			for i in new_area:
+				if !(i in self.area):
+					found = true
+					self.area.append(i)
+					self.grow_cost = self.grow_cost*1.2
+					self.grow_cost_left = self.grow_cost
+					update()
+					break
+			if !found:
+				self.grow_cost == -1
+			
 	if self.mode == BUILD:
 		var build_finished = true
 		for i in self.build_resources_left.keys():
@@ -123,7 +144,8 @@ func kill_building(building):
 		self.update_resources()
 
 func _draw():
-	print("draw city")
+	var colour = self.get_parent().colour
+	colour.a = 0.5
 	for i in self.area:
 		var points = Array()
 		var pos = Hex.hex_to_point(i)
@@ -134,5 +156,5 @@ func _draw():
 		points.append(pos + Vector2(-Hex.width/4,Hex.height/2)-self.position)
 		points.append(pos + Vector2(-Hex.width/2,0)-self.position)
 		var polygon = PoolVector2Array(points)
-		draw_polygon(polygon,PoolColorArray([self.get_parent().colour]))
+		draw_polygon(polygon,PoolColorArray([colour]))
 

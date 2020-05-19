@@ -30,7 +30,11 @@ func generate():
 			if !special_tiles.empty():
 				self.set_cellv(i,special_tiles[int(rand_range(0,special_tiles.size()-1))]["index"])
 				GlobalConfig.special_resource_tiles[i] = self.tiles[self.get_cellv(i)]
-
+				
+func clear():
+	GlobalConfig.special_resource_tiles.clear()
+	for i in self.get_used_cells():
+		self.set_cellv(i,-1)
 
 func check_templates(templates):
 	return templates

@@ -55,7 +55,7 @@ func start_game():
 	var idx = 0
 	while !map_made and idx < 3:
 		idx += 1
-		$TileMap.generate(true)
+		$TileMap.generate()
 		$TileMap/TileMap.generate()
 		player_start_areas = init_player_start_areas(4)
 		if typeof(player_start_areas) == TYPE_ARRAY:
@@ -75,7 +75,7 @@ func init_player_start_areas(num_players):
 	
 	var x_itterations = int((GlobalConfig.map_size.x-10)/10)
 	var y_itterations = int((GlobalConfig.map_size.y-10)/10)
-	
+	print("areas to search: ",y_itterations*x_itterations)
 	var start_areas_found = 0
 	
 	for i in range(0,y_itterations):
@@ -89,7 +89,7 @@ func init_player_start_areas(num_players):
 				
 				var start_hex = Vector2(x,y)
 				
-				var start_area = Hex.hex_in_range(2,start_hex)
+				var start_area = Hex.hex_in_range(1,start_hex)
 				var no_enemy_area = Hex.hex_in_range(5,start_hex)
 				var valid_start = true
 				
@@ -108,6 +108,7 @@ func init_player_start_areas(num_players):
 					found = true
 					start_areas_found += 1
 	if start_areas_found < num_players:
+		print("invalid map: ", start_areas_found)
 		return false
 	else:
 		return start_areas
@@ -120,9 +121,10 @@ func init_players(num_players,start_areas):
 		var player
 		if i < 1:
 			player = Human.new(start_areas.pop_back())
+			player.colour = GlobalConfig.player_colours[i]
 		else:
 			player = AI.new(start_areas.pop_back())
-		player.colour = Color(1,0,0,0.3)
+			player.colour = GlobalConfig.player_colours[i]
 		player.set_name("Player"+str(i))
 		self.players.push_back(player)
 		add_child(player)
