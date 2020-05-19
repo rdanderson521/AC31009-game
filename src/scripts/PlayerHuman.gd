@@ -125,7 +125,9 @@ func turn_start():
 			
 func turn_end():
 	var all_units_done = true
+	print("end turn")
 	if self.is_turn and self.units_attention_needed.empty() and self.buildings_attention_needed.empty():
+		print("end turn started")
 		self.is_turn = false
 		self.selected_object = null
 		self.units_attention_needed.clear()
@@ -146,7 +148,9 @@ func turn_end():
 			print("error ending turn")
 			
 func unit_turn_finished(unit:Unit):
+	print("unit finished")
 	if unit in self.units_attention_needed and !self.is_turn:
+		print("unit erased")
 		self.units_attention_needed.erase(unit)
 		self.turn_end()
 		
@@ -204,4 +208,7 @@ func unit_moves_left_changed(unit,m):
 		if unit in self.units_attention_needed:
 			self.units_attention_needed.erase(unit)
 		if self.units_attention_needed.empty() and self.buildings_attention_needed.empty():
-			SignalManager.enable_end_turn_btn(self)
+			if self.is_turn:
+				SignalManager.enable_end_turn_btn(self)
+			else:
+				self.turn_end()

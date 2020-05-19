@@ -104,8 +104,8 @@ class a_star_node:
 	func _init(h,t,hex,parent=null):
 		self.distance_heuristic = h
 		self.distance_traveled = t
-		hex_pos = hex
-		hex_effort = GlobalConfig.biome_moves[GlobalConfig.map[hex_pos]]
+		self.hex_pos = hex
+		self.hex_effort = GlobalConfig.biome_moves[GlobalConfig.map[hex_pos]]
 		self.parent = parent
 		self.previous = Array()
 		if parent != null:
@@ -133,7 +133,7 @@ class a_star_node:
 	
 
 func heuristic_distance(destination, from, start = null):
-	var heuristic = Hex.hex_distance(destination,from)*12
+	var heuristic = Hex.hex_distance(destination,from)*1.2
 	if start != null: #heuristic tie break from http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html#S1
 		var start_point = Hex.hex_to_point(start)/32
 		var destination_point = Hex.hex_to_point(destination)/32
@@ -196,7 +196,7 @@ func find_path(destination,debug = false):
 				print("neighbors: " + str(node_neighbors))
 			for i in node_neighbors:
 				if i in self.get_parent().fow:
-					nodes.push_front(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + 5,i,current_node))
+					nodes.push_front(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + 1,i,current_node))
 				else:
 					if (!GlobalConfig.map.has(i)):
 						continue
@@ -210,30 +210,30 @@ func find_path(destination,debug = false):
 						continue
 					if (i in GlobalConfig.unit_tiles.keys()):
 						continue
-					nodes.push_front(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + (current_node.hex_effort*5),i,current_node))
+					nodes.push_front(a_star_node.new(heuristic_distance(destination,i,self.hex_pos),current_node.distance_traveled + (GlobalConfig.biome_moves[GlobalConfig.map[i]]),i,current_node))
 	print("failed")
 	return false 
 	
-func explore(fow = Array(),dist=10):
-	var start_time = OS.get_ticks_msec()
-	var found = false
-	var area = Hex.hex_in_range(dist,self.hex_pos)
-	area.shuffle()
-	if !fow.empty():
-		for i in area:
-			if i in fow:
-				if self.find_path(i):
-					found = true
-					break
-	if !found:
-		for i in area:
-			if Hex.hex_distance(self.hex_pos,i) > 0.5*dist:
-				if self.find_path(i):
-					found = true
-					break
-	if found:
-		pass
-		#print("time taken explore: ", OS.get_ticks_msec()-start_time)
+#func explore(fow = Array(),dist=10):
+#	var start_time = OS.get_ticks_msec()
+#	var found = false
+#	var area = Hex.hex_in_range(dist,self.hex_pos)
+#	area.shuffle()
+#	if !fow.empty():
+#		for i in area:
+#			if i in fow:
+#				if self.find_path(i):
+#					found = true
+#					break
+#	if !found:
+#		for i in area:
+#			if Hex.hex_distance(self.hex_pos,i) > 0.5*dist:
+#				if self.find_path(i):
+#					found = true
+#					break
+#	if found:
+#		pass
+#		#print("time taken explore: ", OS.get_ticks_msec()-start_time)
 	
 func attack(enemy):
 	mode = ATTACK

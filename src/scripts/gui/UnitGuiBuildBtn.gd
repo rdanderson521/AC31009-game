@@ -3,7 +3,7 @@ extends Button
 var building: Dictionary
 
 func _ready():
-	SignalManager.connect("unit_selected",self,"unit_selected")
+	pass
 
 func init(building):
 	self.building = building
@@ -14,9 +14,4 @@ func init(building):
 func pressed():
 	SignalManager.build_btn_click(self.building["name"])
 	
-#func unit_selected(unit):
-#	if unit.can_build(self.building["name"]):
-#		self.visible = true
-#	else:
-#		self.visible = false
-	
+
