@@ -55,6 +55,8 @@ func start_game():
 	var idx = 0
 	while !map_made and idx < 3:
 		idx += 1
+		$TileMap.clear()
+		$TileMap/TileMap.clear()
 		$TileMap.generate()
 		$TileMap/TileMap.generate()
 		player_start_areas = init_player_start_areas(4)

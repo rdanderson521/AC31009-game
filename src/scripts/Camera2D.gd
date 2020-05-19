@@ -34,7 +34,8 @@ export (bool) var drag = true
 export (bool) var edge = false
 export (bool) var wheel = true
 
-var zoom_out_limit = 2
+var zoom_out_limit = 0.9
+var zoom_out_limit_max = 0.9
 var zoom_in_limit = 0.1
 
 # Camera speed in px/s.
@@ -72,6 +73,9 @@ func _ready():
 	set_enable_follow_smoothing(true)
 	set_follow_smoothing(4)
 	self.camera_zoom = get_zoom()
+	if GlobalConfig.testing:
+		zoom_out_limit_max = 2
+		zoom_out_limit = 2
 
 func _physics_process(delta):
 	
@@ -114,7 +118,7 @@ func _physics_process(delta):
 			area_to_see.end.y = max(area_to_see.end.y,point.y)
 		var zoom_out_area = (area_to_see.size/(get_viewport().get_visible_rect().size))*1.5
 		if !GlobalConfig.testing:
-			zoom_out_limit = max(zoom_out_area.x,zoom_out_area.y)
+			zoom_out_limit = min(max(zoom_out_area.x,zoom_out_area.y),self.zoom_out_limit_max)
 	if area_to_see.size.x > 0 and area_to_see.size.y > 0:
 
 	# Update position of the camera.

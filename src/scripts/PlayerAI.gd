@@ -186,7 +186,11 @@ func kill(obj:GameObject):
 		self.buildings.erase(obj)
 		if obj in self.buildings_attention_needed:
 			self.buildings_attention_needed.erase(obj)
-		self.city_profiles.erase(obj)
+		if obj is City:
+			self.city_profiles.erase(obj)
+			self.cities.erase(obj)
+			for i in obj.buildings:
+				i.kill()
 		if obj == self.selected_object:
 			self.selected_object = null
 			
@@ -272,9 +276,12 @@ func turn_decisions():
 				else:
 					if self.expand_priority[expand.IMPROVEMENT][j] > self.expand_priority[expand.IMPROVEMENT][improvement_city]:
 						improvement_city = j
-			self.unit_targets[i] = improvement_city
-			self.expand_priority[expand.IMPROVEMENT][improvement_city] -= total_priority/num_units
-			total_expand_priority -= total_priority/num_units
+			if improvement_city != null:
+				self.unit_targets[i] = improvement_city
+				self.expand_priority[expand.IMPROVEMENT][improvement_city] -= total_priority/num_units
+				total_expand_priority -= total_priority/num_units
+			else:
+				unassigned_units.append(i)
 		else:
 			unassigned_units.append(i)
 	
@@ -612,7 +619,7 @@ func update_build_priorites():
 		self.expand_priority[expand.BUILD_IMPROVE] = max_expand_priority - ((self.units_assigned.values().count(EXPAND)*max_expand_priority)/self.cities.size())
 	else:
 		self.expand_priority[expand.BUILD_IMPROVE] = 0
-	self.expand_priority[expand.BUILD_CITY] = (self.expand_priority[expand.CITY]/max(pow(self.units_assigned.values().count(EXPAND),2),1))
+	self.expand_priority[expand.BUILD_CITY] = (self.expand_priority[expand.CITY]*(GlobalConfig.max_cities - self.cities.size())/GlobalConfig.max_cities)
 	
 func update_player_profiles():
 	self.check_tiles_for_enemy(self.visible_tiles)
@@ -783,6 +790,13 @@ class UnitProfile:
 						if !self.unit.find_path(new_city_location):
 							if GlobalConfig.unit_tiles.has(new_city_location) and GlobalConfig.unit_tiles[new_city_location].get_parent() == self.player:
 								SignalManager.make_unit_move(GlobalConfig.unit_tiles[new_city_location],self.unit)
+							else:
+								var dist = 0
+								var found = false
+								while dist < Hex.hex_distance(self.unit.hex_pos,new_city_location)-2 and !found:
+									dist += 1
+									found = self.unit.find_path(Hex.closest_hex_in_range(new_city_location,dist,self.unit.hex_pos))
+									
 								
 	func improve_city(city:City):
 		var nearest_tile = null
@@ -792,6 +806,11 @@ class UnitProfile:
 			if i == city.hex_pos:
 				continue
 			if city.building_tiles.has(i) and city.building_tiles[i] != null:
+				continue
+			if GlobalConfig.map.has(i):
+				if GlobalConfig.map[i] in GlobalConfig.impasible_biomes or GlobalConfig.map[i] in GlobalConfig.water_biomes:
+					continue
+			else:
 				continue
 			var dist = Hex.hex_distance(self.unit.hex_pos,i)
 			if shortest_distance == -1 or shortest_distance > dist:
@@ -839,7 +858,6 @@ class UnitProfile:
 			var city_start_area = Hex.hex_in_range(1,i)
 			var area_valid = true
 			var area_score = {"food":0,"construction":0,"defence":0}
-			#print("checking location:" +str(i))
 			for j in city_start_area:
 				if !GlobalConfig.map.has(j):
 					area_valid = false
@@ -1058,6 +1076,7 @@ class PlayerProfile:
 		self.city_defence_score = 0
 		SignalManager.connect("kill_unit",self,"unit_killed")
 		SignalManager.connect("kill_building",self,"building_killed")
+		SignalManager.connect("unit_moved",self,"unit_moved")
 		
 	func get_cities():
 		return self.cities.values()
@@ -1142,6 +1161,10 @@ class PlayerProfile:
 			self.buildings.erase(building)
 		if self.cities.has(building):
 			self.cities.erase(building)
+			
+	func unit_moved(unit,from,to):
+		if unit in self.units and to in self.player.visible_tiles:
+			self.update_unit(unit)
 		
 			
 		

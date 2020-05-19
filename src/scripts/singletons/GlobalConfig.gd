@@ -21,6 +21,8 @@ const map_border = 1
 
 const player_colours = [Color(1,0,0),Color(1,0,0.5),Color(0,0,1),Color(1,1,0),Color(0,1,1)]
 
+const max_cities = 5
+
 var testing = true
 
 var map: Dictionary

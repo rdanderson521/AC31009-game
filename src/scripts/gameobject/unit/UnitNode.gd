@@ -294,6 +294,8 @@ func update_build_options():
 				for i in GlobalConfig.city_tiles.keys():
 					if Hex.hex_distance(self.hex_pos,i) < 5:
 						enabled = false
+				if self.player.cities.size() >= GlobalConfig.max_cities:
+					enabled = false
 			if self.moves_left <= 0:
 				enabled = false
 			if i.has("resources"):
