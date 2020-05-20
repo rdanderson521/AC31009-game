@@ -17,7 +17,8 @@ func camera_changed(player):
 	
 func turn_started(player):
 	if player == self.player:
-		self.find_node("EndTurnBtn").disabled = true
+		if !GlobalConfig.testing:
+			self.find_node("EndTurnBtn").disabled = true
 		self.find_node("TurnLbl").text = str(player.turn)
 		self.find_node("PlayerTurnLabel").text = "Your Turn"
 		self.visible = true
@@ -29,6 +30,7 @@ func enable_end_turn_btn(player):
 		self.find_node("EndTurnBtn").disabled = false
 		
 func turn_ended():
-	self.find_node("EndTurnBtn").disabled = true
+	if !GlobalConfig.testing:
+		self.find_node("EndTurnBtn").disabled = true
 	
 	

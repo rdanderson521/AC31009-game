@@ -79,7 +79,8 @@ func mouse_entered_gui(gui):
 	#print("mouse_entered_gui")
 	
 func mouse_exited_gui(gui):
-	self.mouse_over_gui_list.erase(gui)
+	while self.mouse_over_gui_list.has(gui):
+		self.mouse_over_gui_list.erase(gui)
 	if self.mouse_over_gui_list.empty():
 		self.mouse_over_gui = false
 	emit_signal("mouse_exited_gui")

@@ -70,12 +70,12 @@ func game_object_clicked_right(obj:GameObject):
 		if self.selected_object != null and obj.get_parent() != self:
 			if self.selected_object is Unit:
 				self.selected_object.attack(obj)
-			elif self.selected_object is Building:
-				if self.selected_object.in_range(obj):###########make in range func################
-					self.selected_object.attack(obj)############make attack func##############
-		elif obj.get_parent() == self and obj is Unit:
-			pass
-			################################################### attacking own unit not allowed
+#			elif self.selected_object is Building:
+#				if self.selected_object.in_range(obj):###########make in range func################
+#					self.selected_object.attack(obj)############make attack func##############
+#		elif obj.get_parent() == self and obj is Unit:
+#			pass
+#			################################################### attacking own unit not allowed
 		elif obj.get_parent() == self and obj is Building and !(obj.hex_pos in GlobalConfig.unit_tiles.keys()):
 			if self.selected_object is Unit:
 				self.selected_object.find_path(obj.hex_pos)
@@ -126,7 +126,7 @@ func turn_start():
 func turn_end():
 	var all_units_done = true
 	print("end turn")
-	if self.is_turn and self.units_attention_needed.empty() and self.buildings_attention_needed.empty():
+	if self.is_turn and ((self.units_attention_needed.empty() and self.buildings_attention_needed.empty()) or GlobalConfig.testing):
 		print("end turn started")
 		self.is_turn = false
 		self.selected_object = null
@@ -148,9 +148,7 @@ func turn_end():
 			print("error ending turn")
 			
 func unit_turn_finished(unit:Unit):
-	print("unit finished")
 	if unit in self.units_attention_needed and !self.is_turn:
-		print("unit erased")
 		self.units_attention_needed.erase(unit)
 		self.turn_end()
 		

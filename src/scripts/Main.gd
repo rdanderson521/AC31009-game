@@ -43,7 +43,7 @@ func _ready():
 		find_node("AudioStreamPlayer").autoplay = false
 		find_node("AudioStreamPlayer").playing = false
 		
-	else:
+	if true:#else:
 		find_node("AudioStreamPlayer").autoplay = true
 		find_node("AudioStreamPlayer").playing = true
 	$TileMap.clear()

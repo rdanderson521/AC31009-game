@@ -133,7 +133,7 @@ class a_star_node:
 	
 
 func heuristic_distance(destination, from, start = null):
-	var heuristic = Hex.hex_distance(destination,from)*1.2
+	var heuristic = Hex.hex_distance(destination,from)*2.5
 	if start != null: #heuristic tie break from http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html#S1
 		var start_point = Hex.hex_to_point(start)/32
 		var destination_point = Hex.hex_to_point(destination)/32
@@ -158,7 +158,7 @@ func find_path(destination,debug = false):
 		if !destination in self.get_parent().fow:
 			print("invalid destination")
 			return false
-	elif GlobalConfig.unit_tiles.keys().has(destination):
+	elif GlobalConfig.unit_tiles.has(destination):
 		if destination in self.get_parent().visible_tiles:
 			print("invalid destination")
 			return false
