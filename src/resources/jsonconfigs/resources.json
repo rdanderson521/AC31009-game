@@ -70,19 +70,6 @@
 		"tiles":[3,4,10,11,15]
 	},
 	{
-		"name":"fish",
-		"improvements":{
-			"food":2
-		},
-		"building":[
-			"city",
-			"fishing hut"
-		],
-		"happiness":1,
-		"texture":"res://resources/images/fish.png",
-		"tiles":[7]
-	},
-	{
 		"name":"gold",
 		"improvements":{
 			"gold":2

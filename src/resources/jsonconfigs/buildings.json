@@ -12,7 +12,7 @@
 			"gold":1,
 			"science":2
 		},
-		"texture":"res://building.png"
+		"texture":"res://resources/images/city.png"
 	},
 	{
 		"name":"farm",
@@ -23,7 +23,7 @@
 			"construction":-1
 		},
 		"build_turns":4,
-		"texture":"res://building.png"
+		"texture":"res://resources/images/farm.png"
 	},
 	{
 		"name":"mine",
@@ -34,7 +34,7 @@
 			"construction":2
 		},
 		"build_turns":4,
-		"texture":"res://building.png",
+		"texture":"res://resources/images/mine.png",
 		"tiles":[3,4,10,11,15]
 	},
 	{
@@ -44,12 +44,12 @@
 		"improvements":{
 			"construction":1,
 			"gold":1,
-			"food":-1
+			"food":1
 		},
 		"build_turns":4,
-		"texture":"res://building.png",
-		"resources":["camel","deer","horse","penguin","sheep"]
-		
+		"texture":"res://resources/images/stable.png",
+		"resources":["camel","cows","deer","horse","penguin","sheep"]
+
 	},
 	{
 		"name":"plantation",
@@ -62,35 +62,7 @@
 			"construction":-1
 		},
 		"build_turns":4,
-		"texture":"res://building.png",
+		"texture":"res://resources/images/plantation.png",
 		"resources":["cocoa","coconut","wine"]
 	},
-		{
-		"name":"slaughterhouse",
-		"is_district":true,
-		"requires_resources":true,
-		"health":50,
-		"improvements":{
-			"food":1,
-			"gold":1,
-			"construction":-1
-		},
-		"build_turns":4,
-		"texture":"res://building.png",
-		"resources":["camel","cows","deer","penguin","sheep"]
-	},
-		{
-		"name":"fishing hut",
-		"is_district":true,
-		"requires_resources":true,
-		"health":50,
-		"improvements":{
-			"food":1,
-			"gold":1,
-			"construction":-1
-		},
-		"build_turns":4,
-		"texture":"res://building.png",
-		"resources":["fish"]
-	}
 ]

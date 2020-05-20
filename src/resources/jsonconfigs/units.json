@@ -54,7 +54,7 @@
 		"cost":{
 			"food":40
 		},
-		"texture":"res://icon.png"
+		"texture":"res://resources/images/scout.png"
 	},
 	{
 		"name":"City Builder",

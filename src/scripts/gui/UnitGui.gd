@@ -20,6 +20,7 @@ func _ready():
 				var btn = preload("res://scenes/gui/UnitGuiBuildBtn.tscn").instance()
 				btn.script = preload("res://scripts/gui/UnitGuiBuildBtn.gd")
 				btn.init(i)
+				btn.find_node("BuildIcon",true,false).texture = load(i["texture"])
 				btn_list.add_child(btn)
 			
 func unit_selected(unit):
